@@ -275,6 +275,16 @@
       line-height: 1.5;
     }
 
+    .history-note {
+      max-width: 720px;
+      margin: 0 auto 28px;
+      text-align: center;
+      padding: 12px 18px;
+      border-radius: 14px;
+      background: #EAF5F7;
+      border: 1px solid #6F9CAF44;
+    }
+
     .history-item { margin: 26px 0; }
     .live { color: var(--amber); font-weight: 800; }
 
@@ -287,8 +297,8 @@
     .mascot-name { color: var(--amber); font-size: .75rem; font-weight: 800; }
     .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #91A99A55; border-radius: 20px; background: #B8D7E1; box-shadow: 0 12px 28px #07191d55; }
     .chat-message:nth-child(even) .chat-bubble { background: #A9CCD9; border-color: #8FA8B055; }
-    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #24443D; border-left: 1px solid #91A99A55; border-bottom: 1px solid #91A99A55; transform: rotate(45deg); border-bottom-left-radius: 4px; }
-    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #2C454F; border: 0; border-top: 1px solid #8FA8B055; border-right: 1px solid #8FA8B055; border-radius: 0 4px 0 0; }
+    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #B8D7E1; border-left: 1px solid #6F9CAF66; border-bottom: 1px solid #6F9CAF66; transform: rotate(45deg); border-bottom-left-radius: 4px; }
+    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #A9CCD9; border: 0; border-top: 1px solid #6F9CAF66; border-right: 1px solid #6F9CAF66; border-radius: 0 4px 0 0; }
     .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: var(--ivory); }
     .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #DDEEF2; color: #355763; font-size: .9rem; line-height: 1.5; }
     .chat-message:nth-child(even) .chat-reason { background: #D2E7ED; }
@@ -408,8 +418,8 @@
         <h2 id="history-heading">📜 Historial</h2>
         <button class="back" onclick="goHome()" id="back-history">← Inicio</button>
       </div>
-      <p class="note" id="history-note">
-        Este historial contiene ejemplos. Las transacciones oficiales deberán ser registradas por una persona autorizada.
+      <p class="note history-note" id="history-note">
+        Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.
       </p>
       <div class="history-chat" aria-label="Mensajes de ejemplo del historial">
         <article class="chat-message">
