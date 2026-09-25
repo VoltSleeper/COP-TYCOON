@@ -275,8 +275,32 @@
       line-height: 1.5;
     }
 
-    .history-item { margin: 12px 0; }
-    .live { color: var(--sage); font-weight: 800; }
+    .history-item { margin: 26px 0; }
+    .live { color: var(--amber); font-weight: 800; }
+
+    /* Chat-style history: mascot beside each connected speech bubble */
+    .history-chat { display: flex; flex-direction: column; gap: 22px; margin-top: 24px; }
+    .chat-message { display: flex; align-items: center; gap: 14px; width: min(760px, 100%); animation: chat-enter .45s ease both; }
+    .chat-message:nth-child(even) { align-self: flex-end; flex-direction: row-reverse; }
+    .chat-mascot { flex: 0 0 76px; width: 76px; text-align: center; }
+    .mascot-art { width: 68px; height: 68px; margin: 0 auto 6px; display: grid; place-items: center; border-radius: 22px; background: #263F43; border: 1px solid #C6A86B66; font-size: 2.25rem; box-shadow: 0 8px 20px #07191d66; }
+    .mascot-name { color: var(--amber); font-size: .75rem; font-weight: 800; }
+    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #91A99A55; border-radius: 20px; background: #24443D; box-shadow: 0 12px 28px #07191d55; }
+    .chat-message:nth-child(even) .chat-bubble { background: #2C454F; border-color: #8FA8B055; }
+    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #24443D; border-left: 1px solid #91A99A55; border-bottom: 1px solid #91A99A55; transform: rotate(45deg); border-bottom-left-radius: 4px; }
+    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #2C454F; border: 0; border-top: 1px solid #8FA8B055; border-right: 1px solid #8FA8B055; border-radius: 0 4px 0 0; }
+    .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: var(--ivory); }
+    .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #172F2F; color: #D6DED5; font-size: .9rem; line-height: 1.5; }
+    .chat-message:nth-child(even) .chat-reason { background: #1B3038; }
+    .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: #C1CCC6; font-size: .72rem; }
+    @keyframes chat-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 560px) {
+      .chat-message { gap: 9px; }
+      .chat-mascot { flex-basis: 52px; width: 52px; }
+      .mascot-art { width: 48px; height: 48px; border-radius: 16px; font-size: 1.65rem; }
+      .chat-bubble { padding: 15px 14px 12px; }
+      .chat-bubble::before { top: 23px; }
+    }
 
     footer {
       text-align: center;
@@ -387,17 +411,31 @@
       <p class="note" id="history-note">
         Este historial contiene ejemplos. Las transacciones oficiales deberán ser registradas por una persona autorizada.
       </p>
-      <div class="history-item">
-        <span class="live">● DEMO</span>
-        <h3>Francia → Haití</h3>
-        <p>€20.000.000 · Adaptación climática</p>
-        <p class="muted">Ejemplo ficticio; no es una transacción oficial.</p>
-      </div>
-      <div class="history-item">
-        <span class="live">● DEMO</span>
-        <h3>Japón → Kenia</h3>
-        <p>€5.000.000 · Energías renovables</p>
-        <p class="muted">Ejemplo ficticio; no es una transacción oficial.</p>
+      <div class="history-chat" aria-label="Mensajes de ejemplo del historial">
+        <article class="chat-message">
+          <div class="chat-mascot">
+            <div class="mascot-art" aria-hidden="true">🇫🇷</div>
+            <div class="mascot-name">Francia</div>
+          </div>
+          <div class="chat-bubble">
+            <span class="live">● DEMO</span>
+            <h3 class="chat-title">Francia ha donado 20M a España</h3>
+            <div class="chat-reason">Motivo: Beneficio mutuo / Transacción</div>
+            <div class="chat-meta">Ejemplo ficticio · 12:45</div>
+          </div>
+        </article>
+        <article class="chat-message">
+          <div class="chat-mascot">
+            <div class="mascot-art" aria-hidden="true">🇯🇵</div>
+            <div class="mascot-name">Japón</div>
+          </div>
+          <div class="chat-bubble">
+            <span class="live">● DEMO</span>
+            <h3 class="chat-title">Japón ha donado 5M a Kenia</h3>
+            <div class="chat-reason">Motivo: Energías renovables</div>
+            <div class="chat-meta">Ejemplo ficticio · 12:47</div>
+          </div>
+        </article>
       </div>
     </section>
   </main>
