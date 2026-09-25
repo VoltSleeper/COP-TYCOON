@@ -8,43 +8,44 @@
     @import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&display=swap');
 
     :root {
-      --bg: #77A7C4;
+      /* Color system: blue base + cream surfaces + teal action + tiny warm accents */
+      --bg: #EAF3F6;
       --forest: #017360;
       --slate: #446E8F;
       --sage: #77A7C4;
       --mauve: #A1DBF1;
       --ivory: #173D45;
-      --muted: #446E8F;
+      --muted: #5C7180;
       --amber: #F3D094;
-      --border: #446E8F66;
-      --panel: #A1DBF1;
-      --panel-strong: #F2E6CE;
-      --shadow: #446E8F55;
-      --soft: #F2E6CE;
-      --bubble-left: #A1DBF1;
-      --bubble-right: #77A7C4;
-      --bubble-inner-left: #F2E6CE;
-      --bubble-inner-right: #DDF0F7;
+      --border: #446E8F2E;
+      --panel: #F8F5EC;
+      --panel-strong: #FFFDF8;
+      --shadow: #173D4520;
+      --soft: #EAF3F6;
+      --bubble-left: #FFFDF8;
+      --bubble-right: #F2F7F8;
+      --bubble-inner-left: #EAF3F6;
+      --bubble-inner-right: #EAF3F6;
     }
 
     body.palette-b {
-      --bg: #DDECF1;
-      --forest: #84BF93;
-      --slate: #9ABF17;
+      --bg: #F3F8F5;
+      --forest: #2F765D;
+      --slate: #486B68;
       --sage: #84BF93;
-      --mauve: #D4DB74;
-      --ivory: #35543C;
-      --muted: #5D785F;
-      --amber: #9ABF17;
-      --border: #84BF9366;
-      --panel: #AED9C5;
-      --panel-strong: #F3EEB6;
-      --shadow: #55795F44;
-      --soft: #F3EEB6;
-      --bubble-left: #AED9C5;
-      --bubble-right: #84BF93;
-      --bubble-inner-left: #F3EEB6;
-      --bubble-inner-right: #DDECF1;
+      --mauve: #AED9C5;
+      --ivory: #28473E;
+      --muted: #61766F;
+      --amber: #D4A84E;
+      --border: #486B6830;
+      --panel: #FFFDF4;
+      --panel-strong: #FFFFFF;
+      --shadow: #28473E20;
+      --soft: #F3F8F5;
+      --bubble-left: #FFFFFF;
+      --bubble-right: #F4FAF6;
+      --bubble-inner-left: #F3F8F5;
+      --bubble-inner-right: #F3F8F5;
     }
 
     * { box-sizing: border-box; }
@@ -53,7 +54,7 @@
       margin: 0;
       font-family: 'Happy Monkey', system-ui, sans-serif;
       color: var(--ivory);
-      background: linear-gradient(180deg, var(--soft) 0%, var(--bg) 48%, var(--panel) 100%);
+      background: var(--bg);
       min-height: 100vh;
     }
 
@@ -79,7 +80,7 @@
 
     select {
       color: var(--ivory);
-      background: linear-gradient(145deg, var(--panel), var(--forest));
+      background: var(--panel-strong);
       border: 1px solid var(--slate);
       border-radius: 10px;
       padding: 9px 12px;
@@ -105,7 +106,7 @@
     }
 
     h1 {
-      font-family: 'Space Grotesk', sans-serif;
+      font-family: 'Happy Monkey', system-ui, sans-serif;
       font-size: clamp(3rem, 8vw, 6rem);
       line-height: .95;
       margin: 13px 0;
@@ -123,7 +124,7 @@
 
     .card {
       appearance: none;
-      background: linear-gradient(145deg, var(--panel-strong), var(--panel));
+      background: var(--panel-strong);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: 22px;
@@ -132,7 +133,7 @@
       color: var(--ivory);
       cursor: pointer;
       transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease, background .28s ease;
-      box-shadow: 0 12px 30px var(--shadow);
+      box-shadow: 0 10px 28px var(--shadow);
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
@@ -140,27 +141,27 @@
 
     .card:hover {
       transform: translateY(-8px);
-      border-color: var(--sage);
-      box-shadow: 0 20px 42px var(--shadow), 0 0 26px #91A99A22;
-      background: linear-gradient(145deg, var(--panel-strong), var(--bubble-left));
+      border-color: var(--slate);
+      box-shadow: 0 18px 36px var(--shadow), 0 0 0 3px #77A7C422;
+      background: var(--panel-strong);
     }
 
     .animation-slot {
       height: 165px;
-      border: 1px dashed #91A99A55;
+      border: 1px dashed #446E8F55;
       border-radius: 12px;
       margin-bottom: 22px;
       display: grid;
       place-items: center;
-      background: color-mix(in srgb, var(--bg) 60%, transparent);
+      background: var(--soft);
       color: var(--slate);
       transition: transform .28s ease, border-color .28s ease, background .28s ease;
     }
 
     .card:hover .animation-slot {
       transform: translateY(-2px);
-      border-color: #91A99A99;
-      background: color-mix(in srgb, var(--forest) 60%, transparent);
+      border-color: var(--sage);
+      background: #E2F0F3;
     }
 
     .animation-placeholder {
@@ -181,7 +182,7 @@
 
     .section {
       display: none;
-      background: var(--forest);
+      background: var(--panel-strong);
       border: 1px solid var(--border);
       border-radius: 16px;
       padding: clamp(20px, 4vw, 35px);
@@ -265,7 +266,7 @@
     input {
       flex: 1;
       min-width: 0;
-      background: color-mix(in srgb, var(--soft) 75%, white);
+      background: var(--panel-strong);
       border: 1px solid var(--slate);
       color: var(--ivory);
       border-radius: 10px;
@@ -282,8 +283,8 @@
       border: 0;
       border-radius: 10px;
       padding: 13px 18px;
-      background: var(--sage);
-      color: #17323B;
+      background: var(--forest);
+      color: #FFFFFF;
       font-weight: 800;
       cursor: pointer;
       transition: transform .2s ease, filter .2s ease;
@@ -307,7 +308,7 @@
       padding: 12px 18px;
       border-radius: 14px;
       background: var(--soft);
-      border: 1px solid #6F9CAF44;
+      border: 1px solid var(--border);
     }
 
     .history-item { margin: 26px 0; }
@@ -318,12 +319,12 @@
     .chat-message { display: flex; align-items: center; gap: 14px; width: min(760px, 100%); animation: chat-enter .45s ease both; }
     .chat-message:nth-child(even) { align-self: flex-end; flex-direction: row-reverse; }
     .chat-mascot { flex: 0 0 76px; width: 76px; text-align: center; }
-    .mascot-art { width: 68px; height: 68px; margin: 0 auto 6px; display: grid; place-items: center; border-radius: 22px; background: var(--panel); border: 1px solid #C6A86B66; font-size: 2.25rem; box-shadow: 0 8px 20px #07191d66; }
-    .mascot-name { color: var(--amber); font-size: .75rem; font-weight: 800; }
-    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #91A99A55; border-radius: 20px; background: var(--bubble-left); box-shadow: 0 12px 28px #07191d55; }
+    .mascot-art { width: 68px; height: 68px; margin: 0 auto 6px; display: grid; place-items: center; border-radius: 22px; background: var(--panel); border: 1px solid var(--border); font-size: 2.25rem; box-shadow: 0 8px 20px var(--shadow); }
+    .mascot-name { color: var(--slate); font-size: .75rem; font-weight: 800; }
+    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid var(--border); border-radius: 20px; background: var(--bubble-left); box-shadow: 0 12px 28px var(--shadow); }
     .chat-message:nth-child(even) .chat-bubble { background: var(--bubble-right); border-color: #8FA8B055; }
-    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #B8D7E1; border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); transform: rotate(45deg); border-bottom-left-radius: 4px; }
-    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #A9CCD9; border: 0; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-radius: 0 4px 0 0; }
+    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: var(--bubble-left); border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); transform: rotate(45deg); border-bottom-left-radius: 4px; }
+    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: var(--bubble-right); border: 0; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-radius: 0 4px 0 0; }
     .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: var(--ivory); }
     .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: var(--bubble-inner-left); color: var(--ivory); font-size: .9rem; line-height: 1.5; }
     .chat-message:nth-child(even) .chat-reason { background: var(--bubble-inner-right); }
