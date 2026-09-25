@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COP TYCOON LFS 2026</title>
+  <style>
+    :root {
+      --bg: #07131b;
+      --panel: #10232e;
+      --panel2: #152d39;
+      --text: #f1f7f8;
+      --muted: #a9bec6;
+      --green: #8ce6b0;
+      --blue: #83d8ef;
+      --border: #2c4a56;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at top, #173b43 0%, transparent 48%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 6%;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      font-size: 1.1rem;
+    }
+
+    .year { color: var(--green); }
+
+    select, button, input {
+      font: inherit;
+    }
+
+    select {
+      color: var(--text);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 12px;
+    }
+
+    main {
+      width: min(1100px, 90%);
+      margin: 0 auto;
+      padding: 45px 0 70px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 38px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: .8rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 5rem);
+      line-height: 1;
+      margin: 12px 0;
+      letter-spacing: -2px;
+    }
+
+    .hero p, .muted { color: var(--muted); }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin: 35px 0;
+    }
+
+    .card {
+      background: linear-gradient(145deg, var(--panel2), var(--panel));
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 25px;
+      min-height: 220px;
+      text-align: left;
+      color: var(--text);
+      cursor: pointer;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+    }
+
+    .card:hover {
+      transform: translateY(-7px) scale(1.02);
+      border-color: var(--green);
+      box-shadow: 0 0 28px #8ce6b022;
+    }
+
+    .card .emoji {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 18px;
+    }
+
+    .card h2 { margin: 0 0 8px; }
+    .card p { color: var(--muted); line-height: 1.5; }
+
+    .section {
+      display: none;
+      background: #0d202a;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: clamp(20px, 4vw, 35px);
+      margin-top: 25px;
+    }
+
+    .section.active { display: block; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .back {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 9px 13px;
+      cursor: pointer;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .stat, .result, .history-item {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 17px;
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 7px;
+    }
+
+    .stat strong { font-size: 1.15rem; }
+
+    .wolf {
+      font-size: 4rem;
+      text-align: center;
+      margin: 10px;
+    }
+
+    .speech {
+      background: var(--panel2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      line-height: 1.6;
+      margin: 15px 0;
+    }
+
+    .sim-form {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    input {
+      flex: 1;
+      min-width: 0;
+      background: #081820;
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 13px;
+    }
+
+    .primary {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 18px;
+      background: var(--green);
+      color: #092019;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .primary:hover { filter: brightness(1.06); }
+
+    .note {
+      font-size: .85rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .history-item { margin: 12px 0; }
+    .live { color: var(--green); font-weight: 800; }
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: var(--muted);
+      font-size: .85rem;
+    }
+
+    @media (max-width: 720px) {
+      .cards { grid-template-columns: 1fr; }
+      .card { min-height: 170px; }
+      .stats { grid-template-columns: 1fr; }
+      .sim-form { flex-direction: column; }
+      header { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">COP <span class="year">TYCOON</span> · LFS 2026</div>
+    <select id="language" aria-label="Idioma">
+      <option value="es">🇪🇸 Español</option>
+      <option value="en">🇬🇧 English</option>
+      <option value="fr">🇫🇷 Français</option>
+    </select>
+  </header>
+
+  <main>
+    <div id="home">
+      <section class="hero">
+        <div class="eyebrow">SIMULACIÓN CLIMÁTICA</div>
+        <h1>COP TYCOON</h1>
+        <p id="tagline">Negocia. Simula. Descubre el impacto de tus decisiones.</p>
+      </section>
+
+      <div class="cards">
+        <button class="card" onclick="openSection('lobby')">
+          <span class="emoji">🌍</span>
+          <h2 id="lobby-title">Lobby</h2>
+          <p id="lobby-desc">Consulta los países, representantes y presupuestos.</p>
+        </button>
+
+        <button class="card" onclick="openSection('simulator')">
+          <span class="emoji">🐺</span>
+          <h2 id="sim-title">Gran simulador</h2>
+          <p id="sim-desc">Prueba una transacción y explora sus posibles efectos.</p>
+        </button>
+
+        <button class="card" onclick="openSection('history')">
+          <span class="emoji">📜</span>
+          <h2 id="history-title">Historial</h2>
+          <p id="history-desc">Revisa el registro de transacciones oficiales.</p>
+        </button>
+      </div>
+    </div>
+
+    <section class="section" id="lobby">
+      <div class="section-head">
+        <h2 id="lobby-heading">🌍 Lobby</h2>
+        <button class="back" onclick="goHome()" id="back-lobby">← Inicio</button>
+      </div>
+      <p class="note" id="lobby-note">
+        Datos de demostración. El presupuesto oficial se actualizará cuando exista un registro autorizado.
+      </p>
+      <div class="stats">
+        <div class="stat"><span id="country-label">País</span><strong>🇫🇷 Francia</strong></div>
+        <div class="stat"><span id="rep-label">Representante</span><strong>Representante de ejemplo</strong></div>
+        <div class="stat"><span id="mascot-label">Mascota del equipo</span><strong>🐺</strong></div>
+        <div class="stat"><span id="budget-label">Presupuesto actual</span><strong>€100.000.000</strong></div>
+      </div>
+    </section>
+
+    <section class="section" id="simulator">
+      <div class="section-head">
+        <h2 id="sim-heading">🐺 Gran simulador</h2>
+        <button class="back" onclick="goHome()" id="back-sim">← Inicio</button>
+      </div>
+
+      <div class="wolf" id="wolf">🐺</div>
+      <div class="speech" id="speech">
+        ¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.
+        Por ejemplo: “Francia dona 20 millones de euros a Haití para adaptación climática”.
+      </div>
+
+      <form class="sim-form" id="sim-form">
+        <input id="transaction" required
+          placeholder="Describe una transacción hipotética…"
+          aria-label="Transacción hipotética">
+        <button class="primary" type="submit" id="simulate-button">Simular</button>
+      </form>
+
+      <div class="result" id="simulation-result" hidden></div>
+      <p class="note" id="sim-note">
+        Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
+        Los indicadores son ejemplos y no representan predicciones científicas.
+      </p>
+    </section>
+
+    <section class="section" id="history">
+      <div class="section-head">
+        <h2 id="history-heading">📜 Historial</h2>
+        <button class="back" onclick="goHome()" id="back-history">← Inicio</button>
+      </div>
+      <p class="note" id="history-note">
+        Este historial contiene ejemplos. Las transacciones oficiales deberán ser registradas por una persona autorizada.
+      </p>
+      <div class="history-item">
+        <span class="live">● DEMO</span>
+        <h3>Francia → Haití</h3>
+        <p>€20.000.000 · Adaptación climática</p>
+        <p class="muted">Ejemplo ficticio; no es una transacción oficial.</p>
+      </div>
+      <div class="history-item">
+        <span class="live">● DEMO</span>
+        <h3>Japón → Kenia</h3>
+        <p>€5.000.000 · Energías renovables</p>
+        <p class="muted">Ejemplo ficticio; no es una transacción oficial.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer> COP TYCOON LFS 2026 · Proyecto educativo de simulación </footer>
+
+  <script>
+    const sections = ["lobby", "simulator", "history"];
+
+    function openSection(id) {
+      document.getElementById("home").style.display = "none";
+      sections.forEach(section => {
+        document.getElementById(section).classList.toggle("active", section === id);
+      });
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function goHome() {
+      sections.forEach(section => {
+        document.getElementById(section).classList.remove("active");
+      });
+      document.getElementById("home").style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    const translations = {
+      es: {
+        tagline: "Negocia. Simula. Descubre el impacto de tus decisiones.",
+        lobby: "Lobby",
+        lobbyDesc: "Consulta los países, representantes y presupuestos.",
+        sim: "Gran simulador",
+        simDesc: "Prueba una transacción y explora sus posibles efectos.",
+        history: "Historial",
+        historyDesc: "Revisa el registro de transacciones oficiales.",
+        country: "País",
+        rep: "Representante",
+        mascot: "Mascota del equipo",
+        budget: "Presupuesto actual",
+        back: "← Inicio",
+        simulate: "Simular",
+        placeholder: "Describe una transacción hipotética…",
+        greeting: "¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.",
+        result: "Resultado ilustrativo",
+        explanation: "Esta versión solo muestra una demostración visual. Para calcular impactos reales del modelo, habrá que definir reglas e indicadores transparentes."
+      },
+      en: {
+        tagline: "Negotiate. Simulate. Discover the impact of your decisions.",
+        lobby: "Lobby",
+        lobbyDesc: "View countries, representatives, and budgets.",
+        sim: "Main simulator",
+        simDesc: "Try a transaction and explore its possible effects.",
+        history: "History",
+        historyDesc: "Review the official transaction record.",
+        country: "Country",
+        rep: "Representative",
+        mascot: "Team mascot",
+        budget: "Current budget",
+        back: "← Home",
+        simulate: "Simulate",
+        placeholder: "Describe a hypothetical transaction…",
+        greeting: "Hi! Enter a hypothetical transaction to explore its possible effects.",
+        result: "Illustrative result",
+        explanation: "This version is only a visual demo. Transparent rules and indicators must be defined before the model can calculate impacts."
+      },
+      fr: {
+        tagline: "Négociez. Simulez. Découvrez l’impact de vos décisions.",
+        lobby: "Lobby",
+        lobbyDesc: "Consultez les pays, les représentants et les budgets.",
+        sim: "Grand simulateur",
+        simDesc: "Testez une transaction et explorez ses effets possibles.",
+        history: "Historique",
+        historyDesc: "Consultez le registre des transactions officielles.",
+        country: "Pays",
+        rep: "Représentant",
+        mascot: "Mascotte de l’équipe",
+        budget: "Budget actuel",
+        back: "← Accueil",
+        simulate: "Simuler",
+        placeholder: "Décrivez une transaction hypothétique…",
+        greeting: "Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles.",
+        result: "Résultat illustratif",
+        explanation: "Cette version est une démonstration visuelle. Il faudra définir des règles et indicateurs transparents avant de calculer les impacts."
+      }
+    };
+
+    const ids = {
+      tagline: "tagline",
+      lobby: "lobby-title",
+      lobbyDesc: "lobby-desc",
+      sim: "sim-title",
+      simDesc: "sim-desc",
+      history: "history-title",
+      historyDesc: "history-desc",
+      country: "country-label",
+      rep: "rep-label",
+      mascot: "mascot-label",
+      budget: "budget-label"
+    };
+
+    document.getElementById("language").addEventListener("change", event => {
+      const t = translations[event.target.value];
+      Object.entries(ids).forEach(([key, id]) => {
+        const value = t[key];
+        if (value) document.getElementById(id).textContent = value;
+      });
+      ["back-lobby", "back-sim", "back-history"].forEach(id => {
+        document.getElementById(id).textContent = t.back;
+      });
+      document.getElementById("simulate-button").textContent = t.simulate;
+      document.getElementById("transaction").placeholder = t.placeholder;
+      document.getElementById("speech").textContent = t.greeting;
+    });
+
+    document.getElementById("sim-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const text = document.getElementById("transaction").value.trim();
+      const lang = document.getElementById("language").value;
+      const t = translations[lang];
+      const result = document.getElementById("simulation-result");
+
+      result.hidden = false;
+      result.innerHTML = `
+        <h3>${t.result}</h3>
+        <p><strong>Transacción:</strong> ${escapeHTML(text)}</p>
+        <p>💶 Presupuesto restante: → Sin calcular</p>
+        <p>🏭 Emisiones de CO₂: → Sin calcular</p>
+        <p>🌱 Impacto climático: → Sin calcular</p>
+        <p>🤝 Relaciones internacionales: → Sin calcular</p>
+        <p>🏳️ Impacto en el país: → Sin calcular</p>
+        <p class="note">${t.explanation}</p>
+      `;
+      document.getElementById("wolf").textContent = "🐺💭";
+    });
+
+    function escapeHTML(value) {
+      return value.replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+  </script>
+</body>
+</html>
