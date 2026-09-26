@@ -390,14 +390,14 @@
     .chat-mascot { flex: 0 0 76px; width: 76px; text-align: center; }
     .mascot-art { width: 68px; height: 68px; margin: 0 auto 6px; display: grid; place-items: center; border-radius: 22px; background: var(--forest-soft); border: 1px solid var(--green-border); font-size: 2.25rem; box-shadow: 0 8px 20px var(--shadow); }
     .mascot-name { color: var(--forest); font-size: .75rem; font-weight: 800; }
-    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid var(--border); border-radius: 20px; background: var(--bubble-left); box-shadow: 0 12px 28px var(--shadow); }
-    .chat-message:nth-child(even) .chat-bubble { background: var(--bubble-right); border-color: var(--slate-light); }
-    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: var(--bubble-left); border-left: 1px solid var(--border); border-bottom: 1px solid var(--border); transform: rotate(45deg); border-bottom-left-radius: 4px; }
-    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: var(--bubble-right); border: 0; border-top: 1px solid var(--border); border-right: 1px solid var(--border); border-radius: 0 4px 0 0; }
-    .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: var(--ivory); }
-    .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: var(--forest-soft); color: var(--ivory); font-size: .9rem; line-height: 1.5; }
-    .chat-message:nth-child(even) .chat-reason { background: var(--soft-blue); }
-    .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: var(--muted); font-size: .72rem; }
+    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #01736066; border-radius: 20px; background: linear-gradient(125deg, #017360 0%, #286F78 56%, #446E8F 100%); color: #FFFFFF; box-shadow: 0 14px 30px #173D4530; }
+    .chat-message:nth-child(even) .chat-bubble { background: linear-gradient(125deg, #315F7D 0%, #446E8F 62%, #3C927D 100%); border-color: #446E8F88; }
+    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #0A7568; border-left: 1px solid #01736066; border-bottom: 1px solid #01736066; transform: rotate(45deg); border-bottom-left-radius: 4px; }
+    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #3E6D86; border: 0; border-top: 1px solid #446E8F88; border-right: 1px solid #446E8F88; border-radius: 0 4px 0 0; }
+    .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: #FFFFFF; }
+    .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #DCEEE7; color: #173D45; font-size: .9rem; line-height: 1.5; }
+    .chat-message:nth-child(even) .chat-reason { background: #E5F1F5; }
+    .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: #DDECF1; font-size: .72rem; }
     .history-admin-bar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:18px 0 6px; }
     .admin-caption { margin:0; color:var(--muted); font-size:.8rem; }
     .admin-toggle { border:1px solid var(--green-border); border-radius:12px; padding:10px 15px; background:linear-gradient(120deg,var(--forest),var(--forest-mid)); color:white; font:inherit; font-size:.85rem; cursor:pointer; box-shadow:0 7px 18px var(--shadow); }
@@ -415,6 +415,7 @@
     .chat-admin-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:12px; position:relative; }
     .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#FFFFFFB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
     .chat-admin-actions .reverse-action { color:#9B3545; border-color:#9B354544; }
+    .chat-admin-actions .delete-action { color:#9B3545; border-color:#9B354544; }
     .chat-message.is-reversed .chat-bubble { opacity:.78; border-color:#B85B6855; }
     .chat-message.is-reversed .chat-title { text-decoration:line-through; text-decoration-thickness:1px; }
     .reversed-tag { display:inline-block; margin-left:7px; padding:3px 7px; border-radius:7px; background:#F7E1E4; color:#9B3545; font-size:.68rem; font-weight:800; }
@@ -796,6 +797,7 @@
         const controls = adminUnlocked ? `<div class="chat-admin-actions">
           <button type="button" onclick="editTransaction(${item.id})">✏️ Editar</button>
           <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ Restaurar" : "↶ Revertir"}</button>
+          <button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 Eliminar</button>
         </div>` : "";
         return `<article class="chat-message ${index % 2 ? "is-right" : ""} ${item.reversed ? "is-reversed" : ""}">
           <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(item.country)}</div></div>
@@ -864,6 +866,15 @@
       const item = transactions.find(entry => entry.id === id);
       if (!item) return;
       item.reversed = !item.reversed;
+      saveTransactions();
+      renderHistory();
+    }
+
+    function deleteTransaction(id) {
+      if (!adminUnlocked) return;
+      const item = transactions.find(entry => entry.id === id);
+      if (!item || !confirm("¿Eliminar esta entrada del historial de demostración? Esta acción no se puede deshacer.")) return;
+      transactions = transactions.filter(entry => entry.id !== id);
       saveTransactions();
       renderHistory();
     }
