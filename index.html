@@ -398,6 +398,26 @@
     .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: var(--forest-soft); color: var(--ivory); font-size: .9rem; line-height: 1.5; }
     .chat-message:nth-child(even) .chat-reason { background: var(--soft-blue); }
     .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: var(--muted); font-size: .72rem; }
+    .history-admin-bar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:18px 0 6px; }
+    .admin-caption { margin:0; color:var(--muted); font-size:.8rem; }
+    .admin-toggle { border:1px solid var(--green-border); border-radius:12px; padding:10px 15px; background:linear-gradient(120deg,var(--forest),var(--forest-mid)); color:white; font:inherit; font-size:.85rem; cursor:pointer; box-shadow:0 7px 18px var(--shadow); }
+    .admin-panel { margin:16px 0 24px; padding:22px; border:1px solid var(--green-border); border-radius:20px; background:linear-gradient(140deg,#FFFDF8 0%,#E4F2EB 65%,#DCEAF0 100%); box-shadow:0 12px 28px var(--shadow); }
+    .admin-panel[hidden] { display:none; }
+    .admin-panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
+    .admin-panel-head h3 { margin:0 0 5px; color:var(--forest); }
+    .admin-panel-head p { margin:0; color:var(--muted); font-size:.85rem; }
+    .admin-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .admin-form label { display:grid; gap:7px; color:var(--slate); font-size:.8rem; font-weight:700; }
+    .admin-form label:nth-child(2), .admin-form label:nth-child(3), .admin-form-actions { grid-column:1/-1; }
+    .admin-form input,.admin-form select { width:100%; min-width:0; padding:12px 13px; border:1px solid var(--border); border-radius:11px; background:#FFFFFFD9; color:var(--ivory); font:inherit; font-size:.9rem; }
+    .admin-form-actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .admin-warning { margin:14px 0 0; color:var(--muted); font-size:.76rem; line-height:1.5; }
+    .chat-admin-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:12px; position:relative; }
+    .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#FFFFFFB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
+    .chat-admin-actions .reverse-action { color:#9B3545; border-color:#9B354544; }
+    .chat-message.is-reversed .chat-bubble { opacity:.78; border-color:#B85B6855; }
+    .chat-message.is-reversed .chat-title { text-decoration:line-through; text-decoration-thickness:1px; }
+    .reversed-tag { display:inline-block; margin-left:7px; padding:3px 7px; border-radius:7px; background:#F7E1E4; color:#9B3545; font-size:.68rem; font-weight:800; }
     @keyframes chat-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 560px) {
       .chat-message { gap: 9px; }
@@ -570,32 +590,37 @@
       <p class="note history-note" id="history-note">
         Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.
       </p>
-      <div class="history-chat" aria-label="Mensajes de ejemplo del historial">
-        <article class="chat-message">
-          <div class="chat-mascot">
-            <div class="mascot-art" aria-hidden="true">🇫🇷</div>
-            <div class="mascot-name">Francia</div>
-          </div>
-          <div class="chat-bubble">
-            <span class="live">● DEMO</span>
-            <h3 class="chat-title">Francia ha donado 20M a España</h3>
-            <div class="chat-reason">Motivo: Beneficio mutuo / Transacción</div>
-            <div class="chat-meta">Ejemplo ficticio · 12:45</div>
-          </div>
-        </article>
-        <article class="chat-message">
-          <div class="chat-mascot">
-            <div class="mascot-art" aria-hidden="true">🇯🇵</div>
-            <div class="mascot-name">Japón</div>
-          </div>
-          <div class="chat-bubble">
-            <span class="live">● DEMO</span>
-            <h3 class="chat-title">Japón ha donado 5M a Kenia</h3>
-            <div class="chat-reason">Motivo: Energías renovables</div>
-            <div class="chat-meta">Ejemplo ficticio · 12:47</div>
-          </div>
-        </article>
+      <div class="history-admin-bar">
+        <p class="admin-caption">Registro de demostración</p>
+        <button class="admin-toggle" id="admin-toggle" type="button" onclick="toggleAdmin()">🔐 Modo admin</button>
       </div>
+      <div class="admin-panel" id="admin-panel" hidden>
+        <div class="admin-panel-head">
+          <div><h3>Panel de administración</h3><p>Gestiona el historial de esta demostración.</p></div>
+          <button class="back" type="button" onclick="logoutAdmin()">Cerrar</button>
+        </div>
+        <form id="admin-transaction-form" class="admin-form">
+          <label>País que realiza la acción
+            <select id="admin-country" required>
+              <option value="China">🇨🇳 China</option><option value="Francia">🇫🇷 Francia</option>
+              <option value="España">🇪🇸 España</option><option value="Turquía">🇹🇷 Turquía</option>
+              <option value="Australia">🇦🇺 Australia</option><option value="Japón">🇯🇵 Japón</option>
+            </select>
+          </label>
+          <label>Transacción / mensaje
+            <input id="admin-title" required maxlength="180" placeholder="Ej. China ha donado 10M a España">
+          </label>
+          <label>Motivo
+            <input id="admin-reason" required maxlength="240" placeholder="Describe brevemente el motivo">
+          </label>
+          <div class="admin-form-actions">
+            <button class="primary" id="admin-submit" type="submit">Añadir al historial</button>
+            <button class="back" id="admin-cancel" type="button" onclick="cancelEdit()" hidden>Cancelar edición</button>
+          </div>
+        </form>
+        <p class="admin-warning">Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.</p>
+      </div>
+      <div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
     </section>
   </main>
 
@@ -730,7 +755,7 @@
     });
 
     function escapeHTML(value) {
-      return value.replace(/[&<>"']/g, char => ({
+      return String(value).replace(/[&<>"']/g, char => ({
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
@@ -738,6 +763,131 @@
         "'": "&#039;"
       }[char]));
     }
+
+    // Front-end demo only: this code is visible in the public page source.
+    const ADMIN_DEMO_CODE = "COP-DEMO-2026";
+    const countryFlags = { "China":"🇨🇳", "Francia":"🇫🇷", "España":"🇪🇸", "Turquía":"🇹🇷", "Australia":"🇦🇺", "Japón":"🇯🇵" };
+    const demoTransactions = [
+      { id: 1, country: "Francia", title: "Francia ha donado 20M a España", reason: "Beneficio mutuo / Transacción", time: "12:45", reversed: false },
+      { id: 2, country: "Japón", title: "Japón ha donado 5M a Kenia", reason: "Energías renovables", time: "12:47", reversed: false }
+    ];
+    let transactions = loadTransactions();
+    let adminUnlocked = false;
+    let editingTransactionId = null;
+
+    function loadTransactions() {
+      try {
+        const saved = localStorage.getItem("copTycoonDemoHistory");
+        return saved ? JSON.parse(saved) : demoTransactions;
+      } catch (error) {
+        return demoTransactions;
+      }
+    }
+
+    function saveTransactions() {
+      try { localStorage.setItem("copTycoonDemoHistory", JSON.stringify(transactions)); }
+      catch (error) { console.warn("No se pudo guardar el historial en este navegador."); }
+    }
+
+    function renderHistory() {
+      const host = document.getElementById("history-chat");
+      host.innerHTML = transactions.map((item, index) => {
+        const reversed = item.reversed ? '<span class="reversed-tag">ANULADA</span>' : "";
+        const controls = adminUnlocked ? `<div class="chat-admin-actions">
+          <button type="button" onclick="editTransaction(${item.id})">✏️ Editar</button>
+          <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ Restaurar" : "↶ Revertir"}</button>
+        </div>` : "";
+        return `<article class="chat-message ${index % 2 ? "is-right" : ""} ${item.reversed ? "is-reversed" : ""}">
+          <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(item.country)}</div></div>
+          <div class="chat-bubble">
+            <span class="live">● DEMO</span>${reversed}
+            <h3 class="chat-title">${escapeHTML(item.title)}</h3>
+            <div class="chat-reason">Motivo: ${escapeHTML(item.reason)}</div>
+            <div class="chat-meta">Ejemplo ficticio · ${escapeHTML(item.time || "—")}</div>
+            ${controls}
+          </div>
+        </article>`;
+      }).join("") || '<p class="note">Todavía no hay transacciones en este historial de demostración.</p>';
+    }
+
+    function toggleAdmin() {
+      if (!adminUnlocked) {
+        const code = prompt("Introduce el código de demostración para abrir el modo admin:");
+        if (code !== ADMIN_DEMO_CODE) {
+          if (code !== null) alert("Código incorrecto.");
+          return;
+        }
+        adminUnlocked = true;
+      } else {
+        adminUnlocked = false;
+        cancelEdit();
+      }
+      document.getElementById("admin-panel").hidden = !adminUnlocked;
+      document.getElementById("admin-toggle").textContent = adminUnlocked ? "🔓 Admin activo" : "🔐 Modo admin";
+      renderHistory();
+    }
+
+    function logoutAdmin() {
+      adminUnlocked = false;
+      document.getElementById("admin-panel").hidden = true;
+      document.getElementById("admin-toggle").textContent = "🔐 Modo admin";
+      cancelEdit();
+      renderHistory();
+    }
+
+    function editTransaction(id) {
+      if (!adminUnlocked) return;
+      const item = transactions.find(entry => entry.id === id);
+      if (!item) return;
+      editingTransactionId = id;
+      document.getElementById("admin-country").value = item.country;
+      document.getElementById("admin-title").value = item.title;
+      document.getElementById("admin-reason").value = item.reason;
+      document.getElementById("admin-submit").textContent = "Guardar cambios";
+      document.getElementById("admin-cancel").hidden = false;
+      document.getElementById("admin-panel").hidden = false;
+      document.getElementById("admin-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    function cancelEdit() {
+      editingTransactionId = null;
+      const form = document.getElementById("admin-transaction-form");
+      if (form) form.reset();
+      const submit = document.getElementById("admin-submit");
+      const cancel = document.getElementById("admin-cancel");
+      if (submit) submit.textContent = "Añadir al historial";
+      if (cancel) cancel.hidden = true;
+    }
+
+    function reverseTransaction(id) {
+      if (!adminUnlocked) return;
+      const item = transactions.find(entry => entry.id === id);
+      if (!item) return;
+      item.reversed = !item.reversed;
+      saveTransactions();
+      renderHistory();
+    }
+
+    document.getElementById("admin-transaction-form").addEventListener("submit", event => {
+      event.preventDefault();
+      if (!adminUnlocked) return;
+      const country = document.getElementById("admin-country").value;
+      const title = document.getElementById("admin-title").value.trim();
+      const reason = document.getElementById("admin-reason").value.trim();
+      if (!title || !reason) return;
+      if (editingTransactionId !== null) {
+        const item = transactions.find(entry => entry.id === editingTransactionId);
+        if (item) Object.assign(item, { country, title, reason });
+      } else {
+        const now = new Date();
+        transactions.unshift({ id: Date.now(), country, title, reason, time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), reversed: false });
+      }
+      saveTransactions();
+      cancelEdit();
+      renderHistory();
+    });
+
+    renderHistory();
   </script>
 </body>
 </html>
