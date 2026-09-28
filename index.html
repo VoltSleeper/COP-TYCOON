@@ -729,12 +729,9 @@
       document.getElementById("admin-submit").textContent=editingTransactionId!==null?t.save:t.add;
       document.getElementById("admin-cancel").textContent=t.cancel;
       document.getElementById("admin-toggle").textContent=(adminUnlocked?"🔓 ":"🔐 ")+t.admin;
-      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+"
-            ";
-      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+"
-            ";
-      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+"
-            ";
+      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+" ";
+      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+" ";
+      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+" ";
       renderHistory();
     }
     function renderCountryRoster() {
