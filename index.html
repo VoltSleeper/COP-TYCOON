@@ -601,6 +601,36 @@
     .chat-meta{color:#C5DCE9}
     .mascot-art{box-shadow:0 0 18px #8FC6A522}
     .history-note{box-shadow:0 0 18px #34765E20}
+
+    /* Soft mint text for small supporting copy and labels */
+    .card p,.hero p,.roster-subnote,.country-detail span,.chat-meta,.note,
+    .section .subtext,.section .description,.stat small,.result small{
+      color:#A9D8BD;
+    }
+    .country-detail span,.roster-subhead,.eyebrow,.mascot-name{
+      color:#A9D8BD;
+    }
+    .card p{ text-shadow:0 0 10px #8FC6A510; }
+    .country-detail span{letter-spacing:.055em}
+    /* Performance pass: keep the atmosphere, reduce expensive continuous blur and movement */
+    body{background-attachment:scroll}
+    .card,.country-card,.section,.stat,.result,.history-item{
+      box-shadow:0 8px 22px #020A1055,inset 0 1px 0 #FFFFFF08;
+    }
+    .card,.country-card,.primary,.back,.animation-slot{
+      transition:transform .16s ease,border-color .16s ease,background-color .16s ease,box-shadow .16s ease;
+    }
+    .card:hover,.country-card:hover{
+      box-shadow:0 12px 28px #020A1080,0 0 0 1px #EAF6FF88,0 0 16px #A9D2EC35;
+    }
+    .card:hover{transform:translateY(-4px)}
+    .country-card:hover{transform:translateY(-3px)}
+    .chat-message{animation:none}
+    .hero h1{filter:none}
+    .card:hover .animation-slot{filter:none}
+    @media(prefers-reduced-motion:reduce){
+      *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+    }
 </style>
 </head>
 <body>
