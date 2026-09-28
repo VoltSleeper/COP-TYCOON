@@ -678,7 +678,8 @@
       Object.entries(textMap).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t[key];});
       document.querySelectorAll(".animation-placeholder").forEach(el=>el.textContent=t.animation);
       document.querySelectorAll(".country-detail").forEach((el,i)=>{const spans=el.querySelectorAll("span");const strongs=el.querySelectorAll("strong");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;if(strongs[0])strongs[0].textContent=t.repExample;if(strongs[1])strongs[1].textContent=t.rooms[i]||t.rooms[0];if(strongs[2])strongs[2].textContent=t.budgetSample;});
-      const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames[i]||el.textContent);\n      document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
+      const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames[i]||el.textContent);
+      document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
       document.getElementById("admin-title").placeholder=lang==="fr"?"Ex. La Chine a fait un don de 10 M à l’Espagne":lang==="en"?"E.g. China donated 10M to Spain":"Ej. China ha donado 10M a España";
       document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
@@ -751,7 +752,11 @@
       const host = document.getElementById("history-chat");
       const t = translations[document.getElementById("language").value] || translations.es;
       host.innerHTML = transactions.map((item, index) => {
-        const example = item.id===1 ? t.historyExamples[0] : item.id===2 ? t.historyExamples[1] : null;\n        const countryName = example ? example[0] : item.country;\n        const title = example ? example[1] : item.title;\n        const reason = example ? example[2] : item.reason;\n        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
+        const example = item.id===1 ? t.historyExamples[0] : item.id===2 ? t.historyExamples[1] : null;
+        const countryName = example ? example[0] : item.country;
+        const title = example ? example[1] : item.title;
+        const reason = example ? example[2] : item.reason;
+        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
         const controls = adminUnlocked ? `<div class="chat-admin-actions">
           <button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button>
           <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ "+t.restore : "↶ "+t.reverse}</button>
