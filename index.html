@@ -692,7 +692,7 @@
       {es:"Singapur",en:"Singapore",fr:"Singapour",flag:"🇸🇬",reps:["Marco"]},
       {es:"Suecia",en:"Sweden",fr:"Suède",flag:"🇸🇪",reps:["Mariam"]},
       {es:"Tonga",en:"Tonga",fr:"Tonga",flag:"🇹🇴",reps:["Anaé F."]},
-      {es:"Tuvalu",en:"Tuvalu",fr:"Tuvalu",flag:"🇹🇻",reps:["Alberto","por asignar"]},
+      {es:"Tuvalu",en:"Tuvalu",fr:"Tuvalu",flag:"🇹🇻",reps:["Alberto","pending"]},
       {es:"Turquía",en:"Türkiye",fr:"Turquie",flag:"🇹🇷",reps:[]},
       {es:"Ucrania",en:"Ukraine",fr:"Ukraine",flag:"🇺🇦",reps:["Javier"]},
       {es:"Venezuela",en:"Venezuela",fr:"Venezuela",flag:"🇻🇪",reps:["Paolo"]}
@@ -743,7 +743,7 @@
       const host=document.getElementById("lobby-grid");
       host.innerHTML=countryRoster.map((country,index)=>{
         const name=country[lang]||country.en;
-        const rep=country.reps.length?country.reps.join(", "):t.pending;
+        const rep=country.reps.length?country.reps.map(name=>name==="pending"?t.pending:name).join(", "):t.pending;
         const search=[name,country.es,country.en,country.fr,...country.reps].join(" ").toLocaleLowerCase();
         return `<article class="country-card" data-search="${escapeHTML(search)}">
           <div class="country-flag" aria-hidden="true">${country.flag}</div>
@@ -797,7 +797,7 @@
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#23561A;"
+        "'": "&#39;"
       }[char]));
     }
 
