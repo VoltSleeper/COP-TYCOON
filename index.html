@@ -8,30 +8,29 @@
     @import url('https://fonts.googleapis.com/css2?family=Happy+Monkey&display=swap');
 
     :root {
-      /* COP TYCOON palette: only the six selected brand colors, using transparency for depth */
-      --bg: #F2E6CE;
-      --forest: #017360;
-      --forest-mid: #77A7C4;
-      --forest-light: #A1DBF1;
-      --forest-soft: #F2E6CE;
-      --slate: #446E8F;
-      --slate-light: #77A7C4;
-      --sky-soft: #F2E6CE;
-      --blue-deep: #446E8F;
-      --ivory: #017360;
-      --muted: #446E8F;
-      --amber: #F3D094;
-      --border: #446E8F38;
-      --green-border: #01736045;
-      --panel: #F2E6CE;
-      --panel-strong: #F2E6CE;
-      --shadow: #01736020;
-      --soft: #F2E6CE;
-      --soft-blue: #F2E6CE;
-      --bubble-left: #F2E6CE;
-      --bubble-right: #F2E6CE;
-      --bubble-inner-left: #F2E6CE;
-      --bubble-inner-right: #F2E6CE;
+      --bg:#EFF4BD;
+      --forest:#23561A;
+      --forest-mid:#556F30;
+      --forest-light:#A2B447;
+      --forest-soft:#EFF4BD;
+      --slate:#516F7A;
+      --slate-light:#A2B447;
+      --sky-soft:#EFF4BD;
+      --blue-deep:#516F7A;
+      --ivory:#362F22;
+      --muted:#516F7A;
+      --amber:#A2B447;
+      --border:#516F7A40;
+      --green-border:#23561A55;
+      --panel:#EFF4BD;
+      --panel-strong:#EFF4BD;
+      --shadow:#23561A24;
+      --soft:#EFF4BD;
+      --soft-blue:#EFF4BD;
+      --bubble-left:#23561A;
+      --bubble-right:#516F7A;
+      --bubble-inner-left:#EFF4BD;
+      --bubble-inner-right:#EFF4BD;
     }
 
     * { box-sizing: border-box; }
@@ -41,10 +40,10 @@
       font-family: 'Happy Monkey', system-ui, sans-serif;
       color: var(--ivory);
       background:
-        radial-gradient(ellipse at 12% 4%, #77A7C466 0%, transparent 34%),
-        radial-gradient(ellipse at 92% 22%, #77A7C455 0%, transparent 38%),
-        radial-gradient(ellipse at 52% 78%, #F2E6CEAA 0%, transparent 48%),
-        linear-gradient(145deg, #A1DBF1 0%, #77A7C4 44%, #A1DBF1 78%, #F2E6CE 100%);
+        radial-gradient(ellipse at 12% 4%, #A2B44766 0%, transparent 34%),
+        radial-gradient(ellipse at 92% 22%, #A2B44755 0%, transparent 38%),
+        radial-gradient(ellipse at 52% 78%, #EFF4BDAA 0%, transparent 48%),
+        linear-gradient(145deg, #EFF4BD 0%, #A2B447 44%, #EFF4BD 78%, #EFF4BD 100%);
       background-attachment: fixed;
       min-height: 100vh;
     }
@@ -55,9 +54,9 @@
       align-items: center;
       gap: 16px;
       padding: 22px 6%;
-      border-bottom: 1px solid #446E8F35;
-      background: linear-gradient(100deg, #A1DBF1EE, #77A7C4EE, #A1DBF1EE);
-      box-shadow: 0 8px 26px #01736018;
+      border-bottom: 1px solid #516F7A35;
+      background: linear-gradient(100deg, #EFF4BDEE, #A2B447EE, #EFF4BDEE);
+      box-shadow: 0 8px 26px #23561A18;
     }
 
     .brand {
@@ -93,8 +92,8 @@
       padding: 34px 20px 30px;
       border-radius: 26px;
       background:
-        radial-gradient(ellipse at 50% 0%, #77A7C466 0%, transparent 62%),
-        linear-gradient(180deg, #F2E6CE88 0%, #F2E6CE00 100%);
+        radial-gradient(ellipse at 50% 0%, #A2B44766 0%, transparent 62%),
+        linear-gradient(180deg, #EFF4BD88 0%, #EFF4BD00 100%);
     }
 
     h1 {
@@ -123,7 +122,7 @@
 
     .primary,
     .brand,
-    .eyebrow { text-shadow: 0 1px 0 #F2E6CE66; }
+    .eyebrow { text-shadow: 0 1px 0 #EFF4BD66; }
 
     .cards {
       display: grid;
@@ -134,8 +133,8 @@
 
     .card {
       appearance: none;
-      background: linear-gradient(145deg, #A1DBF1 0%, #77A7C4 58%, #A1DBF1 100%);
-      border: 1px solid #77A7C466;
+      background: linear-gradient(145deg, #EFF4BD 0%, #EFF4BD 62%, #A2B44755 100%);
+      border: 1px solid #A2B44766;
       border-radius: 16px;
       padding: 22px;
       min-height: 330px;
@@ -163,8 +162,8 @@
       margin-bottom: 22px;
       display: grid;
       place-items: center;
-      background: linear-gradient(135deg, #446E8F 0%, #77A7C4 55%, #F3D094 100%);
-      color: #F2E6CE;
+      background: linear-gradient(135deg, #516F7A 0%, #A2B447 55%, #A2B447 100%);
+      color: #EFF4BD;
       transition: transform .28s ease, border-color .28s ease, background .28s ease;
     }
 
@@ -192,8 +191,8 @@
 
     .section {
       display: none;
-      background: linear-gradient(145deg, #A1DBF1F5 0%, #77A7C4F5 58%, #A1DBF1F5 100%);
-      border: 1px solid #77A7C466;
+      background: linear-gradient(145deg, #EFF4BDF5 0%, #A2B447F5 58%, #EFF4BDF5 100%);
+      border: 1px solid #A2B44766;
       border-radius: 16px;
       padding: clamp(20px, 4vw, 35px);
       margin-top: 25px;
@@ -246,13 +245,13 @@
       padding: 24px 20px 22px;
       aspect-ratio: 1 / 1;
       min-width: 0;
-      border: 1px solid #01736035;
+      border: 1px solid #23561A35;
       border-radius: 22px;
       background:
-        radial-gradient(circle at 92% 4%, #77A7C466 0, transparent 40%),
-        radial-gradient(circle at 10% 100%, #77A7C477 0, transparent 55%),
-        linear-gradient(145deg, #A1DBF1 0%, #77A7C4 52%, #A1DBF1 100%);
-      box-shadow: 0 12px 28px #01736020, inset 0 1px 0 #F2E6CED9;
+        radial-gradient(circle at 92% 4%, #A2B44766 0, transparent 40%),
+        radial-gradient(circle at 10% 100%, #A2B44777 0, transparent 55%),
+        linear-gradient(145deg, #EFF4BD 0%, #A2B447 52%, #EFF4BD 100%);
+      box-shadow: 0 12px 28px #23561A20, inset 0 1px 0 #EFF4BDD9;
       overflow: hidden;
       transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
     }
@@ -265,14 +264,14 @@
       right: -65px;
       bottom: -75px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #446E8F38, #01736020);
+      background: linear-gradient(145deg, #516F7A38, #23561A20);
       pointer-events: none;
     }
 
     .country-card:hover {
       transform: translateY(-5px);
       border-color: var(--forest-mid);
-      box-shadow: 0 18px 34px #01736029, 0 0 0 3px #77A7C433;
+      box-shadow: 0 18px 34px #23561A29, 0 0 0 3px #A2B44733;
     }
 
     .country-flag {
@@ -282,20 +281,20 @@
       display: grid;
       place-items: center;
       border-radius: 22px;
-      background: linear-gradient(145deg, #F2E6CE 0%, #A1DBF1 58%, #77A7C4 100%);
-      border: 1px solid #01736038;
+      background: linear-gradient(145deg, #EFF4BD 0%, #EFF4BD 58%, #A2B447 100%);
+      border: 1px solid #23561A38;
       font-size: 3.15rem;
-      box-shadow: inset 0 1px 0 #F2E6CEC9, 0 8px 18px #01736020;
+      box-shadow: inset 0 1px 0 #EFF4BDC9, 0 8px 18px #23561A20;
       position: relative;
       z-index: 1;
     }
 
     .country-info { position: relative; z-index: 1; width: 100%; margin-top: 14px; }
-    .country-name { margin: 0 0 14px; font-size: 1.35rem; color: #446E8F; }
+    .country-name { margin: 0 0 14px; font-size: 1.35rem; color: #516F7A; }
     .country-detail { display: grid; grid-template-columns: 1fr; gap: 7px; font-size: .83rem; line-height: 1.35; }
-    .country-detail span { color: #446E8F; font-size: .75rem; text-transform: uppercase; letter-spacing: .045em; }
-    .country-detail strong { color: #017360; overflow-wrap: anywhere; }
-    .budget-value { color: #446E8F !important; font-size: 1rem; background: #F3D094; border-radius: 7px; padding: 3px 7px; display: inline-block; }
+    .country-detail span { color: #516F7A; font-size: .75rem; text-transform: uppercase; letter-spacing: .045em; }
+    .country-detail strong { color: #23561A; overflow-wrap: anywhere; }
+    .budget-value { color: #516F7A !important; font-size: 1rem; background: #A2B447; border-radius: 7px; padding: 3px 7px; display: inline-block; }
 
     .stats {
       display: grid;
@@ -304,8 +303,8 @@
     }
 
     .stat, .result, .history-item {
-      background: linear-gradient(135deg, #F2E6CE 0%, #F2E6CE 60%, #F2E6CE 100%);
-      border: 1px solid #77A7C455;
+      background: linear-gradient(135deg, #EFF4BD 0%, #EFF4BD 60%, #EFF4BD 100%);
+      border: 1px solid #A2B44755;
       border-radius: 12px;
       padding: 17px;
     }
@@ -323,19 +322,19 @@
       font-size: 4rem;
       text-align: center;
       margin: 10px;
-      color: #446E8F;
-      text-shadow: 0 3px 0 #F3D094, 0 8px 18px #446E8F38;
+      color: #516F7A;
+      text-shadow: 0 3px 0 #A2B447, 0 8px 18px #516F7A38;
     }
 
     .speech {
-      background: linear-gradient(135deg, #446E8F 0%, #77A7C4 62%, #A1DBF1 100%);
-      color: #F2E6CE;
-      border: 1px solid #F3D094;
+      background: linear-gradient(135deg, #516F7A 0%, #A2B447 62%, #EFF4BD 100%);
+      color: #EFF4BD;
+      border: 1px solid #A2B447;
       border-radius: 12px;
       padding: 18px;
       line-height: 1.6;
       margin: 15px 0;
-      box-shadow: 0 10px 24px #446E8F38;
+      box-shadow: 0 10px 24px #516F7A38;
     }
 
     .sim-form {
@@ -365,7 +364,7 @@
       border-radius: 10px;
       padding: 13px 18px;
       background: var(--forest);
-      color: #F2E6CE;
+      color: #EFF4BD;
       font-weight: 800;
       cursor: pointer;
       transition: transform .2s ease, filter .2s ease;
@@ -389,12 +388,12 @@
       text-align: center;
       padding: 12px 18px;
       border-radius: 14px;
-      background: linear-gradient(120deg, #F2E6CE 0%, #A1DBF1 100%);
-      border: 1px solid #77A7C4;
+      background: linear-gradient(120deg, #EFF4BD 0%, #EFF4BD 100%);
+      border: 1px solid #A2B447;
     }
 
     .history-item { margin: 26px 0; }
-    .live { color: var(--slate); font-weight: 800; background: #F3D094; border-radius: 999px; padding: 4px 9px; }
+    .live { color: var(--slate); font-weight: 800; background: #A2B447; border-radius: 999px; padding: 4px 9px; }
 
     /* Chat-style history: mascot beside each connected speech bubble */
     .history-chat { display: flex; flex-direction: column; gap: 22px; margin-top: 24px; }
@@ -403,18 +402,18 @@
     .chat-mascot { flex: 0 0 76px; width: 76px; text-align: center; }
     .mascot-art { width: 68px; height: 68px; margin: 0 auto 6px; display: grid; place-items: center; border-radius: 22px; background: var(--forest-soft); border: 1px solid var(--green-border); font-size: 2.25rem; box-shadow: 0 8px 20px var(--shadow); }
     .mascot-name { color: var(--forest); font-size: .75rem; font-weight: 800; }
-    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #01736066; border-radius: 20px; background: linear-gradient(125deg, #017360 0%, #446E8F 56%, #446E8F 100%); color: #F2E6CE; box-shadow: 0 14px 30px #01736030; }
-    .chat-message:nth-child(even) .chat-bubble { background: linear-gradient(125deg, #446E8F 0%, #446E8F 62%, #446E8F 100%); border-color: #446E8F88; }
-    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #017360; border-left: 1px solid #01736066; border-bottom: 1px solid #01736066; transform: rotate(45deg); border-bottom-left-radius: 4px; }
-    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #446E8F; border: 0; border-top: 1px solid #446E8F88; border-right: 1px solid #446E8F88; border-radius: 0 4px 0 0; }
-    .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: #F2E6CE; }
-    .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #F3D094; color: #446E8F; font-size: .9rem; line-height: 1.5; }
-    .chat-message:nth-child(even) .chat-reason { background: #A1DBF1; }
-    .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: #F2E6CE; font-size: .72rem; }
+    .chat-bubble { position: relative; flex: 1; min-width: 0; padding: 20px 22px 16px; border: 1px solid #23561A66; border-radius: 20px; background: linear-gradient(125deg, #23561A 0%, #556F30 52%, #516F7A 100%); color: #EFF4BD; box-shadow: 0 14px 30px #23561A30; }
+    .chat-message:nth-child(even) .chat-bubble { background: linear-gradient(125deg, #516F7A 0%, #23561A 100%); border-color: #516F7A88; }
+    .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #23561A; border-left: 1px solid #23561A66; border-bottom: 1px solid #23561A66; transform: rotate(45deg); border-bottom-left-radius: 4px; }
+    .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #516F7A; border: 0; border-top: 1px solid #516F7A88; border-right: 1px solid #516F7A88; border-radius: 0 4px 0 0; }
+    .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: #EFF4BD; }
+    .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #A2B447; color: #516F7A; font-size: .9rem; line-height: 1.5; }
+    .chat-message:nth-child(even) .chat-reason { background: #EFF4BD; }
+    .chat-meta { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 10px; color: #EFF4BD; font-size: .72rem; }
     .history-admin-bar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:18px 0 6px; }
     .admin-caption { margin:0; color:var(--muted); font-size:.8rem; }
     .admin-toggle { border:1px solid var(--green-border); border-radius:12px; padding:10px 15px; background:linear-gradient(120deg,var(--forest),var(--forest-mid)); color:white; font:inherit; font-size:.85rem; cursor:pointer; box-shadow:0 7px 18px var(--shadow); }
-    .admin-panel { margin:16px 0 24px; padding:22px; border:1px solid var(--green-border); border-radius:20px; background:linear-gradient(140deg,#A1DBF1 0%,#77A7C4 58%,#A1DBF1 100%); box-shadow:0 12px 28px var(--shadow); }
+    .admin-panel { margin:16px 0 24px; padding:22px; border:1px solid var(--green-border); border-radius:20px; background:linear-gradient(140deg,#EFF4BD 0%,#A2B447 58%,#EFF4BD 100%); box-shadow:0 12px 28px var(--shadow); }
     .admin-panel[hidden] { display:none; }
     .admin-panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
     .admin-panel-head h3 { margin:0 0 5px; color:var(--forest); }
@@ -422,16 +421,16 @@
     .admin-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
     .admin-form label { display:grid; gap:7px; color:var(--slate); font-size:.8rem; font-weight:700; }
     .admin-form label:nth-child(2), .admin-form label:nth-child(3), .admin-form-actions { grid-column:1/-1; }
-    .admin-form input,.admin-form select { width:100%; min-width:0; padding:12px 13px; border:1px solid var(--border); border-radius:11px; background:#F2E6CE; color:var(--ivory); font:inherit; font-size:.9rem; }
+    .admin-form input,.admin-form select { width:100%; min-width:0; padding:12px 13px; border:1px solid var(--border); border-radius:11px; background:#EFF4BD; color:var(--ivory); font:inherit; font-size:.9rem; }
     .admin-form-actions { display:flex; flex-wrap:wrap; gap:10px; }
     .admin-warning { margin:14px 0 0; color:var(--muted); font-size:.76rem; line-height:1.5; }
     .chat-admin-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:12px; position:relative; }
-    .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#F2E6CEB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
-    .chat-admin-actions .reverse-action { color:#446E8F; border-color:#446E8F44; }
-    .chat-admin-actions .delete-action { color:#446E8F; border-color:#446E8F44; }
-    .chat-message.is-reversed .chat-bubble { opacity:.78; border-color:#446E8F55; }
+    .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#EFF4BDB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
+    .chat-admin-actions .reverse-action { color:#516F7A; border-color:#516F7A44; }
+    .chat-admin-actions .delete-action { color:#516F7A; border-color:#516F7A44; }
+    .chat-message.is-reversed .chat-bubble { opacity:.78; border-color:#516F7A55; }
     .chat-message.is-reversed .chat-title { text-decoration:line-through; text-decoration-thickness:1px; }
-    .reversed-tag { display:inline-block; margin-left:7px; padding:3px 7px; border-radius:7px; background:#F2E6CE; color:#446E8F; font-size:.68rem; font-weight:800; }
+    .reversed-tag { display:inline-block; margin-left:7px; padding:3px 7px; border-radius:7px; background:#EFF4BD; color:#516F7A; font-size:.68rem; font-weight:800; }
     @keyframes chat-enter { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 560px) {
       .chat-message { gap: 9px; }
@@ -477,14 +476,14 @@
   <main>
     <div id="home">
       <section class="hero">
-        <div class="eyebrow">SIMULACIÓN CLIMÁTICA</div>
+        <div class="eyebrow" id="climate-eyebrow">SIMULACIÓN CLIMÁTICA</div>
         <h1>COP TYCOON</h1>
         <p id="tagline">Negocia. Simula. Descubre el impacto de tus decisiones.</p>
       </section>
 
       <div class="cards">
         <button class="card" onclick="openSection('lobby')">
-          <div class="animation-slot" aria-label="Espacio reservado para animación"><span class="animation-placeholder">Animación</span></div>
+          <div class="animation-slot" aria-label="Espacio reservado para animación"><span class="animation-placeholder" id="animation-label">Animación</span></div>
           <h2 id="lobby-title">Lobby</h2>
           <p id="lobby-desc">Consulta los países, representantes y presupuestos.</p>
         </button>
@@ -605,7 +604,7 @@
         Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.
       </p>
       <div class="history-admin-bar">
-        <p class="admin-caption">Registro de demostración</p>
+        <p class="admin-caption" id="history-demo-label">Registro de demostración</p>
         <button class="admin-toggle" id="admin-toggle" type="button" onclick="toggleAdmin()">🔐 Modo admin</button>
       </div>
       <div class="admin-panel" id="admin-panel" hidden>
@@ -638,7 +637,7 @@
     </section>
   </main>
 
-  <footer> COP TYCOON LFS 2026 · Proyecto educativo de simulación </footer>
+  <footer id="page-footer"> COP TYCOON LFS 2026 · Proyecto educativo de simulación </footer>
 
   <script>
     const sections = ["lobby", "simulator", "history"];
@@ -660,26 +659,35 @@
     }
 
     const translations = {
-      es: {tagline:"Negocia. Simula. Descubre el impacto de tus decisiones.",lobby:"Lobby",lobbyDesc:"Consulta los países, representantes y presupuestos.",sim:"Gran simulador",simDesc:"Prueba una transacción y explora sus posibles efectos.",history:"Historial",historyDesc:"Revisa el registro de transacciones oficiales.",country:"País",rep:"Representante",mascot:"Mascota del equipo",budget:"Presupuesto actual",back:"← Inicio",simulate:"Simular",placeholder:"Describe una transacción hipotética…",greeting:"¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.",result:"Resultado ilustrativo",explanation:"Esta versión solo muestra una demostración visual. Para calcular impactos reales del modelo, habrá que definir reglas e indicadores transparentes.",historyNote:"Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.",historyDemo:"Registro de demostración",admin:"Modo admin",adminTitle:"Panel de administración",adminDesc:"Gestiona el historial de esta demostración.",close:"Cerrar",adminCountry:"País que realiza la acción",countryPlaceholder:"Escribe o busca un país…",adminTransaction:"Transacción / mensaje",adminReason:"Motivo",reasonPlaceholder:"Describe brevemente el motivo",add:"Añadir al historial",save:"Guardar cambios",cancel:"Cancelar edición",warning:"Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.",demo:"DEMO",reversed:"ANULADA",reasonPrefix:"Motivo:",fictitious:"Ejemplo ficticio",edit:"Editar",reverse:"Revertir",restore:"Restaurar",delete:"Eliminar",emptyHistory:"Todavía no hay transacciones en este historial de demostración.",confirmDelete:"¿Eliminar esta entrada del historial de demostración? Esta acción no se puede deshacer.",wrongCode:"Código incorrecto.",adminPrompt:"Introduce el código de demostración para abrir el modo admin:"},
-      en: {tagline:"Negotiate. Simulate. Discover the impact of your decisions.",lobby:"Lobby",lobbyDesc:"View countries, representatives, and budgets.",sim:"Main simulator",simDesc:"Try a transaction and explore its possible effects.",history:"History",historyDesc:"Review the official transaction record.",country:"Country",rep:"Representative",mascot:"Team mascot",budget:"Current budget",back:"← Home",simulate:"Simulate",placeholder:"Describe a hypothetical transaction…",greeting:"Hi! Enter a hypothetical transaction to explore its possible effects.",result:"Illustrative result",explanation:"This version is a visual demo only. Transparent rules and indicators must be defined before calculating real impacts.",historyNote:"This history is an example only. For transactions or donations, please refer to the DTB.",historyDemo:"Demo record",admin:"Admin mode",adminTitle:"Administration panel",adminDesc:"Manage this demo history.",close:"Close",adminCountry:"Country making the action",countryPlaceholder:"Type or search for a country…",adminTransaction:"Transaction / message",adminReason:"Reason",reasonPlaceholder:"Briefly describe the reason",add:"Add to history",save:"Save changes",cancel:"Cancel editing",warning:"Demo mode: changes are saved only in this browser. Reverting marks a transaction as cancelled; it does not move money or change real budgets.",demo:"DEMO",reversed:"CANCELLED",reasonPrefix:"Reason:",fictitious:"Fictional example",edit:"Edit",reverse:"Revert",restore:"Restore",delete:"Delete",emptyHistory:"There are no transactions in this demo history yet.",confirmDelete:"Delete this demo history entry? This action cannot be undone.",wrongCode:"Incorrect code.",adminPrompt:"Enter the demo code to open admin mode:"},
-      fr: {tagline:"Négociez. Simulez. Découvrez l’impact de vos décisions.",lobby:"Lobby",lobbyDesc:"Consultez les pays, les représentants et les budgets.",sim:"Grand simulateur",simDesc:"Testez une transaction et explorez ses effets possibles.",history:"Historique",historyDesc:"Consultez le registre des transactions officielles.",country:"Pays",rep:"Représentant",mascot:"Mascotte de l’équipe",budget:"Budget actuel",back:"← Accueil",simulate:"Simuler",placeholder:"Décrivez une transaction hypothétique…",greeting:"Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles.",result:"Résultat illustratif",explanation:"Cette version est une démonstration visuelle. Des règles et indicateurs transparents devront être définis avant de calculer les impacts réels.",historyNote:"Cet historique est un exemple. Pour les transactions ou les dons, veuillez vous adresser au DTB.",historyDemo:"Registre de démonstration",admin:"Mode admin",adminTitle:"Panneau d’administration",adminDesc:"Gérez l’historique de cette démonstration.",close:"Fermer",adminCountry:"Pays à l’origine de l’action",countryPlaceholder:"Saisissez ou recherchez un pays…",adminTransaction:"Transaction / message",adminReason:"Motif",reasonPlaceholder:"Décrivez brièvement le motif",add:"Ajouter à l’historique",save:"Enregistrer les modifications",cancel:"Annuler la modification",warning:"Mode démo : les modifications sont enregistrées uniquement dans ce navigateur. Une annulation marque la transaction comme annulée ; aucun argent ni budget réel n’est modifié.",demo:"DÉMO",reversed:"ANNULÉE",reasonPrefix:"Motif :",fictitious:"Exemple fictif",edit:"Modifier",reverse:"Annuler",restore:"Rétablir",delete:"Supprimer",emptyHistory:"Aucune transaction dans cet historique de démonstration pour le moment.",confirmDelete:"Supprimer cette entrée de démonstration ? Cette action est irréversible.",wrongCode:"Code incorrect.",adminPrompt:"Saisissez le code de démonstration pour ouvrir le mode admin:"}
+      es:{tagline:"Negocia. Simula. Descubre el impacto de tus decisiones.",lobby:"Lobby",lobbyDesc:"Consulta los países, representantes y presupuestos.",sim:"Gran simulador",simDesc:"Prueba una transacción y explora sus posibles efectos.",history:"Historial",historyDesc:"Revisa el registro de transacciones oficiales.",country:"País",rep:"Representante",mascot:"Mascota del equipo",budget:"Presupuesto actual",back:"← Inicio",simulate:"Simular",placeholder:"Describe una transacción hipotética…",greeting:"¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos. Por ejemplo: «Francia dona 20 millones de euros a Haití para adaptación climática». ",result:"Resultado ilustrativo",transaction:"Transacción:",budgetResult:"Presupuesto restante",emissions:"Emisiones de CO₂",climate:"Impacto climático",relations:"Relaciones internacionales",countryImpact:"Impacto en el país",notCalculated:"Sin calcular",explanation:"Esta versión solo muestra una demostración visual. Para calcular impactos reales del modelo, habrá que definir reglas e indicadores transparentes.",simNote:"Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real. Los indicadores son ejemplos y no representan predicciones científicas.",climateEyebrow:"SIMULACIÓN CLIMÁTICA",animation:"Animación",lobbyNote:"Datos de demostración. El presupuesto oficial se actualizará cuando exista un registro autorizado.",representative:"Representante",room:"Sala",historyNote:"Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.",historyDemo:"Registro de demostración",admin:"Modo admin",adminTitle:"Panel de administración",adminDesc:"Gestiona el historial de esta demostración.",close:"Cerrar",adminCountry:"País que realiza la acción",countryPlaceholder:"Escribe o busca un país…",adminTransaction:"Transacción / mensaje",adminReason:"Motivo",reasonPlaceholder:"Describe brevemente el motivo",add:"Añadir al historial",save:"Guardar cambios",cancel:"Cancelar edición",warning:"Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.",demo:"DEMO",reversed:"ANULADA",reasonPrefix:"Motivo:",fictitious:"Ejemplo ficticio",edit:"Editar",reverse:"Revertir",restore:"Restaurar",delete:"Eliminar",emptyHistory:"Todavía no hay transacciones en este historial de demostración.",confirmDelete:"¿Eliminar esta entrada del historial de demostración? Esta acción no se puede deshacer.",wrongCode:"Código incorrecto.",adminPrompt:"Introduce el código de demostración para abrir el modo admin:",historyExamples:[["Francia","Francia ha donado 20M a España","Beneficio mutuo / Transacción"],["Japón","Japón ha donado 5M a Kenia","Energías renovables"]],countryNames:["China","Francia","España","Turquía","Australia"],rooms:["Sala A","Sala B","Sala C","Sala D","Sala E"],footer:"COP TYCOON LFS 2026 · Proyecto educativo de simulación"},
+      en:{tagline:"Negotiate. Simulate. Discover the impact of your decisions.",lobby:"Lobby",lobbyDesc:"View countries, representatives, and budgets.",sim:"Main simulator",simDesc:"Try a transaction and explore its possible effects.",history:"History",historyDesc:"Review the official transaction record.",country:"Country",rep:"Representative",mascot:"Team mascot",budget:"Current budget",back:"← Home",simulate:"Simulate",placeholder:"Describe a hypothetical transaction…",greeting:"Hi! Enter a hypothetical transaction to explore possible effects. For example: “France donates €20 million to Haiti for climate adaptation.”",result:"Illustrative result",transaction:"Transaction:",budgetResult:"Remaining budget",emissions:"CO₂ emissions",climate:"Climate impact",relations:"International relations",countryImpact:"Impact on the country",notCalculated:"Not calculated",explanation:"This version is a visual demo only. Transparent rules and indicators must be defined before calculating real impacts.",simNote:"Illustrative simulation: it does not change official budgets or record a real transaction. Indicators are examples, not scientific predictions.",climateEyebrow:"CLIMATE SIMULATION",animation:"Animation",lobbyNote:"Demo data. The official budget will be updated once an authorized record is available.",representative:"Representative",room:"Room",historyNote:"This history is an example only. For transactions or donations, please refer to the DTB.",historyDemo:"Demo record",admin:"Admin mode",adminTitle:"Administration panel",adminDesc:"Manage this demo history.",close:"Close",adminCountry:"Country making the action",countryPlaceholder:"Type or search for a country…",adminTransaction:"Transaction / message",adminReason:"Reason",reasonPlaceholder:"Briefly describe the reason",add:"Add to history",save:"Save changes",cancel:"Cancel editing",warning:"Demo mode: changes are saved only in this browser. Reverting marks a transaction as cancelled; it does not move money or change real budgets.",demo:"DEMO",reversed:"CANCELLED",reasonPrefix:"Reason:",fictitious:"Fictional example",edit:"Edit",reverse:"Revert",restore:"Restore",delete:"Delete",emptyHistory:"There are no transactions in this demo history yet.",confirmDelete:"Delete this demo history entry? This action cannot be undone.",wrongCode:"Incorrect code.",adminPrompt:"Enter the demo code to open admin mode:",historyExamples:[["France","France donated 20M to Spain","Mutual benefit / transaction"],["Japan","Japan donated 5M to Kenya","Renewable energy"]],countryNames:["China","France","Spain","Türkiye","Australia"],rooms:["Room A","Room B","Room C","Room D","Room E"],footer:"COP TYCOON LFS 2026 · Educational simulation project"},
+      fr:{tagline:"Négociez. Simulez. Découvrez l’impact de vos décisions.",lobby:"Lobby",lobbyDesc:"Consultez les pays, les représentants et les budgets.",sim:"Grand simulateur",simDesc:"Testez une transaction et explorez ses effets possibles.",history:"Historique",historyDesc:"Consultez le registre des transactions officielles.",country:"Pays",rep:"Représentant",mascot:"Mascotte de l’équipe",budget:"Budget actuel",back:"← Accueil",simulate:"Simuler",placeholder:"Décrivez une transaction hypothétique…",greeting:"Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles. Par exemple : « La France fait un don de 20 millions d’euros à Haïti pour l’adaptation climatique. »",result:"Résultat illustratif",transaction:"Transaction :",budgetResult:"Budget restant",emissions:"Émissions de CO₂",climate:"Impact climatique",relations:"Relations internationales",countryImpact:"Impact sur le pays",notCalculated:"Non calculé",explanation:"Cette version est une démonstration visuelle. Des règles et indicateurs transparents devront être définis avant de calculer les impacts réels.",simNote:"Simulation illustrative : elle ne modifie pas les budgets officiels et n’enregistre aucune transaction réelle. Les indicateurs sont des exemples, pas des prévisions scientifiques.",climateEyebrow:"SIMULATION CLIMATIQUE",animation:"Animation",lobbyNote:"Données de démonstration. Le budget officiel sera mis à jour lorsqu’un registre autorisé sera disponible.",representative:"Représentant",room:"Salle",historyNote:"Cet historique est un exemple. Pour les transactions ou les dons, veuillez vous adresser au DTB.",historyDemo:"Registre de démonstration",admin:"Mode admin",adminTitle:"Panneau d’administration",adminDesc:"Gérez l’historique de cette démonstration.",close:"Fermer",adminCountry:"Pays à l’origine de l’action",countryPlaceholder:"Saisissez ou recherchez un pays…",adminTransaction:"Transaction / message",adminReason:"Motif",reasonPlaceholder:"Décrivez brièvement le motif",add:"Ajouter à l’historique",save:"Enregistrer les modifications",cancel:"Annuler la modification",warning:"Mode démo : les modifications sont enregistrées uniquement dans ce navigateur. Une annulation marque la transaction comme annulée ; aucun argent ni budget réel n’est modifié.",demo:"DÉMO",reversed:"ANNULÉE",reasonPrefix:"Motif :",fictitious:"Exemple fictif",edit:"Modifier",reverse:"Annuler",restore:"Rétablir",delete:"Supprimer",emptyHistory:"Aucune transaction dans cet historique de démonstration pour le moment.",confirmDelete:"Supprimer cette entrée de démonstration ? Cette action est irréversible.",wrongCode:"Code incorrect.",adminPrompt:"Saisissez le code de démonstration pour ouvrir le mode admin :",historyExamples:[["France","La France a fait un don de 20 M à l’Espagne","Bénéfice mutuel / transaction"],["Japon","Le Japon a fait un don de 5 M au Kenya","Énergies renouvelables"]],countryNames:["Chine","France","Espagne","Turquie","Australie"],rooms:["Salle A","Salle B","Salle C","Salle D","Salle E"],footer:"COP TYCOON LFS 2026 · Projet éducatif de simulation"}
     };
 
     const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
+
     function applyLanguage(lang) {
       const t=translations[lang]||translations.es;
       Object.entries(ids).forEach(([key,id])=>{const el=document.getElementById(id);if(el&&t[key])el.textContent=t[key];});
       ["back-lobby","back-sim","back-history"].forEach(id=>document.getElementById(id).textContent=t.back);
       document.getElementById("simulate-button").textContent=t.simulate;
       document.getElementById("transaction").placeholder=t.placeholder;
+      document.getElementById("transaction").setAttribute("aria-label",t.adminTransaction);
       document.getElementById("speech").textContent=t.greeting;
-      const map={"history-note":"historyNote","history-demo-label":"historyDemo","admin-panel-title":"adminTitle","admin-panel-desc":"adminDesc","admin-close":"close","admin-country-label":"adminCountry","admin-transaction-label":"adminTransaction","admin-reason-label":"adminReason","admin-warning":"warning"};
-      Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t[key];});
+      const textMap={"climate-eyebrow":"climateEyebrow","lobby-note":"lobbyNote","sim-note":"simNote","history-note":"historyNote","history-demo-label":"historyDemo","admin-panel-title":"adminTitle","admin-panel-desc":"adminDesc","admin-close":"close","admin-warning":"warning","page-footer":"footer"};
+      Object.entries(textMap).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t[key];});
+      document.querySelectorAll(".animation-placeholder").forEach(el=>el.textContent=t.animation);
+      document.querySelectorAll(".country-detail").forEach(el=>{const spans=el.querySelectorAll("span");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;});
+      const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames[i]||el.textContent);
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
+      document.getElementById("admin-title").placeholder=lang==="fr"?"Ex. La Chine a fait un don de 10 M à l’Espagne":lang==="en"?"E.g. China donated 10M to Spain":"Ej. China ha donado 10M a España";
       document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
       document.getElementById("admin-submit").textContent=editingTransactionId!==null?t.save:t.add;
       document.getElementById("admin-cancel").textContent=t.cancel;
       document.getElementById("admin-toggle").textContent=(adminUnlocked?"🔓 ":"🔐 ")+t.admin;
+      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+"\n            ";
+      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+"\n            ";
+      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+"\n            ";
       renderHistory();
     }
     document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
@@ -693,12 +701,12 @@
       result.hidden = false;
       result.innerHTML = `
         <h3>${t.result}</h3>
-        <p><strong>Transacción:</strong> ${escapeHTML(text)}</p>
-        <p>💶 Presupuesto restante: → Sin calcular</p>
-        <p>🏭 Emisiones de CO₂: → Sin calcular</p>
-        <p>🌱 Impacto climático: → Sin calcular</p>
-        <p>🤝 Relaciones internacionales: → Sin calcular</p>
-        <p>🏳️ Impacto en el país: → Sin calcular</p>
+        <p><strong>${t.transaction}</strong> ${escapeHTML(text)}</p>
+        <p>💶 ${t.budgetResult}: → ${t.notCalculated}</p>
+        <p>🏭 ${t.emissions}: → ${t.notCalculated}</p>
+        <p>🌱 ${t.climate}: → ${t.notCalculated}</p>
+        <p>🤝 ${t.relations}: → ${t.notCalculated}</p>
+        <p>🏳️ ${t.countryImpact}: → ${t.notCalculated}</p>
         <p class="note">${t.explanation}</p>
       `;
       document.getElementById("wolf").textContent = "🐺💭";
@@ -710,7 +718,7 @@
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
-        "'": "&#017360;"
+        "'": "&#23561A;"
       }[char]));
     }
 
@@ -743,18 +751,18 @@
       const host = document.getElementById("history-chat");
       const t = translations[document.getElementById("language").value] || translations.es;
       host.innerHTML = transactions.map((item, index) => {
-        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
+        const example = item.id===1 ? t.historyExamples[0] : item.id===2 ? t.historyExamples[1] : null;\n        const countryName = example ? example[0] : item.country;\n        const title = example ? example[1] : item.title;\n        const reason = example ? example[2] : item.reason;\n        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
         const controls = adminUnlocked ? `<div class="chat-admin-actions">
           <button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button>
           <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ "+t.restore : "↶ "+t.reverse}</button>
           <button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button>
         </div>` : "";
         return `<article class="chat-message ${index % 2 ? "is-right" : ""} ${item.reversed ? "is-reversed" : ""}">
-          <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(item.country)}</div></div>
+          <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div>
           <div class="chat-bubble">
             <span class="live">● ${t.demo}</span>${reversed}
-            <h3 class="chat-title">${escapeHTML(item.title)}</h3>
-            <div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div>
+            <h3 class="chat-title">${escapeHTML(title)}</h3>
+            <div class="chat-reason">${t.reasonPrefix} ${escapeHTML(reason)}</div>
             <div class="chat-meta">${t.fictitious} · ${escapeHTML(item.time || "—")}</div>
             ${controls}
           </div>
