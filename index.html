@@ -720,16 +720,21 @@
       document.querySelectorAll(".animation-placeholder").forEach(el=>el.textContent=t.animation);
       document.querySelectorAll(".country-detail").forEach((el,i)=>{const spans=el.querySelectorAll("span");const strongs=el.querySelectorAll("strong");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;if(strongs[0])strongs[0].textContent=t.repExample;if(strongs[1])strongs[1].textContent=t.rooms[i]||t.rooms[0];if(strongs[2])strongs[2].textContent=t.budgetSample;});
       const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames[i]||el.textContent);
-      document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;\n      document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;\n      renderCountryRoster();filterCountries();
+      document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
+      document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
+      renderCountryRoster();filterCountries();
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
       document.getElementById("admin-title").placeholder=lang==="fr"?"Ex. La Chine a fait un don de 10 M à l’Espagne":lang==="en"?"E.g. China donated 10M to Spain":"Ej. China ha donado 10M a España";
       document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
       document.getElementById("admin-submit").textContent=editingTransactionId!==null?t.save:t.add;
       document.getElementById("admin-cancel").textContent=t.cancel;
       document.getElementById("admin-toggle").textContent=(adminUnlocked?"🔓 ":"🔐 ")+t.admin;
-      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+"\n            ";
-      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+"\n            ";
-      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+"\n            ";
+      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+"
+            ";
+      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+"
+            ";
+      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+"
+            ";
       renderHistory();
     }
     function renderCountryRoster() {
@@ -824,7 +829,9 @@
     function renderHistory() {
       const host = document.getElementById("history-chat");
       const t = translations[document.getElementById("language").value] || translations.es;
-      const filtered=transactions.filter(item=>[item.country,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));\n      host.innerHTML = filtered.map((item, index) => {
+      const query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
+      const filtered=transactions.filter(item=>[item.country,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
+      host.innerHTML = filtered.map((item, index) => {
         const example = item.id===1 && item.country==="Francia" && item.title==="Francia ha donado 20M a España" ? t.historyExamples[0] : item.id===2 && item.country==="Japón" && item.title==="Japón ha donado 5M a Kenia" ? t.historyExamples[1] : null;
         const countryName = example ? example[0] : item.country;
         const title = example ? example[1] : item.title;
@@ -848,7 +855,9 @@
       }).join("") || `<p class="note">${t.emptyHistory}</p>`;
     }
 
-    document.getElementById("history-search").addEventListener("input",renderHistory);\n\n    function toggleAdmin() {
+    document.getElementById("history-search").addEventListener("input",renderHistory);
+
+    function toggleAdmin() {
       if (!adminUnlocked) {
         const code = prompt((translations[document.getElementById("language").value] || translations.es).adminPrompt);
         if (code !== ADMIN_DEMO_CODE) {
@@ -934,6 +943,8 @@
       renderHistory();
     });
 
+    renderCountryRoster();
+    filterCountries();
     renderHistory();
   </script>
 </body>
