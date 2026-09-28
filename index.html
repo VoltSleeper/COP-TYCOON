@@ -44,7 +44,7 @@
         radial-gradient(ellipse at 12% 4%, #77A7C466 0%, transparent 34%),
         radial-gradient(ellipse at 92% 22%, #77A7C455 0%, transparent 38%),
         radial-gradient(ellipse at 52% 78%, #F2E6CEAA 0%, transparent 48%),
-        linear-gradient(145deg, #F2E6CE 0%, #F2E6CE 42%, #F2E6CE 72%, #F2E6CE 100%);
+        linear-gradient(145deg, #A1DBF1 0%, #77A7C4 44%, #A1DBF1 78%, #F2E6CE 100%);
       background-attachment: fixed;
       min-height: 100vh;
     }
@@ -56,7 +56,7 @@
       gap: 16px;
       padding: 22px 6%;
       border-bottom: 1px solid #446E8F35;
-      background: linear-gradient(100deg, #F2E6CEEE, #F2E6CEEE, #F2E6CEEE);
+      background: linear-gradient(100deg, #A1DBF1EE, #77A7C4EE, #A1DBF1EE);
       box-shadow: 0 8px 26px #01736018;
     }
 
@@ -134,7 +134,7 @@
 
     .card {
       appearance: none;
-      background: linear-gradient(145deg, #F2E6CE 0%, #F2E6CE 58%, #F2E6CE 100%);
+      background: linear-gradient(145deg, #A1DBF1 0%, #77A7C4 58%, #A1DBF1 100%);
       border: 1px solid #77A7C466;
       border-radius: 16px;
       padding: 22px;
@@ -192,7 +192,7 @@
 
     .section {
       display: none;
-      background: linear-gradient(145deg, #F2E6CEF5 0%, #F2E6CEF5 58%, #F2E6CEF5 100%);
+      background: linear-gradient(145deg, #A1DBF1F5 0%, #77A7C4F5 58%, #A1DBF1F5 100%);
       border: 1px solid #77A7C466;
       border-radius: 16px;
       padding: clamp(20px, 4vw, 35px);
@@ -251,7 +251,7 @@
       background:
         radial-gradient(circle at 92% 4%, #77A7C466 0, transparent 40%),
         radial-gradient(circle at 10% 100%, #77A7C477 0, transparent 55%),
-        linear-gradient(145deg, #F2E6CE 0%, #F2E6CE 52%, #F2E6CE 100%);
+        linear-gradient(145deg, #A1DBF1 0%, #77A7C4 52%, #A1DBF1 100%);
       box-shadow: 0 12px 28px #01736020, inset 0 1px 0 #F2E6CED9;
       overflow: hidden;
       transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
@@ -414,7 +414,7 @@
     .history-admin-bar { display:flex; align-items:center; justify-content:space-between; gap:14px; margin:18px 0 6px; }
     .admin-caption { margin:0; color:var(--muted); font-size:.8rem; }
     .admin-toggle { border:1px solid var(--green-border); border-radius:12px; padding:10px 15px; background:linear-gradient(120deg,var(--forest),var(--forest-mid)); color:white; font:inherit; font-size:.85rem; cursor:pointer; box-shadow:0 7px 18px var(--shadow); }
-    .admin-panel { margin:16px 0 24px; padding:22px; border:1px solid var(--green-border); border-radius:20px; background:linear-gradient(140deg,#F2E6CE 0%,#F2E6CE 58%,#F2E6CE 100%); box-shadow:0 12px 28px var(--shadow); }
+    .admin-panel { margin:16px 0 24px; padding:22px; border:1px solid var(--green-border); border-radius:20px; background:linear-gradient(140deg,#A1DBF1 0%,#77A7C4 58%,#A1DBF1 100%); box-shadow:0 12px 28px var(--shadow); }
     .admin-panel[hidden] { display:none; }
     .admin-panel-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; }
     .admin-panel-head h3 { margin:0 0 5px; color:var(--forest); }
@@ -615,11 +615,11 @@
         </div>
         <form id="admin-transaction-form" class="admin-form">
           <label>País que realiza la acción
-            <select id="admin-country" required>
-              <option value="China">🇨🇳 China</option><option value="Francia">🇫🇷 Francia</option>
-              <option value="España">🇪🇸 España</option><option value="Turquía">🇹🇷 Turquía</option>
-              <option value="Australia">🇦🇺 Australia</option><option value="Japón">🇯🇵 Japón</option>
-            </select>
+            <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca un país…">
+            <datalist id="admin-country-options">
+              <option value="China"></option><option value="Francia"></option><option value="España"></option><option value="Turquía"></option><option value="Australia"></option><option value="Japón"></option>
+              <option value="Bahamas"></option><option value="Bangladés"></option><option value="Barbados"></option><option value="Baréin"></option><option value="Bélgica"></option><option value="Belice"></option><option value="Benín"></option><option value="Bielorrusia"></option><option value="Birmania"></option><option value="Bolivia"></option><option value="Bosnia y Herzegovina"></option><option value="Botsuana"></option><option value="Brasil"></option><option value="Brunéi"></option><option value="Bulgaria"></option><option value="Burkina Faso"></option><option value="Burundi"></option><option value="Bután"></option>
+            </datalist>
           </label>
           <label>Transacción / mensaje
             <input id="admin-title" required maxlength="180" placeholder="Ej. China ha donado 10M a España">
@@ -660,63 +660,9 @@
     }
 
     const translations = {
-      es: {
-        tagline: "Negocia. Simula. Descubre el impacto de tus decisiones.",
-        lobby: "Lobby",
-        lobbyDesc: "Consulta los países, representantes y presupuestos.",
-        sim: "Gran simulador",
-        simDesc: "Prueba una transacción y explora sus posibles efectos.",
-        history: "Historial",
-        historyDesc: "Revisa el registro de transacciones oficiales.",
-        country: "País",
-        rep: "Representante",
-        mascot: "Mascota del equipo",
-        budget: "Presupuesto actual",
-        back: "← Inicio",
-        simulate: "Simular",
-        placeholder: "Describe una transacción hipotética…",
-        greeting: "¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.",
-        result: "Resultado ilustrativo",
-        explanation: "Esta versión solo muestra una demostración visual. Para calcular impactos reales del modelo, habrá que definir reglas e indicadores transparentes."
-      },
-      en: {
-        tagline: "Negotiate. Simulate. Discover the impact of your decisions.",
-        lobby: "Lobby",
-        lobbyDesc: "View countries, representatives, and budgets.",
-        sim: "Main simulator",
-        simDesc: "Try a transaction and explore its possible effects.",
-        history: "History",
-        historyDesc: "Review the official transaction record.",
-        country: "Country",
-        rep: "Representative",
-        mascot: "Team mascot",
-        budget: "Current budget",
-        back: "← Home",
-        simulate: "Simulate",
-        placeholder: "Describe a hypothetical transaction…",
-        greeting: "Hi! Enter a hypothetical transaction to explore its possible effects.",
-        result: "Illustrative result",
-        explanation: "This version is only a visual demo. Transparent rules and indicators must be defined before the model can calculate impacts."
-      },
-      fr: {
-        tagline: "Négociez. Simulez. Découvrez l’impact de vos décisions.",
-        lobby: "Lobby",
-        lobbyDesc: "Consultez les pays, les représentants et les budgets.",
-        sim: "Grand simulateur",
-        simDesc: "Testez une transaction et explorez ses effets possibles.",
-        history: "Historique",
-        historyDesc: "Consultez le registre des transactions officielles.",
-        country: "Pays",
-        rep: "Représentant",
-        mascot: "Mascotte de l’équipe",
-        budget: "Budget actuel",
-        back: "← Accueil",
-        simulate: "Simuler",
-        placeholder: "Décrivez une transaction hypothétique…",
-        greeting: "Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles.",
-        result: "Résultat illustratif",
-        explanation: "Cette version est une démonstration visuelle. Il faudra définir des règles et indicateurs transparents avant de calculer les impacts."
-      }
+      es: {tagline:"Negocia. Simula. Descubre el impacto de tus decisiones.",lobby:"Lobby",lobbyDesc:"Consulta los países, representantes y presupuestos.",sim:"Gran simulador",simDesc:"Prueba una transacción y explora sus posibles efectos.",history:"Historial",historyDesc:"Revisa el registro de transacciones oficiales.",country:"País",rep:"Representante",mascot:"Mascota del equipo",budget:"Presupuesto actual",back:"← Inicio",simulate:"Simular",placeholder:"Describe una transacción hipotética…",greeting:"¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.",result:"Resultado ilustrativo",explanation:"Esta versión solo muestra una demostración visual. Para calcular impactos reales del modelo, habrá que definir reglas e indicadores transparentes.",historyNote:"Este historial es solo un ejemplo. Para hacer transacciones o donaciones diríjase al DTB.",historyDemo:"Registro de demostración",admin:"Modo admin",adminTitle:"Panel de administración",adminDesc:"Gestiona el historial de esta demostración.",close:"Cerrar",adminCountry:"País que realiza la acción",countryPlaceholder:"Escribe o busca un país…",adminTransaction:"Transacción / mensaje",adminReason:"Motivo",reasonPlaceholder:"Describe brevemente el motivo",add:"Añadir al historial",save:"Guardar cambios",cancel:"Cancelar edición",warning:"Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.",demo:"DEMO",reversed:"ANULADA",reasonPrefix:"Motivo:",fictitious:"Ejemplo ficticio",edit:"Editar",reverse:"Revertir",restore:"Restaurar",delete:"Eliminar",emptyHistory:"Todavía no hay transacciones en este historial de demostración.",confirmDelete:"¿Eliminar esta entrada del historial de demostración? Esta acción no se puede deshacer.",wrongCode:"Código incorrecto.",adminPrompt:"Introduce el código de demostración para abrir el modo admin:"},
+      en: {tagline:"Negotiate. Simulate. Discover the impact of your decisions.",lobby:"Lobby",lobbyDesc:"View countries, representatives, and budgets.",sim:"Main simulator",simDesc:"Try a transaction and explore its possible effects.",history:"History",historyDesc:"Review the official transaction record.",country:"Country",rep:"Representative",mascot:"Team mascot",budget:"Current budget",back:"← Home",simulate:"Simulate",placeholder:"Describe a hypothetical transaction…",greeting:"Hi! Enter a hypothetical transaction to explore its possible effects.",result:"Illustrative result",explanation:"This version is a visual demo only. Transparent rules and indicators must be defined before calculating real impacts.",historyNote:"This history is an example only. For transactions or donations, please refer to the DTB.",historyDemo:"Demo record",admin:"Admin mode",adminTitle:"Administration panel",adminDesc:"Manage this demo history.",close:"Close",adminCountry:"Country making the action",countryPlaceholder:"Type or search for a country…",adminTransaction:"Transaction / message",adminReason:"Reason",reasonPlaceholder:"Briefly describe the reason",add:"Add to history",save:"Save changes",cancel:"Cancel editing",warning:"Demo mode: changes are saved only in this browser. Reverting marks a transaction as cancelled; it does not move money or change real budgets.",demo:"DEMO",reversed:"CANCELLED",reasonPrefix:"Reason:",fictitious:"Fictional example",edit:"Edit",reverse:"Revert",restore:"Restore",delete:"Delete",emptyHistory:"There are no transactions in this demo history yet.",confirmDelete:"Delete this demo history entry? This action cannot be undone.",wrongCode:"Incorrect code.",adminPrompt:"Enter the demo code to open admin mode:"},
+      fr: {tagline:"Négociez. Simulez. Découvrez l’impact de vos décisions.",lobby:"Lobby",lobbyDesc:"Consultez les pays, les représentants et les budgets.",sim:"Grand simulateur",simDesc:"Testez une transaction et explorez ses effets possibles.",history:"Historique",historyDesc:"Consultez le registre des transactions officielles.",country:"Pays",rep:"Représentant",mascot:"Mascotte de l’équipe",budget:"Budget actuel",back:"← Accueil",simulate:"Simuler",placeholder:"Décrivez une transaction hypothétique…",greeting:"Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles.",result:"Résultat illustratif",explanation:"Cette version est une démonstration visuelle. Des règles et indicateurs transparents devront être définis avant de calculer les impacts réels.",historyNote:"Cet historique est un exemple. Pour les transactions ou les dons, veuillez vous adresser au DTB.",historyDemo:"Registre de démonstration",admin:"Mode admin",adminTitle:"Panneau d’administration",adminDesc:"Gérez l’historique de cette démonstration.",close:"Fermer",adminCountry:"Pays à l’origine de l’action",countryPlaceholder:"Saisissez ou recherchez un pays…",adminTransaction:"Transaction / message",adminReason:"Motif",reasonPlaceholder:"Décrivez brièvement le motif",add:"Ajouter à l’historique",save:"Enregistrer les modifications",cancel:"Annuler la modification",warning:"Mode démo : les modifications sont enregistrées uniquement dans ce navigateur. Une annulation marque la transaction comme annulée ; aucun argent ni budget réel n’est modifié.",demo:"DÉMO",reversed:"ANNULÉE",reasonPrefix:"Motif :",fictitious:"Exemple fictif",edit:"Modifier",reverse:"Annuler",restore:"Rétablir",delete:"Supprimer",emptyHistory:"Aucune transaction dans cet historique de démonstration pour le moment.",confirmDelete:"Supprimer cette entrée de démonstration ? Cette action est irréversible.",wrongCode:"Code incorrect.",adminPrompt:"Saisissez le code de démonstration pour ouvrir le mode admin:"}
     };
 
     const ids = {
