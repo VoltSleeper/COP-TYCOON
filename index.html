@@ -752,7 +752,7 @@
       const host = document.getElementById("history-chat");
       const t = translations[document.getElementById("language").value] || translations.es;
       host.innerHTML = transactions.map((item, index) => {
-        const example = item.id===1 ? t.historyExamples[0] : item.id===2 ? t.historyExamples[1] : null;
+        const example = item.id===1 && item.country==="Francia" && item.title==="Francia ha donado 20M a España" ? t.historyExamples[0] : item.id===2 && item.country==="Japón" && item.title==="Japón ha donado 5M a Kenia" ? t.historyExamples[1] : null;
         const countryName = example ? example[0] : item.country;
         const title = example ? example[1] : item.title;
         const reason = example ? example[2] : item.reason;
