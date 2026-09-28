@@ -610,21 +610,21 @@
       </div>
       <div class="admin-panel" id="admin-panel" hidden>
         <div class="admin-panel-head">
-          <div><h3>Panel de administración</h3><p>Gestiona el historial de esta demostración.</p></div>
-          <button class="back" type="button" onclick="logoutAdmin()">Cerrar</button>
+          <div><h3 id="admin-panel-title">Panel de administración</h3><p id="admin-panel-desc">Gestiona el historial de esta demostración.</p></div>
+          <button class="back" type="button" onclick="logoutAdmin()" id="admin-close">Cerrar</button>
         </div>
         <form id="admin-transaction-form" class="admin-form">
-          <label>País que realiza la acción
+          <label id="admin-country-label">País que realiza la acción
             <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca un país…">
             <datalist id="admin-country-options">
               <option value="China"></option><option value="Francia"></option><option value="España"></option><option value="Turquía"></option><option value="Australia"></option><option value="Japón"></option>
               <option value="Bahamas"></option><option value="Bangladés"></option><option value="Barbados"></option><option value="Baréin"></option><option value="Bélgica"></option><option value="Belice"></option><option value="Benín"></option><option value="Bielorrusia"></option><option value="Birmania"></option><option value="Bolivia"></option><option value="Bosnia y Herzegovina"></option><option value="Botsuana"></option><option value="Brasil"></option><option value="Brunéi"></option><option value="Bulgaria"></option><option value="Burkina Faso"></option><option value="Burundi"></option><option value="Bután"></option>
             </datalist>
           </label>
-          <label>Transacción / mensaje
+          <label id="admin-transaction-label">Transacción / mensaje
             <input id="admin-title" required maxlength="180" placeholder="Ej. China ha donado 10M a España">
           </label>
-          <label>Motivo
+          <label id="admin-reason-label">Motivo
             <input id="admin-reason" required maxlength="240" placeholder="Describe brevemente el motivo">
           </label>
           <div class="admin-form-actions">
@@ -632,7 +632,7 @@
             <button class="back" id="admin-cancel" type="button" onclick="cancelEdit()" hidden>Cancelar edición</button>
           </div>
         </form>
-        <p class="admin-warning">Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.</p>
+        <p class="admin-warning" id="admin-warning">Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.</p>
       </div>
       <div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
     </section>
@@ -741,31 +741,32 @@
 
     function renderHistory() {
       const host = document.getElementById("history-chat");
+      const t = translations[document.getElementById("language").value] || translations.es;
       host.innerHTML = transactions.map((item, index) => {
-        const reversed = item.reversed ? '<span class="reversed-tag">ANULADA</span>' : "";
+        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
         const controls = adminUnlocked ? `<div class="chat-admin-actions">
-          <button type="button" onclick="editTransaction(${item.id})">✏️ Editar</button>
-          <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ Restaurar" : "↶ Revertir"}</button>
-          <button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 Eliminar</button>
+          <button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button>
+          <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ "+t.restore : "↶ "+t.reverse}</button>
+          <button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button>
         </div>` : "";
         return `<article class="chat-message ${index % 2 ? "is-right" : ""} ${item.reversed ? "is-reversed" : ""}">
           <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(item.country)}</div></div>
           <div class="chat-bubble">
-            <span class="live">● DEMO</span>${reversed}
+            <span class="live">● ${t.demo}</span>${reversed}
             <h3 class="chat-title">${escapeHTML(item.title)}</h3>
-            <div class="chat-reason">Motivo: ${escapeHTML(item.reason)}</div>
-            <div class="chat-meta">Ejemplo ficticio · ${escapeHTML(item.time || "—")}</div>
+            <div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div>
+            <div class="chat-meta">${t.fictitious} · ${escapeHTML(item.time || "—")}</div>
             ${controls}
           </div>
         </article>`;
-      }).join("") || '<p class="note">Todavía no hay transacciones en este historial de demostración.</p>';
+      }).join("") || `<p class="note">${t.emptyHistory}</p>`;
     }
 
     function toggleAdmin() {
       if (!adminUnlocked) {
-        const code = prompt("Introduce el código de demostración para abrir el modo admin:");
+        const code = prompt((translations[document.getElementById("language").value] || translations.es).adminPrompt);
         if (code !== ADMIN_DEMO_CODE) {
-          if (code !== null) alert("Código incorrecto.");
+          if (code !== null) alert((translations[document.getElementById("language").value] || translations.es).wrongCode);
           return;
         }
         adminUnlocked = true;
@@ -774,14 +775,14 @@
         cancelEdit();
       }
       document.getElementById("admin-panel").hidden = !adminUnlocked;
-      document.getElementById("admin-toggle").textContent = adminUnlocked ? "🔓 Admin activo" : "🔐 Modo admin";
+      document.getElementById("admin-toggle").textContent = (adminUnlocked ? "🔓 " : "🔐 ") + (translations[document.getElementById("language").value] || translations.es).admin;
       renderHistory();
     }
 
     function logoutAdmin() {
       adminUnlocked = false;
       document.getElementById("admin-panel").hidden = true;
-      document.getElementById("admin-toggle").textContent = "🔐 Modo admin";
+      document.getElementById("admin-toggle").textContent = "🔐 " + (translations[document.getElementById("language").value] || translations.es).admin;
       cancelEdit();
       renderHistory();
     }
@@ -794,7 +795,7 @@
       document.getElementById("admin-country").value = item.country;
       document.getElementById("admin-title").value = item.title;
       document.getElementById("admin-reason").value = item.reason;
-      document.getElementById("admin-submit").textContent = "Guardar cambios";
+      document.getElementById("admin-submit").textContent = (translations[document.getElementById("language").value] || translations.es).save;
       document.getElementById("admin-cancel").hidden = false;
       document.getElementById("admin-panel").hidden = false;
       document.getElementById("admin-panel").scrollIntoView({ behavior: "smooth", block: "center" });
@@ -806,7 +807,7 @@
       if (form) form.reset();
       const submit = document.getElementById("admin-submit");
       const cancel = document.getElementById("admin-cancel");
-      if (submit) submit.textContent = "Añadir al historial";
+      if (submit) submit.textContent = (translations[document.getElementById("language").value] || translations.es).add;
       if (cancel) cancel.hidden = true;
     }
 
@@ -822,7 +823,7 @@
     function deleteTransaction(id) {
       if (!adminUnlocked) return;
       const item = transactions.find(entry => entry.id === id);
-      if (!item || !confirm("¿Eliminar esta entrada del historial de demostración? Esta acción no se puede deshacer.")) return;
+      if (!item || !confirm((translations[document.getElementById("language").value] || translations.es).confirmDelete)) return;
       transactions = transactions.filter(entry => entry.id !== id);
       saveTransactions();
       renderHistory();
