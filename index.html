@@ -665,34 +665,24 @@
       fr: {tagline:"Négociez. Simulez. Découvrez l’impact de vos décisions.",lobby:"Lobby",lobbyDesc:"Consultez les pays, les représentants et les budgets.",sim:"Grand simulateur",simDesc:"Testez une transaction et explorez ses effets possibles.",history:"Historique",historyDesc:"Consultez le registre des transactions officielles.",country:"Pays",rep:"Représentant",mascot:"Mascotte de l’équipe",budget:"Budget actuel",back:"← Accueil",simulate:"Simuler",placeholder:"Décrivez une transaction hypothétique…",greeting:"Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles.",result:"Résultat illustratif",explanation:"Cette version est une démonstration visuelle. Des règles et indicateurs transparents devront être définis avant de calculer les impacts réels.",historyNote:"Cet historique est un exemple. Pour les transactions ou les dons, veuillez vous adresser au DTB.",historyDemo:"Registre de démonstration",admin:"Mode admin",adminTitle:"Panneau d’administration",adminDesc:"Gérez l’historique de cette démonstration.",close:"Fermer",adminCountry:"Pays à l’origine de l’action",countryPlaceholder:"Saisissez ou recherchez un pays…",adminTransaction:"Transaction / message",adminReason:"Motif",reasonPlaceholder:"Décrivez brièvement le motif",add:"Ajouter à l’historique",save:"Enregistrer les modifications",cancel:"Annuler la modification",warning:"Mode démo : les modifications sont enregistrées uniquement dans ce navigateur. Une annulation marque la transaction comme annulée ; aucun argent ni budget réel n’est modifié.",demo:"DÉMO",reversed:"ANNULÉE",reasonPrefix:"Motif :",fictitious:"Exemple fictif",edit:"Modifier",reverse:"Annuler",restore:"Rétablir",delete:"Supprimer",emptyHistory:"Aucune transaction dans cet historique de démonstration pour le moment.",confirmDelete:"Supprimer cette entrée de démonstration ? Cette action est irréversible.",wrongCode:"Code incorrect.",adminPrompt:"Saisissez le code de démonstration pour ouvrir le mode admin:"}
     };
 
-    const ids = {
-      tagline: "tagline",
-      lobby: "lobby-title",
-      lobbyDesc: "lobby-desc",
-      sim: "sim-title",
-      simDesc: "sim-desc",
-      history: "history-title",
-      historyDesc: "history-desc",
-      country: "country-label",
-      rep: "rep-label",
-      mascot: "mascot-label",
-      budget: "budget-label"
-    };
-
-    document.getElementById("language").addEventListener("change", event => {
-      const t = translations[event.target.value];
-      Object.entries(ids).forEach(([key, id]) => {
-        const value = t[key];
-        if (value) document.getElementById(id).textContent = value;
-      });
-      ["back-lobby", "back-sim", "back-history"].forEach(id => {
-        document.getElementById(id).textContent = t.back;
-      });
-      document.getElementById("simulate-button").textContent = t.simulate;
-      document.getElementById("transaction").placeholder = t.placeholder;
-      document.getElementById("speech").textContent = t.greeting;
-    });
-
+    const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
+    function applyLanguage(lang) {
+      const t=translations[lang]||translations.es;
+      Object.entries(ids).forEach(([key,id])=>{const el=document.getElementById(id);if(el&&t[key])el.textContent=t[key];});
+      ["back-lobby","back-sim","back-history"].forEach(id=>document.getElementById(id).textContent=t.back);
+      document.getElementById("simulate-button").textContent=t.simulate;
+      document.getElementById("transaction").placeholder=t.placeholder;
+      document.getElementById("speech").textContent=t.greeting;
+      const map={"history-note":"historyNote","history-demo-label":"historyDemo","admin-panel-title":"adminTitle","admin-panel-desc":"adminDesc","admin-close":"close","admin-country-label":"adminCountry","admin-transaction-label":"adminTransaction","admin-reason-label":"adminReason","admin-warning":"warning"};
+      Object.entries(map).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t[key];});
+      document.getElementById("admin-country").placeholder=t.countryPlaceholder;
+      document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
+      document.getElementById("admin-submit").textContent=editingTransactionId!==null?t.save:t.add;
+      document.getElementById("admin-cancel").textContent=t.cancel;
+      document.getElementById("admin-toggle").textContent=(adminUnlocked?"🔓 ":"🔐 ")+t.admin;
+      renderHistory();
+    }
+    document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
     document.getElementById("sim-form").addEventListener("submit", event => {
       event.preventDefault();
       const text = document.getElementById("transaction").value.trim();
