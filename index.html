@@ -648,6 +648,13 @@
     #lobby-grid,#stakeholder-grid{display:block}
 
 .room-topic{display:inline;color:#86D6A5;font-family:"Happy Monkey",system-ui,sans-serif;font-size:.82rem;font-weight:400}
+
+    /* Emoji flags: place clearly above each country card */
+    #lobby-grid .country-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px}
+    #lobby-grid .country-flag{display:flex!important;align-items:center;justify-content:center;width:100%;height:auto;min-height:76px;font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:4.25rem;line-height:1.15;opacity:1;visibility:visible}
+    #lobby-grid .country-info{width:100%;text-align:center}
+    #lobby-grid .country-detail{justify-content:center}
+    #lobby-grid .country-name{margin-top:0}
 </style>
 </head>
 <body>
@@ -842,9 +849,9 @@
       {es:"Venezuela",en:"Venezuela",fr:"Venezuela",flag:"🇻🇪",reps:["Paolo"]}
     ];
     const roomRoster = [
-      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia"},{room:1,country:"China"},{room:1,country:"India"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu"},{room:1,country:"Samoa"},
-      {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China"},{room:2,country:"India"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
-      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China"},{room:3,country:"India"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu"}
+      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu"},{room:1,country:"Samoa"},
+      {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
+      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu"}
     ];
     const stakeholderRoster = [
       {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"},
@@ -899,7 +906,7 @@
           const country=countryRoster.find(item=>item.en===entry.country);
           if(!country)return "";
           const name=country[lang]||country.en;
-          const reps=country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending;
+          const reps=entry.representative|| (country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
           const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase();
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
           return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${country.flag}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(reps)}</strong><span>${t.room}</span><strong>${roomName(room)}</strong><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></article>`;
