@@ -631,6 +631,18 @@
     @media(prefers-reduced-motion:reduce){
       *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
     }
+
+    /* Lobby refresh: readable deeper mint and visible flag artwork */
+    .card p,.hero p,.roster-subnote,.country-detail span,.chat-meta,.note,.section .subtext,.section .description,.stat small,.result small,.country-detail .room-label,.stakeholder-room{color:#78C99A}
+    .country-detail span,.roster-subhead,.eyebrow,.mascot-name{color:#86D6A5}
+    .country-flag{width:96px;height:64px;border-radius:12px;background:transparent;border:0;box-shadow:none;font-size:3.7rem;line-height:1}
+    .room-group{margin:26px 0 10px}.room-group:first-child{margin-top:0}
+    .room-heading{font-family:'Space Grotesk',system-ui,sans-serif;color:#DCEFFA;font-size:1.25rem;margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid #6F9DBB55}
+    .room-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+    .room-chip{display:inline-block;margin:0 0 10px;padding:4px 9px;border-radius:999px;background:#183B35;border:1px solid #34765E;color:#86D6A5;font-size:.72rem;font-weight:700}
+    .stakeholder-card .country-flag{font-size:2.7rem}
+    @media(max-width:820px){.room-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media(max-width:560px){.room-cards{grid-template-columns:1fr}.country-flag{width:90px;height:60px}}
 </style>
 </head>
 <body>
@@ -824,13 +836,23 @@
       {es:"Ucrania",en:"Ukraine",fr:"Ukraine",flag:"🇺🇦",reps:["Javier"]},
       {es:"Venezuela",en:"Venezuela",fr:"Venezuela",flag:"🇻🇪",reps:["Paolo"]}
     ];
+    const roomRoster = [
+      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia"},{room:1,country:"China"},{room:1,country:"India"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu"},{room:1,country:"Samoa"},
+      {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China"},{room:2,country:"India"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
+      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China"},{room:3,country:"India"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu"}
+    ];
     const stakeholderRoster = [
-      {es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",people:{es:"Maria",en:"Maria",fr:"Maria"}},
-      {es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Isabella, Paula · California: por asignar",en:"Isabella, Paula · California: to be assigned",fr:"Isabella, Paula · Californie : à attribuer"}},
-      {es:"Lobby Nestlé y ChatGPT",en:"Nestlé and ChatGPT lobby",fr:"Lobby Nestlé et ChatGPT",people:{es:"Julia D. + por asignar",en:"Julia D. + to be assigned",fr:"Julia D. + à attribuer"}},
-      {es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Sacha, Adam · California: 2 participantes",en:"Sacha, Adam · California: 2 participants",fr:"Sacha, Adam · Californie : 2 participants"}},
-      {es:"Lobby Grupo ACS",en:"ACS Group lobby",fr:"Lobby Groupe ACS",people:{es:"Emma",en:"Emma",fr:"Emma"}},
-      {es:"Activista climática WWF",en:"WWF climate activist",fr:"Militante climat WWF",people:{es:"Nuria · California: por asignar",en:"Nuria · California: to be assigned",fr:"Nuria · Californie : à attribuer"}}
+      {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"},
+      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
+      {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
+      {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",people:{es:"Julia D. + 1 persona por asignar",en:"Julia D. + 1 participant to be assigned",fr:"Julia D. + 1 personne à attribuer"},icon:"🏢"},
+      {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",people:{es:"Sacha",en:"Sacha",fr:"Sacha"},icon:"💬"},
+      {room:2,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
+      {room:2,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
+      {room:3,es:"Lobby Grupo ACS",en:"ACS Group lobby",fr:"Lobby Groupe ACS",people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
+      {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
+      {room:3,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
+      {room:3,es:"DTB · WWF",en:"DTB · WWF",fr:"DTB · WWF",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
     ];
     const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
 
@@ -865,22 +887,24 @@
       const lang=document.getElementById("language").value;
       const t=translations[lang]||translations.es;
       const host=document.getElementById("lobby-grid");
-      host.innerHTML=countryRoster.map((country,index)=>{
-        const name=country[lang]||country.en;
-        const rep=country.reps.length?country.reps.map(name=>name==="pending"?t.pending:name).join(", "):t.pending;
-        const search=[name,country.es,country.en,country.fr,...country.reps].join(" ").toLocaleLowerCase();
-        return `<article class="country-card" data-search="${escapeHTML(search)}">
-          <div class="country-flag" aria-hidden="true">${country.flag}</div>
-          <div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>
-            <div class="country-detail">
-              <span>${t.representative}</span><strong class="country-representatives">${escapeHTML(rep)}</strong>
-              <span>${t.room}</span><strong>${t.pending}</strong>
-              <span>${t.budget}</span><strong class="budget-value">${t.pending}</strong>
-            </div>
-          </div>
-        </article>`;
+      const roomName=room=>lang==="en"?"Room "+room:lang==="fr"?"Salle "+room:"Sala "+room;
+      host.innerHTML=[1,2,3].map(room=>{
+        const entries=roomRoster.filter(entry=>entry.room===room);
+        const cards=entries.map(entry=>{
+          const country=countryRoster.find(item=>item.en===entry.country);
+          if(!country)return "";
+          const name=country[lang]||country.en;
+          const reps=country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending;
+          const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase();
+          const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
+          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${country.flag}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(reps)}</strong><span>${t.room}</span><strong>${roomName(room)}</strong><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></article>`;
+        }).join("");
+        return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${cards}</div></section>`;
       }).join("");
-      document.getElementById("stakeholder-grid").innerHTML=stakeholderRoster.map(item=>`<article class="country-card stakeholder-card"><div class="country-flag" aria-hidden="true">🌐</div><div class="country-info"><h3 class="country-name">${escapeHTML(item[lang]||item.en)}</h3><div class="country-detail"><strong class="country-representatives">${escapeHTML(item.people)}</strong></div></div></article>`).join("");
+      document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{
+        const items=stakeholderRoster.filter(item=>item.room===room);
+        return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${items.map(item=>`<article class="country-card stakeholder-card"><div class="country-flag" aria-hidden="true">${item.icon}</div><div class="country-info"><h3 class="country-name">${escapeHTML(item[lang]||item.en)}</h3><div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(item.people[lang]||item.people.en)}</strong></div></div></article>`).join("")}</div></section>`;
+      }).join("");
       const datalist=document.getElementById("admin-country-options");
       datalist.innerHTML=countryRoster.map(country=>`<option value="${escapeHTML(country[lang]||country.en)}"></option>`).join("");
     }
