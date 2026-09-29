@@ -855,7 +855,7 @@
       {room:3,es:"Lobby Grupo ACS",en:"ACS Group lobby",fr:"Lobby Groupe ACS",people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
       {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
       {room:3,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
-      {room:3,es:"DTB · WWF",en:"DTB · WWF",fr:"DTB · WWF",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
+      {room:0,es:"DTB · WWF",en:"DTB · WWF",fr:"DTB · WWF",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
     ];
     const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
 
@@ -904,10 +904,11 @@
         }).join("");
         return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${cards}</div></section>`;
       }).join("");
+      const renderStakeholders=items=>items.map(item=>`<article class="country-card stakeholder-card"><div class="country-flag" aria-hidden="true">${item.icon}</div><div class="country-info"><h3 class="country-name">${escapeHTML(item[lang]||item.en)}</h3><div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(item.people[lang]||item.people.en)}</strong></div></div></article>`).join("");
       document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{
         const items=stakeholderRoster.filter(item=>item.room===room);
-        return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${items.map(item=>`<article class="country-card stakeholder-card"><div class="country-flag" aria-hidden="true">${item.icon}</div><div class="country-info"><h3 class="country-name">${escapeHTML(item[lang]||item.en)}</h3><div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(item.people[lang]||item.people.en)}</strong></div></div></article>`).join("")}</div></section>`;
-      }).join("");
+        return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${renderStakeholders(items)}</div></section>`;
+      }).join("")+`<section class="room-group"><h3 class="room-heading">${lang==="en"?"Room to be assigned":lang==="fr"?"Salle à attribuer":"Sala por asignar"}</h3><div class="room-cards">${renderStakeholders(stakeholderRoster.filter(item=>item.room===0))}</div></section>`;
       const datalist=document.getElementById("admin-country-options");
       datalist.innerHTML=countryRoster.map(country=>`<option value="${escapeHTML(country[lang]||country.en)}"></option>`).join("");
     }
