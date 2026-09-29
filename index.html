@@ -643,6 +643,9 @@
     .stakeholder-card .country-flag{font-size:2.7rem}
     @media(max-width:820px){.room-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
     @media(max-width:560px){.room-cards{grid-template-columns:1fr}.country-flag{width:90px;height:60px}}
+
+    /* Room sections span the full lobby width; each room has its own card grid */
+    #lobby-grid,#stakeholder-grid{display:block}
 </style>
 </head>
 <body>
