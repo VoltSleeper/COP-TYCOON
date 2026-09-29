@@ -655,6 +655,18 @@
     #lobby-grid .country-info{width:100%;text-align:center}
     #lobby-grid .country-detail{justify-content:center}
     #lobby-grid .country-name{margin-top:0}
+    /* Responsive lobby cards: flags scale smoothly across desktop, tablet and phone */
+    #lobby-grid .country-flag{font-size:clamp(2.45rem,4.2vw,3.5rem)!important;min-height:clamp(48px,7vw,68px)!important;height:auto!important}
+    #lobby-grid .country-card{min-width:0;padding:clamp(12px,1.8vw,22px)}
+    #lobby-grid .country-info{min-width:0;overflow-wrap:anywhere}
+    #lobby-grid .country-name{font-size:clamp(.95rem,1.35vw,1.2rem)}
+    #lobby-grid .country-detail{font-size:clamp(.78rem,1vw,.92rem)}
+    #lobby-grid .country-flag{font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
+    #lobby-grid .room-group[hidden],#lobby-grid .country-card[hidden]{display:none!important}
+    @media(min-width:1100px){#lobby-grid .room-cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}}
+    @media(min-width:700px) and (max-width:1099px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
+    @media(max-width:699px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
+    @media(max-width:390px){#lobby-grid .room-cards{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -880,7 +892,7 @@
       Object.entries(textMap).forEach(([id,key])=>{const el=document.getElementById(id);if(el)el.textContent=t[key];});
       document.querySelectorAll(".animation-placeholder").forEach(el=>el.textContent=t.animation);
       document.querySelectorAll(".country-detail").forEach((el,i)=>{const spans=el.querySelectorAll("span");const strongs=el.querySelectorAll("strong");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;if(strongs[0])strongs[0].textContent=t.repExample;if(strongs[1])strongs[1].textContent=t.rooms[i]||t.rooms[0];if(strongs[2])strongs[2].textContent=t.budgetSample;});
-      const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames[i]||el.textContent);
+      const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames?.[i]||el.textContent);
       document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
       document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
       renderCountryRoster();filterCountries();
@@ -925,8 +937,17 @@
       const query=document.getElementById("lobby-search").value.trim().toLocaleLowerCase();
       const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
       let visible=0;
-      cards.forEach(card=>{const show=card.dataset.search.includes(query);card.hidden=!show;if(show)visible++;});
-      const lang=document.getElementById("language").value;
+      cards.forEach(card=>{
+        const show=(card.dataset.search||"").includes(query);
+        card.hidden=!show;
+        card.style.display=show?"":"none";
+        if(show)visible++;
+      });
+      document.querySelectorAll("#lobby-grid .room-group").forEach(group=>{
+        const hasVisible=[...group.querySelectorAll(".country-card")].some(card=>!card.hidden);
+        group.hidden=!hasVisible;
+        group.style.display=hasVisible?"":"none";
+      });
       document.getElementById("lobby-count").textContent=visible+" / "+cards.length;
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
