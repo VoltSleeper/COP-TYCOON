@@ -682,6 +682,13 @@
     .country-suggestions button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:#F3F7FA;font:inherit;cursor:pointer}
     .country-suggestions button:hover,.country-suggestions button:focus{background:#18364A;outline:1px solid #6F9DBB}
     @media(max-width:699px){#lobby-grid .country-card{padding:13px 10px 15px!important}#lobby-grid .country-flag img{width:38px;max-height:38px}}
+    /* Country details: one clear item per line */
+    #lobby-grid .country-detail{display:flex!important;flex-direction:column!important;align-items:center;justify-content:flex-start;gap:5px!important;line-height:1.3!important}
+    #lobby-grid .country-detail .country-representatives{display:block;font-weight:700}
+    #lobby-grid .country-detail .country-room{display:block}
+    #lobby-grid .country-detail .budget-line{display:flex;flex-direction:column;align-items:center;gap:2px}
+    #lobby-grid .country-detail .budget-line span{margin:0;font-size:.76rem;letter-spacing:.02em}
+    #lobby-grid .country-detail .budget-value{display:inline-block}
 </style>
 </head>
 <body>
@@ -941,7 +948,7 @@
           const reps=entry.representative|| (country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
           const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase();
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
-          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${flagMarkup(country.flag)}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(reps)}</strong><span>${t.room}</span><strong>${roomName(room)}</strong><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></article>`;
+          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${flagMarkup(country.flag)}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><strong class="country-representatives">${escapeHTML(reps)}</strong><span class="country-room">${roomName(room)}</span><div class="budget-line"><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></div></article>`;
         }).join("");
         return `<section class="room-group"><h3 class="room-heading">${roomName(room)} <span class="room-topic">· ${t.roomTopics[room-1]}</span></h3><div class="room-cards">${cards}</div></section>`;
       }).join("");
