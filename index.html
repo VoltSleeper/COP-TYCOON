@@ -667,6 +667,21 @@
     @media(min-width:700px) and (max-width:1099px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}}
     @media(max-width:699px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}}
     @media(max-width:390px){#lobby-grid .room-cards{grid-template-columns:1fr}}
+    /* Compact, content-first lobby cards for tablet and desktop */
+    #lobby-grid .country-card{aspect-ratio:auto!important;height:auto!important;min-height:0!important;gap:5px!important;padding:15px 12px 17px!important;overflow:visible!important}
+    #lobby-grid .country-flag{width:100%!important;min-height:0!important;height:auto!important;display:flex!important;align-items:center;justify-content:center;margin:0 0 2px!important;font-size:clamp(2rem,3vw,2.75rem)!important;line-height:1!important}
+    #lobby-grid .country-flag img{display:block;width:clamp(38px,4vw,52px);height:auto;max-height:46px;object-fit:contain}
+    #lobby-grid .country-info{width:100%;min-width:0}
+    #lobby-grid .country-name{margin:0 0 5px!important;font-size:clamp(.92rem,1.2vw,1.08rem)!important;line-height:1.2}
+    #lobby-grid .country-detail{display:flex;flex-wrap:wrap;justify-content:center;gap:3px 7px;font-size:.78rem!important;line-height:1.25}
+    #lobby-grid .country-detail span{margin-top:2px}
+    #lobby-grid .country-detail strong{overflow-wrap:anywhere}
+    #lobby-grid .room-cards{align-items:stretch}
+    .country-suggestions{position:absolute;z-index:100;left:0;right:0;top:100%;max-height:220px;overflow-y:auto;background:#0D2433;border:1px solid #6F9DBB;border-radius:12px;box-shadow:0 12px 30px #020A10A8;padding:5px}
+    #admin-country-label{position:relative}
+    .country-suggestions button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;border-radius:8px;background:transparent;color:#F3F7FA;font:inherit;cursor:pointer}
+    .country-suggestions button:hover,.country-suggestions button:focus{background:#18364A;outline:1px solid #6F9DBB}
+    @media(max-width:699px){#lobby-grid .country-card{padding:13px 10px 15px!important}#lobby-grid .country-flag img{width:38px;max-height:38px}}
 </style>
 </head>
 <body>
@@ -770,7 +785,7 @@
         </div>
         <form id="admin-transaction-form" class="admin-form">
           <label id="admin-country-label">País que realiza la acción
-            <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca un país…">
+            <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca un país…" aria-autocomplete="list" aria-controls="admin-country-suggestions"><div id="admin-country-suggestions" class="country-suggestions" role="listbox" hidden></div>
             <datalist id="admin-country-options">
               <option value="China"></option><option value="Francia"></option><option value="España"></option><option value="Turquía"></option><option value="Australia"></option><option value="Japón"></option>
               <option value="Bahamas"></option><option value="Bangladés"></option><option value="Barbados"></option><option value="Baréin"></option><option value="Bélgica"></option><option value="Belice"></option><option value="Benín"></option><option value="Bielorrusia"></option><option value="Birmania"></option><option value="Bolivia"></option><option value="Bosnia y Herzegovina"></option><option value="Botsuana"></option><option value="Brasil"></option><option value="Brunéi"></option><option value="Bulgaria"></option><option value="Burkina Faso"></option><option value="Burundi"></option><option value="Bután"></option>
@@ -907,6 +922,11 @@
       document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+" ";
       renderHistory();
     }
+    function flagMarkup(flag) {
+      const code=Array.from(flag).map(char=>char.codePointAt(0).toString(16)).join("-");
+      return `<img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${code}.svg" alt="${escapeHTML(flag)}" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">`;
+    }
+
     function renderCountryRoster() {
       const lang=document.getElementById("language").value;
       const t=translations[lang]||translations.es;
@@ -921,7 +941,7 @@
           const reps=entry.representative|| (country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
           const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase();
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
-          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${country.flag}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(reps)}</strong><span>${t.room}</span><strong>${roomName(room)}</strong><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></article>`;
+          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${flagMarkup(country.flag)}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(reps)}</strong><span>${t.room}</span><strong>${roomName(room)}</strong><span>${t.budget}</span><strong class="budget-value">${t.pending}</strong></div></div></article>`;
         }).join("");
         return `<section class="room-group"><h3 class="room-heading">${roomName(room)} <span class="room-topic">· ${t.roomTopics[room-1]}</span></h3><div class="room-cards">${cards}</div></section>`;
       }).join("");
@@ -1105,6 +1125,33 @@
       saveTransactions();
       renderHistory();
     }
+
+    const adminCountryInput=document.getElementById("admin-country");
+    const adminCountrySuggestions=document.getElementById("admin-country-suggestions");
+    function renderAdminCountrySuggestions() {
+      const query=adminCountryInput.value.trim().toLocaleLowerCase();
+      const lang=document.getElementById("language").value;
+      const matches=countryRoster.filter(country=>[country.es,country.en,country.fr].some(name=>name.toLocaleLowerCase().includes(query))).slice(0,12);
+      if(!matches.length){adminCountrySuggestions.hidden=true;adminCountrySuggestions.innerHTML="";return;}
+      adminCountrySuggestions.innerHTML=matches.map(country=>{
+        const name=country[lang]||country.en;
+        return `<button type="button" role="option" data-country="${escapeHTML(name)}">${country.flag} ${escapeHTML(name)}</button>`;
+      }).join("");
+      adminCountrySuggestions.hidden=false;
+    }
+    adminCountryInput.addEventListener("input",renderAdminCountrySuggestions);
+    adminCountryInput.addEventListener("focus",renderAdminCountrySuggestions);
+    adminCountrySuggestions.addEventListener("pointerdown",event=>{
+      const option=event.target.closest("button[data-country]");
+      if(!option)return;
+      event.preventDefault();
+      adminCountryInput.value=option.dataset.country;
+      adminCountrySuggestions.hidden=true;
+      adminCountryInput.focus();
+    });
+    document.addEventListener("pointerdown",event=>{
+      if(!event.target.closest("#admin-country-label"))adminCountrySuggestions.hidden=true;
+    });
 
     document.getElementById("admin-transaction-form").addEventListener("submit", event => {
       event.preventDefault();
