@@ -690,6 +690,8 @@
     #lobby-grid .country-detail .budget-line span{margin:0;font-size:.76rem;letter-spacing:.02em}
     #lobby-grid .country-detail .budget-value{display:inline-block}
 </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
   <header>
@@ -1017,22 +1019,94 @@
       { id: 1, country: "Francia", title: "Francia ha donado 20M a España", reason: "Beneficio mutuo / Transacción", time: "12:45", reversed: false },
       { id: 2, country: "Japón", title: "Japón ha donado 5M a Kenia", reason: "Energías renovables", time: "12:47", reversed: false }
     ];
-    let transactions = loadTransactions();
+    const SUPABASE_URL = "https://ygehjuudubmxuezzwtiq.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tTR311euf8vL7MiqeoEU4w_jjif5v-R";
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+    const HISTORY_TABLE = "cop_history";
+
+    let transactions = [...demoTransactions];
+    let historyRealtimeChannel = null;
+    let historyLoadedFromSupabase = false;
     let adminUnlocked = false;
     let editingTransactionId = null;
 
-    function loadTransactions() {
-      try {
-        const saved = localStorage.getItem("copTycoonDemoHistory");
-        return saved ? JSON.parse(saved) : demoTransactions;
-      } catch (error) {
-        return demoTransactions;
-      }
+    function normalizeHistoryRow(row) {
+      return {
+        id: row.id,
+        country: row.country || "🌍",
+        title: row.title || "",
+        reason: row.reason || "",
+        time: row.time || "—",
+        reversed: !!row.reversed
+      };
     }
 
-    function saveTransactions() {
-      try { localStorage.setItem("copTycoonDemoHistory", JSON.stringify(transactions)); }
-      catch (error) { console.warn("No se pudo guardar el historial en este navegador."); }
+    async function loadTransactions() {
+      try {
+        const { data, error } = await supabaseClient
+          .from(HISTORY_TABLE)
+          .select("id,country,title,reason,time,reversed")
+          .order("id", { ascending: false });
+
+        if (error) throw error;
+
+        if (Array.isArray(data) && data.length) {
+          transactions = data.map(normalizeHistoryRow);
+        } else {
+          transactions = [...demoTransactions];
+        }
+        historyLoadedFromSupabase = true;
+      } catch (error) {
+        console.warn("Historial compartido no disponible todavía. Se usa el historial demo local.", error);
+        try {
+          const saved = localStorage.getItem("copTycoonDemoHistory");
+          transactions = saved ? JSON.parse(saved) : [...demoTransactions];
+        } catch (localError) {
+          transactions = [...demoTransactions];
+        }
+      }
+      renderHistory();
+      subscribeToHistory();
+    }
+
+    async function saveTransactions() {
+      try {
+        localStorage.setItem("copTycoonDemoHistory", JSON.stringify(transactions));
+      } catch (error) {}
+
+      if (!historyLoadedFromSupabase) return;
+
+      const { error } = await supabaseClient
+        .from(HISTORY_TABLE)
+        .upsert(transactions.map(item => ({
+          id: item.id,
+          country: item.country,
+          title: item.title,
+          reason: item.reason,
+          time: item.time,
+          reversed: !!item.reversed
+        })), { onConflict: "id" });
+
+      if (error) console.warn("No se pudo sincronizar el historial compartido.", error);
+    }
+
+    function subscribeToHistory() {
+      if (historyRealtimeChannel) return;
+      historyRealtimeChannel = supabaseClient
+        .channel("cop-tycoon-history-live")
+        .on("postgres_changes", { event: "*", schema: "public", table: HISTORY_TABLE }, payload => {
+          if (payload.eventType === "INSERT") {
+            const incoming = normalizeHistoryRow(payload.new);
+            transactions = [incoming, ...transactions.filter(item => item.id !== incoming.id)];
+          } else if (payload.eventType === "UPDATE") {
+            const incoming = normalizeHistoryRow(payload.new);
+            transactions = transactions.map(item => item.id === incoming.id ? incoming : item);
+          } else if (payload.eventType === "DELETE") {
+            transactions = transactions.filter(item => item.id !== payload.old.id);
+          }
+          renderHistory();
+        })
+        .subscribe();
     }
 
     function renderHistory() {
@@ -1120,6 +1194,11 @@
       const item = transactions.find(entry => entry.id === id);
       if (!item) return;
       item.reversed = !item.reversed;
+      if (historyLoadedFromSupabase) {
+        supabaseClient.from(HISTORY_TABLE).update({ reversed: item.reversed }).eq("id", id).then(({ error }) => {
+          if (error) console.warn("No se pudo actualizar el estado compartido.", error);
+        });
+      }
       saveTransactions();
       renderHistory();
     }
@@ -1129,6 +1208,11 @@
       const item = transactions.find(entry => entry.id === id);
       if (!item || !confirm((translations[document.getElementById("language").value] || translations.es).confirmDelete)) return;
       transactions = transactions.filter(entry => entry.id !== id);
+      if (historyLoadedFromSupabase) {
+        supabaseClient.from(HISTORY_TABLE).delete().eq("id", id).then(({ error }) => {
+          if (error) console.warn("No se pudo eliminar del historial compartido.", error);
+        });
+      }
       saveTransactions();
       renderHistory();
     }
@@ -1169,10 +1253,30 @@
       if (!title || !reason) return;
       if (editingTransactionId !== null) {
         const item = transactions.find(entry => entry.id === editingTransactionId);
-        if (item) Object.assign(item, { country, title, reason });
+        if (item) {
+          Object.assign(item, { country, title, reason });
+          if (historyLoadedFromSupabase) {
+            supabaseClient.from(HISTORY_TABLE).update({ country, title, reason }).eq("id", item.id).then(({ error }) => {
+              if (error) console.warn("No se pudo actualizar el historial compartido.", error);
+            });
+          }
+        }
       } else {
         const now = new Date();
-        transactions.unshift({ id: Date.now(), country, title, reason, time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }), reversed: false });
+        const newItem = {
+          id: Date.now(),
+          country,
+          title,
+          reason,
+          time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          reversed: false
+        };
+        transactions.unshift(newItem);
+        if (historyLoadedFromSupabase) {
+          supabaseClient.from(HISTORY_TABLE).insert(newItem).then(({ error }) => {
+            if (error) console.warn("No se pudo añadir al historial compartido.", error);
+          });
+        }
       }
       saveTransactions();
       cancelEdit();
