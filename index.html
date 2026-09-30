@@ -1054,6 +1054,17 @@
           transactions = data.map(normalizeHistoryRow);
         } else {
           transactions = [...demoTransactions];
+          const { error: seedError } = await supabaseClient
+            .from(HISTORY_TABLE)
+            .upsert(transactions.map(item => ({
+              id: item.id,
+              country: item.country,
+              title: item.title,
+              reason: item.reason,
+              time: item.time,
+              reversed: !!item.reversed
+            })), { onConflict: "id" });
+          if (seedError) throw seedError;
         }
         historyLoadedFromSupabase = true;
       } catch (error) {
