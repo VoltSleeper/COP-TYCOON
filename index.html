@@ -1057,7 +1057,8 @@
     }
 
     function scaledEffects(action,amount,country){
-      const ratio=country.budget2025 ? Math.min(1,amount/Math.max(country.budget2025.maxAmount||country.budget2025.total*.01,1)) : .1;
+      const referenceMax=country.budget2025 ? Math.max(country.budget2025.maxAmount||country.budget2025.total*.01,1) : Math.max(amount,1);
+      const ratio=country.budget2025 ? Math.min(1,amount/referenceMax) : .5;
       const scale=.65+.35*ratio;
       return {
         five:Object.fromEntries(Object.entries(action.base).map(([k,v])=>[k,v*scale])),
@@ -1068,14 +1069,15 @@
     function renderSimCountry(country,role,amount,action,lang){
       const s=simulatorText[lang]||simulatorText.es;
       const effects=scaledEffects(action,amount,country);
-      const budgetChange=role==="actor"?-amount:amount;
       const label=role==="actor"?s.actor:s.receiver;
+      const hasBudget=!!country.budget2025;
+      const remaining=hasBudget&&role==="actor"?Math.max(0,country.budget2025.total-amount):hasBudget?country.budget2025.total+amount:null;
       const metric=(name,value)=>`<div class="sim-impact-line"><span>${name}</span><b>${simArrow(value)}</b></div>`;
       return `<div class="sim-country-result">
         <h4>${country.flag} ${escapeHTML(country[lang]||country.en)} · ${label}</h4>
         <div class="sim-horizon">
           <div><strong>${s.horizon5}</strong>
-            ${metric(s.budget,0)}
+            ${hasBudget?`<div class="sim-impact-line"><span>${s.budget}</span><b>${formatSimMoney(remaining,lang)}</b></div>`:`<div class="sim-impact-line"><span>${s.budget}</span><b>—</b></div>`}
             ${metric(s.ecology,effects.five.ecology*(role==="receiver"?1:.9))}
             ${metric(s.health,effects.five.health*(role==="receiver"?1:.85))}
             ${metric(s.education,effects.five.education*(role==="receiver"?1:.8))}
@@ -1105,7 +1107,6 @@
       result.hidden=false;
 
       if(!parsed.countries.length){result.innerHTML=`<div class="sim-error">${s.missingCountry}</div>`;return;}
-      if(!parsed.countries[0].budget2025){result.innerHTML=`<div class="sim-error">${s.missingData}</div>`;return;}
       if(!parsed.amount){result.innerHTML=`<div class="sim-error">${s.missingAmount}</div>`;return;}
       if(!parsed.action){result.innerHTML=`<div class="sim-error">${s.unknownAction}</div>`;return;}
 
@@ -1114,13 +1115,15 @@
       const transferAction=!action.self;
       const receiver=parsed.countries[1]||null;
       if(transferAction && !receiver){result.innerHTML=`<div class="sim-error">${s.needsReceiver}</div>`;return;}
-      if(parsed.amount>(actor.budget2025.maxAmount||0)){result.innerHTML=`<div class="sim-error">${s.invalidAmount}</div>`;return;}
-      if(receiver && !receiver.budget2025){result.innerHTML=`<div class="sim-error">${s.missingData}</div>`;return;}
+      if(actor.budget2025 && parsed.amount>(actor.budget2025.maxAmount||0)){result.innerHTML=`<div class="sim-error">${s.invalidAmount}</div>`;return;}
+      if(receiver && !receiver.budget2025){
+        /* El motor puede seguir calculando impactos aunque falte una referencia presupuestaria. */
+      }
 
       const actorEffects=scaledEffects(action,parsed.amount,actor);
       const receiverEffects=receiver?scaledEffects(action,parsed.amount,receiver):null;
-      const actorScore=actorEffects.fifteen.ecology+actorEffects.fifteen.health+actorEffects.fifteen.education+actorEffects.fifteen.relations-(parsed.amount/Math.max(actor.budget2025.total,1))*8;
-      const receiverScore=receiver?(receiverEffects.fifteen.ecology+receiverEffects.fifteen.health+receiverEffects.fifteen.education+receiverEffects.fifteen.relations+(parsed.amount/Math.max(receiver.budget2025.total,1))*8):actorScore;
+      const actorScore=actorEffects.fifteen.ecology+actorEffects.fifteen.health+actorEffects.fifteen.education+actorEffects.fifteen.relations-(actor.budget2025?(parsed.amount/Math.max(actor.budget2025.total,1))*8:0);
+      const receiverScore=receiver?(receiverEffects.fifteen.ecology+receiverEffects.fifteen.health+receiverEffects.fifteen.education+receiverEffects.fifteen.relations+(receiver.budget2025?(parsed.amount/Math.max(receiver.budget2025.total,1))*8:0)):actorScore;
       const benefitText=receiver?(Math.abs(actorScore-receiverScore)<.6?s.sameBenefit:`${s.benefitsMore} <strong>${escapeHTML((receiverScore>actorScore?receiver[lang]:actor[lang])|| (receiverScore>actorScore?receiver.en:actor.en))}</strong>.`):`${s.benefitsMore} <strong>${escapeHTML(actor[lang]||actor.en)}</strong>.`;
 
       result.innerHTML=`<h3>${s.result}</h3>
