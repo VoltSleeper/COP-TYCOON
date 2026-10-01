@@ -810,15 +810,15 @@
           <button class="back" type="button" onclick="logoutAdmin()" id="admin-close">Cerrar</button>
         </div>
         <form id="admin-transaction-form" class="admin-form">
-          <label id="admin-country-label">País que realiza la acción
-            <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca un país…" aria-autocomplete="list" aria-controls="admin-country-suggestions"><div id="admin-country-suggestions" class="country-suggestions" role="listbox" hidden></div>
-            <datalist id="admin-country-options">
-              <option value="China"></option><option value="Francia"></option><option value="España"></option><option value="Turquía"></option><option value="Australia"></option><option value="Japón"></option>
-              <option value="Bahamas"></option><option value="Bangladés"></option><option value="Barbados"></option><option value="Baréin"></option><option value="Bélgica"></option><option value="Belice"></option><option value="Benín"></option><option value="Bielorrusia"></option><option value="Birmania"></option><option value="Bolivia"></option><option value="Bosnia y Herzegovina"></option><option value="Botsuana"></option><option value="Brasil"></option><option value="Brunéi"></option><option value="Bulgaria"></option><option value="Burkina Faso"></option><option value="Burundi"></option><option value="Bután"></option>
-            </datalist>
+          <label id="admin-sender-label">País que realiza la transacción
+            <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca el país emisor…" aria-autocomplete="list" aria-controls="admin-country-suggestions"><div id="admin-country-suggestions" class="country-suggestions" role="listbox" hidden></div>
+            <datalist id="admin-country-options"></datalist>
           </label>
-          <label id="admin-transaction-label">Transacción / mensaje
-            <input id="admin-title" required maxlength="180" placeholder="Ej. China ha donado 10M a España">
+          <label id="admin-receiver-label">País que recibe
+            <input id="admin-receiver" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca el país receptor…">
+          </label>
+          <label id="admin-amount-label">Cantidad (USD)
+            <input id="admin-amount" required maxlength="40" inputmode="decimal" placeholder="Ej. 20M o 20000000">
           </label>
           <label id="admin-reason-label">Motivo
             <input id="admin-reason" required maxlength="240" placeholder="Describe brevemente el motivo">
@@ -943,14 +943,16 @@
       document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
       renderCountryRoster();filterCountries();
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
-      document.getElementById("admin-title").placeholder=lang==="fr"?"Ex. La Chine a fait un don de 10 M à l’Espagne":lang==="en"?"E.g. China donated 10M to Spain":"Ej. China ha donado 10M a España";
-      document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
+      document.getElementById("admin-receiver").placeholder=t.receiverPlaceholder;
+      document.getElementById("admin-amount").placeholder=t.amountPlaceholder;
+            document.getElementById("admin-reason").placeholder=t.reasonPlaceholder;
       document.getElementById("admin-submit").textContent=editingTransactionId!==null?t.save:t.add;
       document.getElementById("admin-cancel").textContent=t.cancel;
       document.getElementById("admin-toggle").textContent=(adminUnlocked?"🔓 ":"🔐 ")+t.admin;
-      document.getElementById("admin-country-label").childNodes[0].nodeValue=t.adminCountry+" ";
-      document.getElementById("admin-transaction-label").childNodes[0].nodeValue=t.adminTransaction+" ";
-      document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+" ";
+      document.getElementById("admin-sender-label").childNodes[0].nodeValue=t.adminSender+" ";
+      document.getElementById("admin-receiver-label").childNodes[0].nodeValue=t.adminReceiver+" ";
+      document.getElementById("admin-amount-label").childNodes[0].nodeValue=t.adminAmount+" ";
+            document.getElementById("admin-reason-label").childNodes[0].nodeValue=t.adminReason+" ";
       renderHistory();
     }
     function flagMarkup(flag) {
@@ -958,35 +960,67 @@
       return `<img src="https://cdnjs.cloudflare.com/ajax/libs/twemoji/14.0.2/svg/${code}.svg" alt="${escapeHTML(flag)}" loading="lazy" onerror="this.replaceWith(document.createTextNode(this.alt))">`;
     }
 
-    function renderCountryRoster() {
-      const lang=document.getElementById("language").value;
-      const t=translations[lang]||translations.es;
-      const host=document.getElementById("lobby-grid");
+    function findCountry(value){
+      const normalized=normalizeSimText(value||"");
+      return countryRoster.find(country=>[country.es,country.en,country.fr].some(name=>normalizeSimText(name)===normalized)) || null;
+    }
+
+    function parseMoney(value){
+      const raw=String(value||"").trim().toLowerCase().replace(/[$€£\s]/g,"").replace(/,/g,".");
+      const match=raw.match(/^(\d+(?:\.\d+)?)(b|bn|billion|billions|mil millones|m|million|millions|millones)?$/i);
+      if(!match)return NaN;
+      const n=Number(match[1]), unit=(match[2]||"").toLowerCase();
+      const multiplier=["b","bn","billion","billions","mil millones"].includes(unit)?1e9:["m","million","millions","millones"].includes(unit)?1e6:1;
+      return n*multiplier;
+    }
+
+    function transactionData(item){
+      if(item.sender&&item.receiver&&Number(item.amount)>0)return item;
+      const sender=findCountry(item.country||"");
+      const title=String(item.title||"");
+      const amountMatch=title.match(/(\d+(?:[.,]\d+)?)\s*(billion|billions|bn|b|mil millones|millon(?:es)?|million|millions|m|millones)/i);
+      const amount=amountMatch?parseMoney(amountMatch[0]):Number(item.amount||0);
+      let receiver=null;
+      if(sender){
+        const candidates=countryRoster.filter(country=>country!==sender).sort((a,b)=>(b.es.length+b.en.length+b.fr.length)-(a.es.length+a.en.length+a.fr.length));
+        receiver=candidates.find(country=>[country.es,country.en,country.fr].some(name=>normalizeSimText(title).includes(normalizeSimText(name))))||null;
+      }
+      return {...item,sender:sender?.es||item.country||"",receiver:receiver?.es||item.receiver||"",amount:Number.isFinite(amount)?amount:0};
+    }
+
+    function getBudgetState(country){
+      if(!country?.budget2025)return null;
+      let current=country.budget2025.total,outgoing=0;
+      transactions.forEach(raw=>{
+        const item=transactionData(raw);
+        if(item.reversed||!item.amount)return;
+        const sender=findCountry(item.sender),receiver=findCountry(item.receiver);
+        if(sender===country){current-=Number(item.amount);outgoing+=Number(item.amount);}
+        if(receiver===country)current+=Number(item.amount);
+      });
+      return {current:Math.max(0,current),available:Math.max(0,(country.budget2025.maxAmount||0)-outgoing)};
+    }
+
+    function renderCountryRoster(){
+      const lang=document.getElementById("language").value,t=translations[lang]||translations.es,host=document.getElementById("lobby-grid");
       const roomName=room=>t.rooms[room-1]||("Sala "+room);
       host.innerHTML=[1,2,3].map(room=>{
         const entries=roomRoster.filter(entry=>entry.room===room);
         const cards=entries.map(entry=>{
-          const country=countryRoster.find(item=>item.en===entry.country);
-          if(!country)return "";
-          const name=country[lang]||country.en;
-          const reps=entry.representative|| (country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
-          const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase();
-          const budget=country.budget2025;
+          const country=countryRoster.find(item=>item.en===entry.country);if(!country)return "";
+          const name=country[lang]||country.en,reps=entry.representative||(country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
+          const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase(),state=getBudgetState(country);
           const formatUSD=value=>new Intl.NumberFormat(lang==="fr"?"fr-FR":lang==="en"?"en-US":"es-ES",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value);
-          const budgetBlock=budget?"<div class=\"country-budget-data\"><div class=\"budget-year\">"+t.budget2025+"</div><div class=\"budget-total\">"+t.budget+": "+formatUSD(budget.total)+"</div><span>"+t.defense+"</span><strong>"+budget.defense+"%</strong><span>"+t.health+"</span><strong>"+budget.health+"%</strong><span>"+t.education+"</span><strong>"+budget.education+"%</strong><span>"+t.ecology+"</span><strong>"+budget.ecology+"%</strong><span>"+t.maxAmount+"</span><strong>"+formatUSD(budget.maxAmount)+"</strong></div>":"";
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
-          return `<article class="country-card" data-search="${escapeHTML(search)}"><div class="country-flag" aria-hidden="true">${flagMarkup(country.flag)}</div><div class="country-info"><h3 class="country-name">${escapeHTML(name)}</h3>${provisional}<div class="country-detail"><strong class="country-representatives">${escapeHTML(reps)}</strong><span class="country-room">${roomName(room)}</span><div class="budget-line"><span>${t.budget}</span><strong class="budget-value">${budget?formatUSD(budget.total):t.pending}</strong></div><div class="budget-line"><span>${t.maxAmount}</span><strong class="budget-value">${budget?formatUSD(budget.maxAmount):t.pending}</strong></div></div></div></article>`;
+          return "<article class=\"country-card\" data-search=\"" + escapeHTML(search) + "\"><div class=\"country-flag\" aria-hidden=\"true\">"+flagMarkup(country.flag)+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(name)+"</h3>"+provisional+"<div class=\"country-detail\"><strong class=\"country-representatives\">"+escapeHTML(reps)+"</strong><span class=\"country-room\">"+roomName(room)+"</span><div class=\"budget-line\"><span>"+t.budget+"</span><strong class=\"budget-value\">"+(state?formatUSD(state.current):t.pending)+"</strong></div><div class=\"budget-line\"><span>"+t.maxAmount+"</span><strong class=\"budget-value\">"+(state?formatUSD(state.available):t.pending)+"</strong></div></div></div></article>";
         }).join("");
-        return `<section class="room-group"><h3 class="room-heading">${roomName(room)} <span class="room-topic">· ${t.roomTopics[room-1]}</span></h3><div class="room-cards">${cards}</div></section>`;
+        return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+" <span class=\"room-topic\">· "+t.roomTopics[room-1]+"</span></h3><div class=\"room-cards\">"+cards+"</div></section>";
       }).join("");
-      const renderStakeholders=items=>items.map(item=>`<article class="country-card stakeholder-card"><div class="country-flag" aria-hidden="true">${item.icon}</div><div class="country-info"><h3 class="country-name">${escapeHTML(item[lang]||item.en)}</h3><div class="country-detail"><span>${t.representative}</span><strong class="country-representatives">${escapeHTML(item.people[lang]||item.people.en)}</strong></div></div></article>`).join("");
-      document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{
-        const items=stakeholderRoster.filter(item=>item.room===room);
-        return `<section class="room-group"><h3 class="room-heading">${roomName(room)}</h3><div class="room-cards">${renderStakeholders(items)}</div></section>`;
-      }).join("")+`<section class="room-group"><h3 class="room-heading">${lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas"}</h3><div class="room-cards">${renderStakeholders(stakeholderRoster.filter(item=>item.room===0))}</div></section>`;
-      const datalist=document.getElementById("admin-country-options");
-      datalist.innerHTML=countryRoster.map(country=>`<option value="${escapeHTML(country[lang]||country.en)}"></option>`).join("");
+      const renderStakeholders=items=>items.map(item=>"<article class=\"country-card stakeholder-card\"><div class=\"country-flag\" aria-hidden=\"true\">"+item.icon+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(item[lang]||item.en)+"</h3><div class=\"country-detail\"><span>"+t.representative+"</span><strong class=\"country-representatives\">"+escapeHTML(item.people[lang]||item.people.en)+"</strong></div></div></article>").join("");
+      document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{const items=stakeholderRoster.filter(item=>item.room===room);return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+"</h3><div class=\"room-cards\">"+renderStakeholders(items)+"</div></section>";}).join("")+"<section class=\"room-group\"><h3 class=\"room-heading\">"+(lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas")+"</h3><div class=\"room-cards\">"+renderStakeholders(stakeholderRoster.filter(item=>item.room===0))+"</div></section>";
+      document.getElementById("admin-country-options").innerHTML=countryRoster.map(country=>"<option value=\"" + escapeHTML(country[lang]||country.en) + "\"></option>").join("");
     }
+
     function filterCountries() {
       const query=document.getElementById("lobby-search").value.trim().toLocaleLowerCase();
       const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
@@ -1166,123 +1200,40 @@
     let adminUnlocked = false;
     let editingTransactionId = null;
 
-    function normalizeHistoryRow(row) {
-      return {
-        id: row.id,
-        country: row.country || "🌍",
-        title: row.title || "",
-        reason: row.reason || "",
-        time: row.time || "—",
-        reversed: !!row.reversed
-      };
+    function normalizeHistoryRow(row){return transactionData({id:row.id,country:row.country||row.sender||"",sender:row.sender||"",receiver:row.receiver||"",amount:Number(row.amount||0),title:row.title||"",reason:row.reason||"",time:row.time||"—",reversed:!!row.reversed});}
+    function historyPayload(item){const data=transactionData(item);return {id:data.id,country:data.sender||data.country||"🌍",sender:data.sender||data.country||"",receiver:data.receiver||"",amount:Number(data.amount||0),title:data.title||buildTransactionTitle(data.sender,data.receiver,data.amount),reason:data.reason||"",time:data.time||"—",reversed:!!data.reversed};}
+    function buildTransactionTitle(sender,receiver,amount){
+      const a=findCountry(sender),b=findCountry(receiver),lang=document.getElementById("language")?.value||"es",an=a?(a[lang]||a.es):sender,bn=b?(b[lang]||b.es):receiver,money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
+      return lang==="en"?an+" donated "+money+" to "+bn:lang==="fr"?an+" a fait un don de "+money+" à "+bn:an+" ha donado "+money+" a "+bn;
+    }
+    async function loadTransactions(){
+      try{
+        const {data,error}=await supabaseClient.from(HISTORY_TABLE).select("id,country,sender,receiver,amount,title,reason,time,reversed").order("id",{ascending:false});
+        if(error)throw error;
+        if(Array.isArray(data)&&data.length)transactions=data.map(normalizeHistoryRow);
+        else{transactions=demoTransactions.map(item=>({...item,sender:item.country,receiver:"",amount:0}));const {error:seedError}=await supabaseClient.from(HISTORY_TABLE).upsert(transactions.map(historyPayload),{onConflict:"id"});if(seedError)throw seedError;}
+        historyLoadedFromSupabase=true;
+      }catch(error){console.warn("Historial compartido no disponible todavía.",error);try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}catch(localError){transactions=[...demoTransactions];}}
+      renderHistory();renderCountryRoster();subscribeToHistory();
+    }
+    function subscribeToHistory(){
+      if(historyRealtimeChannel)return;
+      historyRealtimeChannel=supabaseClient.channel("cop-tycoon-history-live").on("postgres_changes",{event:"*",schema:"public",table:HISTORY_TABLE},payload=>{
+        if(payload.eventType==="INSERT"){const incoming=normalizeHistoryRow(payload.new);transactions=[incoming,...transactions.filter(item=>item.id!==incoming.id)];}
+        else if(payload.eventType==="UPDATE"){const incoming=normalizeHistoryRow(payload.new);transactions=transactions.map(item=>item.id===incoming.id?incoming:item);}
+        else if(payload.eventType==="DELETE"){transactions=transactions.filter(item=>item.id!==payload.old.id);}
+        renderHistory();renderCountryRoster();
+      }).subscribe();
     }
 
-    async function loadTransactions() {
-      try {
-        const { data, error } = await supabaseClient
-          .from(HISTORY_TABLE)
-          .select("id,country,title,reason,time,reversed")
-          .order("id", { ascending: false });
-
-        if (error) throw error;
-
-        if (Array.isArray(data) && data.length) {
-          transactions = data.map(normalizeHistoryRow);
-        } else {
-          transactions = [...demoTransactions];
-          const { error: seedError } = await supabaseClient
-            .from(HISTORY_TABLE)
-            .upsert(transactions.map(item => ({
-              id: item.id,
-              country: item.country,
-              title: item.title,
-              reason: item.reason,
-              time: item.time,
-              reversed: !!item.reversed
-            })), { onConflict: "id" });
-          if (seedError) throw seedError;
-        }
-        historyLoadedFromSupabase = true;
-      } catch (error) {
-        console.warn("Historial compartido no disponible todavía. Se usa el historial demo local.", error);
-        try {
-          const saved = localStorage.getItem("copTycoonDemoHistory");
-          transactions = saved ? JSON.parse(saved) : [...demoTransactions];
-        } catch (localError) {
-          transactions = [...demoTransactions];
-        }
-      }
-      renderHistory();
-      subscribeToHistory();
-    }
-
-    async function saveTransactions() {
-      try {
-        localStorage.setItem("copTycoonDemoHistory", JSON.stringify(transactions));
-      } catch (error) {}
-
-      if (!historyLoadedFromSupabase) return;
-
-      const { error } = await supabaseClient
-        .from(HISTORY_TABLE)
-        .upsert(transactions.map(item => ({
-          id: item.id,
-          country: item.country,
-          title: item.title,
-          reason: item.reason,
-          time: item.time,
-          reversed: !!item.reversed
-        })), { onConflict: "id" });
-
-      if (error) console.warn("No se pudo sincronizar el historial compartido.", error);
-    }
-
-    function subscribeToHistory() {
-      if (historyRealtimeChannel) return;
-      historyRealtimeChannel = supabaseClient
-        .channel("cop-tycoon-history-live")
-        .on("postgres_changes", { event: "*", schema: "public", table: HISTORY_TABLE }, payload => {
-          if (payload.eventType === "INSERT") {
-            const incoming = normalizeHistoryRow(payload.new);
-            transactions = [incoming, ...transactions.filter(item => item.id !== incoming.id)];
-          } else if (payload.eventType === "UPDATE") {
-            const incoming = normalizeHistoryRow(payload.new);
-            transactions = transactions.map(item => item.id === incoming.id ? incoming : item);
-          } else if (payload.eventType === "DELETE") {
-            transactions = transactions.filter(item => item.id !== payload.old.id);
-          }
-          renderHistory();
-        })
-        .subscribe();
-    }
-
-    function renderHistory() {
-      const host = document.getElementById("history-chat");
-      const t = translations[document.getElementById("language").value] || translations.es;
-      const query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
-      const filtered=transactions.filter(item=>[item.country,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
-      host.innerHTML = filtered.map((item, index) => {
-        const example = item.id===1 && item.country==="Francia" && item.title==="Francia ha donado 20M a España" ? t.historyExamples[0] : item.id===2 && item.country==="Japón" && item.title==="Japón ha donado 5M a Kenia" ? t.historyExamples[1] : null;
-        const countryName = example ? example[0] : item.country;
-        const title = example ? example[1] : item.title;
-        const reason = example ? example[2] : item.reason;
-        const reversed = item.reversed ? `<span class="reversed-tag">${t.reversed}</span>` : "";
-        const controls = adminUnlocked ? `<div class="chat-admin-actions">
-          <button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button>
-          <button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed ? "↩ "+t.restore : "↶ "+t.reverse}</button>
-          <button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button>
-        </div>` : "";
-        return `<article class="chat-message ${index % 2 ? "is-right" : ""} ${item.reversed ? "is-reversed" : ""}">
-          <div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${countryFlags[item.country] || "🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div>
-          <div class="chat-bubble">
-            <span class="live">● ${t.demo}</span>${reversed}
-            <h3 class="chat-title">${escapeHTML(title)}</h3>
-            <div class="chat-reason">${t.reasonPrefix} ${escapeHTML(reason)}</div>
-            <div class="chat-meta">${t.fictitious} · ${escapeHTML(item.time || "—")}</div>
-            ${controls}
-          </div>
-        </article>`;
-      }).join("") || `<p class="note">${t.emptyHistory}</p>`;
+    function renderHistory(){
+      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
+      const filtered=transactions.map(transactionData).filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
+      host.innerHTML=filtered.map((item,index)=>{
+        const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?`<span class="reversed-tag">${t.reversed}</span>`:"";
+        const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
+        return `<article class="chat-message ${index%2?"is-right":""} ${item.reversed?"is-reversed":""}"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${sender?.flag||"🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div><div class="chat-bubble"><span class="live">● ${t.live}</span>${reversed}<h3 class="chat-title">${escapeHTML(title)}</h3><div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div><div class="chat-meta">${escapeHTML(item.receiver||"")} · ${item.amount?formatSimMoney(item.amount,lang):"—"} · ${escapeHTML(item.time||"—")}</div>${controls}</div></article>`;
+      }).join("")||`<p class="note">${t.emptyHistory}</p>`;
     }
 
     document.getElementById("history-search").addEventListener("input",renderHistory);
@@ -1312,18 +1263,19 @@
       renderHistory();
     }
 
-    function editTransaction(id) {
-      if (!adminUnlocked) return;
-      const item = transactions.find(entry => entry.id === id);
-      if (!item) return;
-      editingTransactionId = id;
-      document.getElementById("admin-country").value = item.country;
-      document.getElementById("admin-title").value = item.title;
-      document.getElementById("admin-reason").value = item.reason;
-      document.getElementById("admin-submit").textContent = (translations[document.getElementById("language").value] || translations.es).save;
-      document.getElementById("admin-cancel").hidden = false;
-      document.getElementById("admin-panel").hidden = false;
-      document.getElementById("admin-panel").scrollIntoView({ behavior: "smooth", block: "center" });
+    function editTransaction(id){
+      if(!adminUnlocked)return;
+      const item=transactionData(transactions.find(entry=>entry.id===id)||{});
+      if(!item)return;
+      editingTransactionId=id;
+      document.getElementById("admin-country").value=item.sender||"";
+      document.getElementById("admin-receiver").value=item.receiver||"";
+      document.getElementById("admin-amount").value=item.amount||"";
+      document.getElementById("admin-reason").value=item.reason||"";
+      document.getElementById("admin-submit").textContent=(translations[document.getElementById("language").value]||translations.es).save;
+      document.getElementById("admin-cancel").hidden=false;
+      document.getElementById("admin-panel").hidden=false;
+      document.getElementById("admin-panel").scrollIntoView({behavior:"smooth",block:"center"});
     }
 
     function cancelEdit() {
@@ -1351,6 +1303,7 @@
       }
       item.reversed = nextReversed;
       renderHistory();
+      renderCountryRoster();
     }
 
     async function deleteTransaction(id) {
@@ -1367,6 +1320,7 @@
       }
       transactions = transactions.filter(entry => entry.id !== id);
       renderHistory();
+      renderCountryRoster();
     }
 
     const adminCountryInput=document.getElementById("admin-country");
@@ -1396,50 +1350,31 @@
       if(!event.target.closest("#admin-country-label"))adminCountrySuggestions.hidden=true;
     });
 
-    document.getElementById("admin-transaction-form").addEventListener("submit", async event => {
+    document.getElementById("admin-transaction-form").addEventListener("submit",async event=>{
       event.preventDefault();
-      if (!adminUnlocked) return;
-      const country = document.getElementById("admin-country").value.trim();
-      const title = document.getElementById("admin-title").value.trim();
-      const reason = document.getElementById("admin-reason").value.trim();
-      if (!country || !title || !reason) return;
-
-      if (editingTransactionId !== null) {
-        const item = transactions.find(entry => entry.id === editingTransactionId);
-        if (!item) return;
-        if (historyLoadedFromSupabase) {
-          const { error } = await supabaseClient.from(HISTORY_TABLE)
-            .update({ country, title, reason })
-            .eq("id", item.id);
-          if (error) {
-            console.warn("No se pudo actualizar el historial compartido.", error);
-            alert("No se pudo sincronizar el cambio con Supabase.");
-            return;
-          }
-        }
-        Object.assign(item, { country, title, reason });
-      } else {
-        const now = new Date();
-        const newItem = {
-          id: Date.now(),
-          country,
-          title,
-          reason,
-          time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          reversed: false
-        };
-        if (historyLoadedFromSupabase) {
-          const { error } = await supabaseClient.from(HISTORY_TABLE).insert(newItem);
-          if (error) {
-            console.warn("No se pudo añadir al historial compartido.", error);
-            alert("No se pudo sincronizar la nueva acción con Supabase.");
-            return;
-          }
-        }
+      if(!adminUnlocked)return;
+      const senderName=document.getElementById("admin-country").value.trim();
+      const receiverName=document.getElementById("admin-receiver").value.trim();
+      const amount=parseMoney(document.getElementById("admin-amount").value);
+      const reason=document.getElementById("admin-reason").value.trim();
+      const sender=findCountry(senderName),receiver=findCountry(receiverName);
+      if(!sender||!receiver){alert("Selecciona un país emisor y un país receptor válidos.");return;}
+      if(sender===receiver){alert("El país emisor y el receptor deben ser distintos.");return;}
+      if(!Number.isFinite(amount)||amount<=0){alert("Introduce una cantidad válida, por ejemplo 20M o 20000000.");return;}
+      const currentState=getBudgetState(sender);
+      if(currentState&&amount>currentState.available){alert("La cantidad supera el máximo disponible actual.");return;}
+      const now=new Date();
+      if(editingTransactionId!==null){
+        const existing=transactions.find(entry=>entry.id===editingTransactionId);if(!existing)return;
+        const updated={...transactionData(existing),country:sender.es,sender:sender.es,receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,receiver.es,amount),reason,time:existing.time||now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:!!existing.reversed};
+        if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).update(historyPayload(updated)).eq("id",existing.id);if(error){console.warn(error);alert("No se pudo sincronizar el cambio con Supabase.");return;}}
+        transactions=transactions.map(item=>item.id===existing.id?updated:item);
+      }else{
+        const newItem={id:Date.now(),country:sender.es,sender:sender.es,receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,receiver.es,amount),reason,time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:false};
+        if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).insert(historyPayload(newItem));if(error){console.warn(error);alert("No se pudo sincronizar la nueva transacción con Supabase.");return;}}
         transactions.unshift(newItem);
       }
-      cancelEdit();
-      renderHistory();
+      cancelEdit();renderHistory();renderCountryRoster();
     });
 
     renderCountryRoster();
