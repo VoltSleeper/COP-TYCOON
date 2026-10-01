@@ -1209,31 +1209,36 @@
       if (cancel) cancel.hidden = true;
     }
 
-    function reverseTransaction(id) {
+    async function reverseTransaction(id) {
       if (!adminUnlocked) return;
       const item = transactions.find(entry => entry.id === id);
       if (!item) return;
-      item.reversed = !item.reversed;
+      const nextReversed = !item.reversed;
       if (historyLoadedFromSupabase) {
-        supabaseClient.from(HISTORY_TABLE).update({ reversed: item.reversed }).eq("id", id).then(({ error }) => {
-          if (error) console.warn("No se pudo actualizar el estado compartido.", error);
-        });
+        const { error } = await supabaseClient.from(HISTORY_TABLE).update({ reversed: nextReversed }).eq("id", id);
+        if (error) {
+          console.warn("No se pudo actualizar el estado compartido.", error);
+          alert("No se pudo sincronizar el cambio con Supabase.");
+          return;
+        }
       }
-      saveTransactions();
+      item.reversed = nextReversed;
       renderHistory();
     }
 
-    function deleteTransaction(id) {
+    async function deleteTransaction(id) {
       if (!adminUnlocked) return;
       const item = transactions.find(entry => entry.id === id);
       if (!item || !confirm((translations[document.getElementById("language").value] || translations.es).confirmDelete)) return;
-      transactions = transactions.filter(entry => entry.id !== id);
       if (historyLoadedFromSupabase) {
-        supabaseClient.from(HISTORY_TABLE).delete().eq("id", id).then(({ error }) => {
-          if (error) console.warn("No se pudo eliminar del historial compartido.", error);
-        });
+        const { error } = await supabaseClient.from(HISTORY_TABLE).delete().eq("id", id);
+        if (error) {
+          console.warn("No se pudo eliminar del historial compartido.", error);
+          alert("No se pudo sincronizar la eliminación con Supabase.");
+          return;
+        }
       }
-      saveTransactions();
+      transactions = transactions.filter(entry => entry.id !== id);
       renderHistory();
     }
 
@@ -1264,23 +1269,28 @@
       if(!event.target.closest("#admin-country-label"))adminCountrySuggestions.hidden=true;
     });
 
-    document.getElementById("admin-transaction-form").addEventListener("submit", event => {
+    document.getElementById("admin-transaction-form").addEventListener("submit", async event => {
       event.preventDefault();
       if (!adminUnlocked) return;
-      const country = document.getElementById("admin-country").value;
+      const country = document.getElementById("admin-country").value.trim();
       const title = document.getElementById("admin-title").value.trim();
       const reason = document.getElementById("admin-reason").value.trim();
-      if (!title || !reason) return;
+      if (!country || !title || !reason) return;
+
       if (editingTransactionId !== null) {
         const item = transactions.find(entry => entry.id === editingTransactionId);
-        if (item) {
-          Object.assign(item, { country, title, reason });
-          if (historyLoadedFromSupabase) {
-            supabaseClient.from(HISTORY_TABLE).update({ country, title, reason }).eq("id", item.id).then(({ error }) => {
-              if (error) console.warn("No se pudo actualizar el historial compartido.", error);
-            });
+        if (!item) return;
+        if (historyLoadedFromSupabase) {
+          const { error } = await supabaseClient.from(HISTORY_TABLE)
+            .update({ country, title, reason })
+            .eq("id", item.id);
+          if (error) {
+            console.warn("No se pudo actualizar el historial compartido.", error);
+            alert("No se pudo sincronizar el cambio con Supabase.");
+            return;
           }
         }
+        Object.assign(item, { country, title, reason });
       } else {
         const now = new Date();
         const newItem = {
@@ -1291,14 +1301,16 @@
           time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
           reversed: false
         };
-        transactions.unshift(newItem);
         if (historyLoadedFromSupabase) {
-          supabaseClient.from(HISTORY_TABLE).insert(newItem).then(({ error }) => {
-            if (error) console.warn("No se pudo añadir al historial compartido.", error);
-          });
+          const { error } = await supabaseClient.from(HISTORY_TABLE).insert(newItem);
+          if (error) {
+            console.warn("No se pudo añadir al historial compartido.", error);
+            alert("No se pudo sincronizar la nueva acción con Supabase.");
+            return;
+          }
         }
+        transactions.unshift(newItem);
       }
-      saveTransactions();
       cancelEdit();
       renderHistory();
     });
