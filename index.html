@@ -342,6 +342,17 @@
       gap: 10px;
       margin: 18px 0;
     }
+    .simulation-result-grid{display:grid;gap:14px;margin-top:14px}
+    .sim-country-result{border:1px solid var(--border);border-radius:14px;padding:15px;background:var(--panel-strong)}
+    .sim-country-result h4{margin:0 0 9px;font-family:"Space Grotesk",sans-serif;color:var(--ivory)}
+    .sim-horizon{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+    .sim-horizon>div{padding:10px;border-radius:10px;background:var(--soft-blue);border:1px solid var(--border)}
+    .sim-horizon strong{display:block;margin-bottom:6px;color:var(--ivory)}
+    .sim-impact-line{display:flex;justify-content:space-between;gap:12px;padding:4px 0;color:var(--muted);font-size:.82rem}
+    .sim-impact-line b{color:var(--ivory)}
+    .sim-summary{margin-top:14px;padding:12px 14px;border-radius:12px;background:var(--forest-soft);border:1px solid var(--green-border);color:var(--ivory);line-height:1.5}
+    .sim-error{margin-top:12px;padding:12px 14px;border-radius:12px;background:#3A1E26;border:1px solid #9B5364;color:#F7DDE2}
+    @media(max-width:650px){.sim-horizon{grid-template-columns:1fr}.sim-form{flex-direction:column}.sim-form .primary{width:100%}}
 
     input {
       flex: 1;
@@ -850,6 +861,11 @@
       fr:{tagline:"Négociez. Simulez. Découvrez l’impact de vos décisions.",lobby:"Lobby",lobbyDesc:"Consultez les pays, les représentants et les budgets.",sim:"Grand simulateur",simDesc:"Testez une transaction et explorez ses effets possibles.",history:"Historique",historyDesc:"Consultez le registre des transactions officielles.",country:"Pays",rep:"Représentant",mascot:"Mascotte de l’équipe",budget:"Budget actuel",back:"← Accueil",simulate:"Simuler",placeholder:"Décrivez une transaction hypothétique…",greeting:"Bonjour ! Saisissez une transaction hypothétique pour explorer ses effets possibles. Par exemple : « La France fait un don de 20 millions d’euros à Haïti pour l’adaptation climatique. »",result:"Résultat illustratif",transaction:"Transaction :",budgetResult:"Budget restant",emissions:"Émissions de CO₂",climate:"Impact climatique",relations:"Relations internationales",countryImpact:"Impact sur le pays",notCalculated:"Non calculé",explanation:"Cette version est une démonstration visuelle. Des règles et indicateurs transparents devront être définis avant de calculer les impacts réels.",simNote:"Simulation illustrative : elle ne modifie pas les budgets officiels et n’enregistre aucune transaction réelle. Les indicateurs sont des exemples, pas des prévisions scientifiques.",climateEyebrow:"SIMULATION CLIMATIQUE",animation:"Animation",lobbyNote:"Données de démonstration. Le budget officiel sera mis à jour lorsqu’un registre autorisé sera disponible.",representative:"Représentant",room:"Salle",historyNote:"Cet historique est un exemple. Pour les transactions ou les dons, veuillez vous adresser au DTB.",historyDemo:"Registre de démonstration",admin:"Mode admin",adminTitle:"Panneau d’administration",adminDesc:"Gérez l’historique de cette démonstration.",close:"Fermer",adminCountry:"Pays à l’origine de l’action",countryPlaceholder:"Saisissez ou recherchez un pays…",adminTransaction:"Transaction / message",adminReason:"Motif",reasonPlaceholder:"Décrivez brièvement le motif",add:"Ajouter à l’historique",save:"Enregistrer les modifications",cancel:"Annuler la modification",warning:"Mode démo : les modifications sont enregistrées uniquement dans ce navigateur. Une annulation marque la transaction comme annulée ; aucun argent ni budget réel n’est modifié.",demo:"DÉMO",reversed:"ANNULÉE",reasonPrefix:"Motif :",fictitious:"Exemple fictif",edit:"Modifier",reverse:"Annuler",restore:"Rétablir",delete:"Supprimer",emptyHistory:"Aucune transaction dans cet historique de démonstration pour le moment.",confirmDelete:"Supprimer cette entrée de démonstration ? Cette action est irréversible.",wrongCode:"Code incorrect.",adminPrompt:"Saisissez le code de démonstration pour ouvrir le mode admin :",historyExamples:[["France","La France a fait un don de 20 M à l’Espagne","Bénéfice mutuel / transaction"],["Japon","Le Japon a fait un don de 5 M au Kenya","Énergies renouvelables"]],countryNames:["Chine","France","Espagne","Turquie","Australie"],budget2025:"Référence 2025",defense:"Défense",health:"Santé",education:"Éducation",ecology:"Écologie",maxAmount:"Montant maximal disponible",rooms:["Salle 1","Salle 2","Salle 3"],roomTopics:["Transition vers les énergies propres","Sécurité alimentaire","Villes résilientes au climat"],pending:"À attribuer",searchLobby:"Rechercher un pays ou un représentant…",searchHistory:"Rechercher un pays dans l’historique…",stakeholders:"Autres participants",stakeholderNote:"Groupes de lobby et militants climatiques (données provisoires).",repExample:"Représentant fictif",budgetSample:"100 000 000 €",lobbyHeading:"🌍 Lobby",simHeading:"🐺 Grand simulateur",historyHeading:"📜 Historique",footer:"COP TYCOON LFS 2026 · Projet éducatif de simulation"}
     };
 
+    const simulatorText = {
+      es:{result:"Resultado de la simulación",actor:"País que actúa",receiver:"País receptor",amount:"Cantidad",action:"Acción",horizon5:"En 5 años",horizon15:"En 15 años",budget:"Presupuesto",ecology:"Ecología",health:"Salud",education:"Educación",relations:"Cooperación",emissions:"Emisiones",benefit:"Beneficio relativo",benefitsMore:"La simulación indica un mayor beneficio relativo para",sameBenefit:"La simulación indica un beneficio relativo similar para ambos países",missingCountry:"No he podido identificar el país que realiza la acción.",missingData:"Todavía no tenemos datos de referencia para este país.",missingAmount:"Añade una cantidad, por ejemplo 200M o 1.5B.",unknownAction:"No he reconocido la acción. Prueba con renovables, reforestación, adaptación, agua, salud, educación, alimentos, tecnología, acuerdo climático, proyecto conjunto o donación.",needsReceiver:"Esta acción necesita un país receptor. Escribe los dos países en la frase.",invalidAmount:"La cantidad supera el máximo disponible de este país para esta simulación.",illustrative:"Reglas provisionales de COP TYCOON. El resultado es una simulación educativa, no una predicción científica.",motives:{renewables:"inversión en energías renovables",reforestation:"reforestación y restauración de ecosistemas",adaptation:"adaptación climática",water:"agua y resiliencia hídrica",health:"salud pública",education:"educación y formación",food:"seguridad alimentaria",technology:"transferencia de tecnología limpia",agreement:"acuerdo climático",joint:"proyecto conjunto",donation:"ayuda o donación"}},
+      en:{result:"Simulation result",actor:"Acting country",receiver:"Receiving country",amount:"Amount",action:"Action",horizon5:"In 5 years",horizon15:"In 15 years",budget:"Budget",ecology:"Ecology",health:"Health",education:"Education",relations:"Cooperation",emissions:"Emissions",benefit:"Relative benefit",benefitsMore:"The simulation indicates a greater relative benefit for",sameBenefit:"The simulation indicates a similar relative benefit for both countries",missingCountry:"I could not identify the country making the action.",missingData:"We do not have reference data for this country yet.",missingAmount:"Add an amount, for example 200M or 1.5B.",unknownAction:"I did not recognize the action. Try renewables, reforestation, adaptation, water, health, education, food, technology, climate agreement, joint project or donation.",needsReceiver:"This action needs a receiving country. Write both countries in the sentence.",invalidAmount:"The amount is above this country's available maximum for this simulation.",illustrative:"Provisional COP TYCOON rules. This is an educational simulation, not a scientific prediction.",motives:{renewables:"investment in renewable energy",reforestation:"reforestation and ecosystem restoration",adaptation:"climate adaptation",water:"water and water-resilience measures",health:"public health",education:"education and training",food:"food security",technology:"clean-technology transfer",agreement:"climate agreement",joint:"joint project",donation:"aid or donation"}},
+      fr:{result:"Résultat de la simulation",actor:"Pays qui agit",receiver:"Pays bénéficiaire",amount:"Montant",action:"Action",horizon5:"Dans 5 ans",horizon15:"Dans 15 ans",budget:"Budget",ecology:"Écologie",health:"Santé",education:"Éducation",relations:"Coopération",emissions:"Émissions",benefit:"Bénéfice relatif",benefitsMore:"La simulation indique un bénéfice relatif plus important pour",sameBenefit:"La simulation indique un bénéfice relatif similaire pour les deux pays",missingCountry:"Je n’ai pas pu identifier le pays qui agit.",missingData:"Nous n’avons pas encore de données de référence pour ce pays.",missingAmount:"Ajoutez un montant, par exemple 200M ou 1,5B.",unknownAction:"Je n’ai pas reconnu l’action. Essayez renouvelables, reboisement, adaptation, eau, santé, éducation, alimentation, technologie, accord climatique, projet commun ou don.",needsReceiver:"Cette action nécessite un pays bénéficiaire. Écrivez les deux pays dans la phrase.",invalidAmount:"Le montant dépasse le maximum disponible de ce pays pour cette simulation.",illustrative:"Règles provisoires de COP TYCOON. Il s’agit d’une simulation éducative, pas d’une prévision scientifique.",motives:{renewables:"investissement dans les énergies renouvelables",reforestation:"reboisement et restauration des écosystèmes",adaptation:"adaptation climatique",water:"eau et résilience hydrique",health:"santé publique",education:"éducation et formation",food:"sécurité alimentaire",technology:"transfert de technologies propres",agreement:"accord climatique",joint:"projet commun",donation:"aide ou don"}}}
+
     const countryRoster = [
       {es:"Alemania",en:"Germany",fr:"Allemagne",flag:"🇩🇪",reps:["Juan"],budget2025:{total:2320000000000,defense:2.5,health:15,education:9,ecology:3.5,maxAmount:325000000}},
       {es:"Arabia Saudita",en:"Saudi Arabia",fr:"Arabie saoudite",flag:"🇸🇦",reps:[],budget2025:{total:340000000000,defense:8,health:7,education:5,ecology:1.5,maxAmount:170000000}},
@@ -990,25 +1006,133 @@
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
+    function normalizeSimText(value){
+      return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+    }
+
+    const SIM_ACTIONS = [
+      {key:"renewables",words:["renovables","renovable","renewable","renewables","energies renouvelables","énergies renouvelables"],base:{ecology:2,health:.4,education:.3,relations:.2,emissions:-2},long:{ecology:4,health:1,education:.8,relations:.5,emissions:-4},self:true},
+      {key:"reforestation",words:["reforestacion","reforestación","reforestation","reboisement"],base:{ecology:2,health:.6,education:.2,relations:.2,emissions:-1.5},long:{ecology:3.5,health:1.2,education:.5,relations:.4,emissions:-3},self:true},
+      {key:"adaptation",words:["adaptacion","adaptación","adaptation","adaptation climatique","climate adaptation"],base:{ecology:1.2,health:.8,education:.2,relations:.3,emissions:0},long:{ecology:2.5,health:1.8,education:.5,relations:.5,emissions:-.2},self:true},
+      {key:"water",words:["agua","water","eau","hidrica","hídrica","water resilience","resilience hydrique"],base:{ecology:1,health:1.2,education:.1,relations:.2,emissions:0},long:{ecology:2,health:2,education:.4,relations:.4,emissions:-.1},self:true},
+      {key:"health",words:["salud","health","sante","santé","hospital","hospitales","hospitals","hopital","hôpital"],base:{ecology:.1,health:2,education:.2,relations:.2,emissions:0},long:{ecology:.2,health:3,education:.6,relations:.4,emissions:0},self:true},
+      {key:"education",words:["educacion","educación","education","educación","formation","formacion","formación","training"],base:{ecology:.2,health:.3,education:2,relations:.2,emissions:0},long:{ecology:.5,health:.7,education:3,relations:.5,emissions:-.1},self:true},
+      {key:"food",words:["alimentos","alimentaria","food","alimentaire","food security","securite alimentaire","sécurité alimentaire"],base:{ecology:.5,health:1.2,education:.1,relations:.4,emissions:.2},long:{ecology:1,health:2,education:.4,relations:.7,emissions:-.2},self:false},
+      {key:"technology",words:["tecnologia","tecnología","technology","technologie","tecnologias limpias","clean technology","technologies propres"],base:{ecology:1.4,health:.3,education:.8,relations:.7,emissions:-1.2},long:{ecology:3,health:.8,education:1.6,relations:1.2,emissions:-3},self:false},
+      {key:"agreement",words:["acuerdo climatico","acuerdo climático","climate agreement","accord climatique"],base:{ecology:.5,health:.1,education:.2,relations:1.5,emissions:-.5},long:{ecology:1.5,health:.3,education:.5,relations:3,emissions:-1.5},self:false},
+      {key:"joint",words:["proyecto conjunto","joint project","projet commun"],base:{ecology:1,health:.4,education:.5,relations:1,emissions:-.8},long:{ecology:2.2,health:1,education:1,relations:2,emissions:-2},self:false},
+      {key:"donation",words:["donacion","donación","dona","donar","donate","donates","don","donation","don"],base:{ecology:.4,health:.7,education:.2,relations:1,emissions:0},long:{ecology:.8,health:1.4,education:.5,relations:1.8,emissions:-.2},self:false}
+    ];
+
+    function parseSimulationInput(text){
+      const normalized=normalizeSimText(text);
+      const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length)-(a.es.length+a.en.length));
+      const found=[];
+      countries.forEach(country=>{
+        const aliases=[country.es,country.en,country.fr].map(normalizeSimText);
+        if(aliases.some(alias=>alias && normalized.includes(alias)) && !found.includes(country)) found.push(country);
+      });
+      const numberMatch=normalized.match(/(?:\\$|€)?\\s*(\\d+(?:[.,]\\d+)?)\\s*(billion|billions|bn|b|mil millones|millon(?:es)?|millions?|m|millones?)(?:\\b|$)/i);
+      let amount=null;
+      if(numberMatch){
+        const n=parseFloat(numberMatch[1].replace(",","."));
+        const unit=numberMatch[2].toLowerCase();
+        const multiplier=["billion","billions","bn","b","mil millones"].includes(unit)?1e9:["millon","millones","million","millions"].includes(unit)?1e6:1e6;
+        amount=n*multiplier;
+      }
+      const action=SIM_ACTIONS.find(item=>item.words.some(word=>normalized.includes(normalizeSimText(word))));
+      return {normalized,countries:found,amount,action};
+    }
+
+    function simArrow(value){
+      if(value>=2.75)return "↑↑";
+      if(value>=.65)return "↑";
+      if(value<=-2.75)return "↓↓";
+      if(value<=-.65)return "↓";
+      return "→";
+    }
+
+    function formatSimMoney(value,lang){
+      return new Intl.NumberFormat(lang==="fr"?"fr-FR":lang==="en"?"en-US":"es-ES",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(Math.max(0,value));
+    }
+
+    function scaledEffects(action,amount,country){
+      const ratio=country.budget2025 ? Math.min(1,amount/Math.max(country.budget2025.maxAmount||country.budget2025.total*.01,1)) : .1;
+      const scale=.65+.35*ratio;
+      return {
+        five:Object.fromEntries(Object.entries(action.base).map(([k,v])=>[k,v*scale])),
+        fifteen:Object.fromEntries(Object.entries(action.long).map(([k,v])=>[k,v*scale]))
+      };
+    }
+
+    function renderSimCountry(country,role,amount,action,lang){
+      const s=simulatorText[lang]||simulatorText.es;
+      const effects=scaledEffects(action,amount,country);
+      const budgetChange=role==="actor"?-amount:amount;
+      const label=role==="actor"?s.actor:s.receiver;
+      const metric=(name,value)=>`<div class="sim-impact-line"><span>${name}</span><b>${simArrow(value)}</b></div>`;
+      return `<div class="sim-country-result">
+        <h4>${country.flag} ${escapeHTML(country[lang]||country.en)} · ${label}</h4>
+        <div class="sim-horizon">
+          <div><strong>${s.horizon5}</strong>
+            ${metric(s.budget,0)}
+            ${metric(s.ecology,effects.five.ecology*(role==="receiver"?1:.9))}
+            ${metric(s.health,effects.five.health*(role==="receiver"?1:.85))}
+            ${metric(s.education,effects.five.education*(role==="receiver"?1:.8))}
+            ${metric(s.relations,effects.five.relations)}
+            ${metric(s.emissions,effects.five.emissions)}
+          </div>
+          <div><strong>${s.horizon15}</strong>
+            ${metric(s.budget,0)}
+            ${metric(s.ecology,effects.fifteen.ecology*(role==="receiver"?1:.9))}
+            ${metric(s.health,effects.fifteen.health*(role==="receiver"?1:.85))}
+            ${metric(s.education,effects.fifteen.education*(role==="receiver"?1:.8))}
+            ${metric(s.relations,effects.fifteen.relations)}
+            ${metric(s.emissions,effects.fifteen.emissions)}
+          </div>
+        </div>
+      </div>`;
+    }
+
     document.getElementById("sim-form").addEventListener("submit", event => {
       event.preventDefault();
-      const text = document.getElementById("transaction").value.trim();
-      const lang = document.getElementById("language").value;
-      const t = translations[lang];
-      const result = document.getElementById("simulation-result");
+      const text=document.getElementById("transaction").value.trim();
+      const lang=document.getElementById("language").value;
+      const t=translations[lang]||translations.es;
+      const s=simulatorText[lang]||simulatorText.es;
+      const result=document.getElementById("simulation-result");
+      const parsed=parseSimulationInput(text);
+      result.hidden=false;
 
-      result.hidden = false;
-      result.innerHTML = `
-        <h3>${t.result}</h3>
-        <p><strong>${t.transaction}</strong> ${escapeHTML(text)}</p>
-        <p>💶 ${t.budgetResult}: → ${t.notCalculated}</p>
-        <p>🏭 ${t.emissions}: → ${t.notCalculated}</p>
-        <p>🌱 ${t.climate}: → ${t.notCalculated}</p>
-        <p>🤝 ${t.relations}: → ${t.notCalculated}</p>
-        <p>🏳️ ${t.countryImpact}: → ${t.notCalculated}</p>
-        <p class="note">${t.explanation}</p>
-      `;
-      document.getElementById("wolf").textContent = "🐺💭";
+      if(!parsed.countries.length){result.innerHTML=`<div class="sim-error">${s.missingCountry}</div>`;return;}
+      if(!parsed.countries[0].budget2025){result.innerHTML=`<div class="sim-error">${s.missingData}</div>`;return;}
+      if(!parsed.amount){result.innerHTML=`<div class="sim-error">${s.missingAmount}</div>`;return;}
+      if(!parsed.action){result.innerHTML=`<div class="sim-error">${s.unknownAction}</div>`;return;}
+
+      const actor=parsed.countries[0];
+      const action=parsed.action;
+      const transferAction=!action.self;
+      const receiver=parsed.countries[1]||null;
+      if(transferAction && !receiver){result.innerHTML=`<div class="sim-error">${s.needsReceiver}</div>`;return;}
+      if(parsed.amount>(actor.budget2025.maxAmount||0)){result.innerHTML=`<div class="sim-error">${s.invalidAmount}</div>`;return;}
+      if(receiver && !receiver.budget2025){result.innerHTML=`<div class="sim-error">${s.missingData}</div>`;return;}
+
+      const actorEffects=scaledEffects(action,parsed.amount,actor);
+      const receiverEffects=receiver?scaledEffects(action,parsed.amount,receiver):null;
+      const actorScore=actorEffects.fifteen.ecology+actorEffects.fifteen.health+actorEffects.fifteen.education+actorEffects.fifteen.relations-(parsed.amount/Math.max(actor.budget2025.total,1))*8;
+      const receiverScore=receiver?(receiverEffects.fifteen.ecology+receiverEffects.fifteen.health+receiverEffects.fifteen.education+receiverEffects.fifteen.relations+(parsed.amount/Math.max(receiver.budget2025.total,1))*8):actorScore;
+      const benefitText=receiver?(Math.abs(actorScore-receiverScore)<.6?s.sameBenefit:`${s.benefitsMore} <strong>${escapeHTML((receiverScore>actorScore?receiver[lang]:actor[lang])|| (receiverScore>actorScore?receiver.en:actor.en))}</strong>.`):`${s.benefitsMore} <strong>${escapeHTML(actor[lang]||actor.en)}</strong>.`;
+
+      result.innerHTML=`<h3>${s.result}</h3>
+        <p><strong>${s.actor}:</strong> ${escapeHTML(actor[lang]||actor.en)} · <strong>${s.amount}:</strong> ${formatSimMoney(parsed.amount,lang)}</p>
+        <p><strong>${s.action}:</strong> ${escapeHTML(s.motives[action.key])}</p>
+        <div class="simulation-result-grid">
+          ${renderSimCountry(actor,"actor",parsed.amount,action,lang)}
+          ${receiver?renderSimCountry(receiver,"receiver",parsed.amount,action,lang):""}
+        </div>
+        <div class="sim-summary">⚖️ <strong>${s.benefit}:</strong> ${benefitText}</div>
+        <p class="note">${s.illustrative}</p>`;
+      document.getElementById("wolf").textContent="🐺💭";
     });
 
     function escapeHTML(value) {
