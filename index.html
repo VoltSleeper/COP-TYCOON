@@ -773,18 +773,19 @@
       </div>
 
       <div class="wolf" id="wolf">🐺</div>
-      <div class="speech" id="speech">
-        ¡Hola! Escribe una transacción hipotética para explorar sus posibles efectos.
-        Por ejemplo: “Francia dona 20 millones de euros a Haití para adaptación climática”.
-      </div>
-
-      <form class="sim-form" id="sim-form">
-        <input id="transaction" required
-          placeholder="Describe una transacción hipotética…"
-          aria-label="Transacción hipotética">
-        <button class="primary" type="submit" id="simulate-button">Simular</button>
+      <div class="speech" id="speech">Elige quién actúa, qué hace y cuánto mueve. El resultado es una simulación educativa de COP TYCOON.</div>
+      <form class="sim-form sim-builder" id="sim-form">
+        <div class="sim-builder-grid">
+          <label><span>País que actúa</span><select id="sim-actor" required></select></label>
+          <label><span>País receptor</span><select id="sim-receiver"></select></label>
+          <label><span>Acción</span><select id="sim-action" required></select></label>
+          <label><span>Cantidad (USD)</span><input id="sim-amount" required inputmode="decimal" placeholder="Ej. 20M o 200M"></label>
+        </div>
+        <button class="primary" type="submit" id="simulate-button">Simular decisión</button>
       </form>
-
+      <details class="sim-text-mode"><summary>¿Prefieres escribir la decisión?</summary>
+        <input id="transaction" placeholder="Ej. Francia dona 20M a España para adaptación climática" aria-label="Transacción hipotética">
+      </details>
       <div class="result" id="simulation-result" hidden></div>
       <p class="note" id="sim-note">
         Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
@@ -1043,7 +1044,7 @@
       document.getElementById("lobby-count").textContent=visible+" / "+cards.length;
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
-    document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
+    document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);populateSimulator();});
     function normalizeSimText(value){
       return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
     }
@@ -1062,6 +1063,16 @@
       {key:"donation",words:["donacion","donación","dona","donar","donate","donates","don","donation","don"],base:{ecology:.4,health:.7,education:.2,relations:1,emissions:0},long:{ecology:.8,health:1.4,education:.5,relations:1.8,emissions:-.2},self:false}
     ];
 
+    function populateSimulator(){
+      const lang=document.getElementById("language").value;
+      const actor=document.getElementById("sim-actor"),receiver=document.getElementById("sim-receiver"),action=document.getElementById("sim-action");
+      if(!actor||!receiver||!action)return;
+      const name=c=>c.flag+" "+(c[lang]||c.en);
+      actor.innerHTML=countryRoster.map(c=>`<option value="${escapeHTML(c.en)}">${escapeHTML(name(c))}</option>`).join("");
+      receiver.innerHTML='<option value="">— Sin país receptor —</option>'+countryRoster.map(c=>`<option value="${escapeHTML(c.en)}">${escapeHTML(name(c))}</option>`).join("");
+      const labels={renewables:["Renovables","Renewables","Énergies renouvelables"],reforestation:["Reforestación","Reforestation","Reboisement"],adaptation:["Adaptación climática","Climate adaptation","Adaptation climatique"],water:["Agua y resiliencia","Water resilience","Eau et résilience"],health:["Salud","Health","Santé"],education:["Educación","Education","Éducation"],food:["Seguridad alimentaria","Food security","Sécurité alimentaire"],technology:["Tecnología limpia","Clean technology","Technologies propres"],agreement:["Acuerdo climático","Climate agreement","Accord climatique"],joint:["Proyecto conjunto","Joint project","Projet commun"],donation:["Donación","Donation","Don"]};
+      action.innerHTML=SIM_ACTIONS.map(a=>`<option value="${a.key}">${a.self?"🏛️":"🤝"} ${escapeHTML(labels[a.key]?.[lang==="en"?1:lang==="fr"?2:0]||a.key)}</option>`).join("");
+    }
     function parseSimulationInput(text){
       const normalized=normalizeSimText(text);
       const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length)-(a.es.length+a.en.length));
@@ -1218,7 +1229,7 @@
         else{transactions=demoTransactions.map(item=>({...item,sender:item.country,receiver:"",amount:0}));const {error:seedError}=await supabaseClient.from(HISTORY_TABLE).upsert(transactions.map(historyPayload),{onConflict:"id"});if(seedError)throw seedError;}
         historyLoadedFromSupabase=true;
       }catch(error){console.warn("Historial compartido no disponible todavía.",error);try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}catch(localError){transactions=[...demoTransactions];}}
-      renderHistory();renderCountryRoster();subscribeToHistory();
+      renderHistory();renderCountryRoster();populateSimulator();subscribeToHistory();
     }
     function subscribeToHistory(){
       if(historyRealtimeChannel)return;
