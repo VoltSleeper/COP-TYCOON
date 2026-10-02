@@ -960,9 +960,16 @@
     };
     Object.entries(firstCountryBatchBudgetInputs).forEach(([iso3,input])=>{
       if(budgetFiscalData[iso3]){
-        budgetFiscalData[iso3].governmentEffectiveness=input.governmentEffectiveness;
-        budgetFiscalData[iso3].sources.governmentEffectiveness=input.sources.governmentEffectiveness;
+        budgetFiscalData[iso3]={
+          ...budgetFiscalData[iso3],
+          ...input,
+          sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}
+        };
       }
+    });
+    countryRoster.forEach(country=>{
+      const fiscal=budgetFiscalData[country.iso3];
+      if(fiscal) country.budgetModel=fiscal;
     });
 
     function clampBudgetFactor(value, min, max){
