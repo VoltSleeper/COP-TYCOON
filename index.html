@@ -1040,7 +1040,7 @@
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
     function normalizeSimText(value){
-      return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
+      return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
     }
 
     const SIM_ACTIONS = [
@@ -1065,7 +1065,7 @@
         const aliases=[country.es,country.en,country.fr].map(normalizeSimText);
         if(aliases.some(alias=>alias && normalized.includes(alias)) && !found.includes(country)) found.push(country);
       });
-      const numberMatch=normalized.match(/(?:\\$|€)?\\s*(\\d+(?:[.,]\\d+)?)\\s*(billion|billions|bn|b|mil millones|millon(?:es)?|millions?|m|millones?)(?:\\b|$)/i);
+      const numberMatch=normalized.match(/(?:\$|€)?\s*(\d+(?:[.,]\d+)?)\s*(billion|billions|bn|b|mil millones|millon(?:es)?|millions?|m|millones?)(?:\b|$)/i);
       let amount=null;
       if(numberMatch){
         const n=parseFloat(numberMatch[1].replace(",","."));
