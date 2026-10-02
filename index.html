@@ -773,19 +773,12 @@
       </div>
 
       <div class="wolf" id="wolf">🐺</div>
-      <div class="speech" id="speech">Elige quién actúa, qué hace y cuánto mueve. El resultado es una simulación educativa de COP TYCOON.</div>
-      <form class="sim-form sim-builder" id="sim-form">
-        <div class="sim-builder-grid">
-          <label><span>País que actúa</span><select id="sim-actor" required></select></label>
-          <label><span>País receptor</span><select id="sim-receiver"></select></label>
-          <label><span>Acción</span><select id="sim-action" required></select></label>
-          <label><span>Cantidad (USD)</span><input id="sim-amount" required inputmode="decimal" placeholder="Ej. 20M o 200M"></label>
-        </div>
+      <div class="speech" id="speech">Escribe una decisión y vemos qué efectos podría tener.</div>
+      <form class="sim-form" id="sim-form">
+        <input id="transaction" required placeholder="Ej. Francia invierte 100M en renovables para España" aria-label="Decisión para simular">
         <button class="primary" type="submit" id="simulate-button">Simular decisión</button>
       </form>
-      <details class="sim-text-mode"><summary>¿Prefieres escribir la decisión?</summary>
-        <input id="transaction" placeholder="Ej. Francia dona 20M a España para adaptación climática" aria-label="Transacción hipotética">
-      </details>
+      <p class="note sim-hint">Puedes escribir un país, una acción y una cantidad. Si añades otro país, compararemos el beneficio relativo para ambos.</p>
       <div class="result" id="simulation-result" hidden></div>
       <p class="note" id="sim-note">
         Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
@@ -863,9 +856,9 @@
     };
 
     const simulatorText = {
-      es:{result:"Resultado de la simulación",actor:"País que actúa",receiver:"País receptor",amount:"Cantidad",action:"Acción",horizon5:"En 5 años",horizon15:"En 15 años",budget:"Dinero disponible",totalBudget:"Presupuesto total",ecology:"Ecología",health:"Salud",education:"Educación",defense:"Defensa",development:"Desarrollo",relations:"Cooperación",emissions:"Emisiones",benefit:"Beneficio relativo",benefitsMore:"La simulación indica un mayor beneficio relativo para",sameBenefit:"La simulación indica un beneficio relativo similar para ambos países",missingCountry:"No he podido identificar el país que realiza la acción.",missingData:"Todavía no tenemos datos de referencia para este país.",missingAmount:"Añade una cantidad, por ejemplo 200M o 1.5B.",unknownAction:"No he reconocido la acción. Prueba con renovables, reforestación, adaptación, agua, salud, educación, alimentos, tecnología, acuerdo climático, proyecto conjunto o donación.",needsReceiver:"Esta acción necesita un país receptor. Escribe los dos países en la frase.",invalidAmount:"La cantidad supera el máximo disponible de este país para esta simulación.",illustrative:"Reglas provisionales de COP TYCOON. El resultado es una simulación educativa, no una predicción científica.",motives:{renewables:"inversión en energías renovables",reforestation:"reforestación y restauración de ecosistemas",adaptation:"adaptación climática",water:"agua y resiliencia hídrica",health:"salud pública",education:"educación y formación",food:"seguridad alimentaria",technology:"transferencia de tecnología limpia",agreement:"acuerdo climático",joint:"proyecto conjunto",donation:"ayuda o donación"}},
-      en:{result:"Simulation result",actor:"Acting country",receiver:"Receiving country",amount:"Amount",action:"Action",horizon5:"In 5 years",horizon15:"In 15 years",budget:"Available funds",totalBudget:"Total budget",ecology:"Ecology",health:"Health",education:"Education",defense:"Defence",development:"Development",relations:"Cooperation",emissions:"Emissions",benefit:"Relative benefit",benefitsMore:"The simulation indicates a greater relative benefit for",sameBenefit:"The simulation indicates a similar relative benefit for both countries",missingCountry:"I could not identify the country making the action.",missingData:"We do not have reference data for this country yet.",missingAmount:"Add an amount, for example 200M or 1.5B.",unknownAction:"I did not recognize the action. Try renewables, reforestation, adaptation, water, health, education, food, technology, climate agreement, joint project or donation.",needsReceiver:"This action needs a receiving country. Write both countries in the sentence.",invalidAmount:"The amount is above this country's available maximum for this simulation.",illustrative:"Provisional COP TYCOON rules. This is an educational simulation, not a scientific prediction.",motives:{renewables:"investment in renewable energy",reforestation:"reforestation and ecosystem restoration",adaptation:"climate adaptation",water:"water and water-resilience measures",health:"public health",education:"education and training",food:"food security",technology:"clean-technology transfer",agreement:"climate agreement",joint:"joint project",donation:"aid or donation"}},
-      fr:{result:"Résultat de la simulation",actor:"Pays qui agit",receiver:"Pays bénéficiaire",amount:"Montant",action:"Action",horizon5:"Dans 5 ans",horizon15:"Dans 15 ans",budget:"Fonds disponibles",totalBudget:"Budget total",ecology:"Écologie",health:"Santé",education:"Éducation",defense:"Défense",development:"Développement",relations:"Coopération",emissions:"Émissions",benefit:"Bénéfice relatif",benefitsMore:"La simulation indique un bénéfice relatif plus important pour",sameBenefit:"La simulation indique un bénéfice relatif similaire pour les deux pays",missingCountry:"Je n’ai pas pu identifier le pays qui agit.",missingData:"Nous n’avons pas encore de données de référence pour ce pays.",missingAmount:"Ajoutez un montant, par exemple 200M ou 1,5B.",unknownAction:"Je n’ai pas reconnu l’action. Essayez renouvelables, reboisement, adaptation, eau, santé, éducation, alimentation, technologie, accord climatique, projet commun ou don.",needsReceiver:"Cette action nécessite un pays bénéficiaire. Écrivez les deux pays dans la phrase.",invalidAmount:"Le montant dépasse le maximum disponible de ce pays pour cette simulation.",illustrative:"Règles provisoires de COP TYCOON. Il s’agit d’une simulation éducative, pas d’une prévision scientifique.",motives:{renewables:"investissement dans les énergies renouvelables",reforestation:"reboisement et restauration des écosystèmes",adaptation:"adaptation climatique",water:"eau et résilience hydrique",health:"santé publique",education:"éducation et formation",food:"sécurité alimentaire",technology:"transfert de technologies propres",agreement:"accord climatique",joint:"projet commun",donation:"aide ou don"}}}
+      es:{result:"Resultado de la simulación",actor:"País que actúa",receiver:"País receptor",amount:"Cantidad",action:"Acción",horizon5:"En 5 años",horizon15:"En 15 años",budget:"Dinero disponible",ecology:"Ecología",health:"Salud",education:"Educación",relations:"Cooperación",emissions:"Emisiones",benefit:"Beneficio relativo",benefitsMore:"La simulación indica un mayor beneficio relativo para",sameBenefit:"La simulación indica un beneficio relativo similar para ambos países",missingCountry:"No he podido identificar el país que realiza la acción.",missingData:"Todavía no tenemos datos de referencia para este país.",missingAmount:"Añade una cantidad, por ejemplo 200M o 1.5B.",unknownAction:"No he reconocido la acción. Prueba con renovables, reforestación, adaptación, agua, salud, educación, alimentos, tecnología, acuerdo climático, proyecto conjunto o donación.",needsReceiver:"Esta acción necesita un país receptor. Escribe los dos países en la frase.",invalidAmount:"La cantidad supera el máximo disponible de este país para esta simulación.",illustrative:"Reglas provisionales de COP TYCOON. El resultado es una simulación educativa, no una predicción científica.",motives:{renewables:"inversión en energías renovables",reforestation:"reforestación y restauración de ecosistemas",adaptation:"adaptación climática",water:"agua y resiliencia hídrica",health:"salud pública",education:"educación y formación",food:"seguridad alimentaria",technology:"transferencia de tecnología limpia",agreement:"acuerdo climático",joint:"proyecto conjunto",donation:"ayuda o donación"}},
+      en:{result:"Simulation result",actor:"Acting country",receiver:"Receiving country",amount:"Amount",action:"Action",horizon5:"In 5 years",horizon15:"In 15 years",budget:"Available funds",ecology:"Ecology",health:"Health",education:"Education",relations:"Cooperation",emissions:"Emissions",benefit:"Relative benefit",benefitsMore:"The simulation indicates a greater relative benefit for",sameBenefit:"The simulation indicates a similar relative benefit for both countries",missingCountry:"I could not identify the country making the action.",missingData:"We do not have reference data for this country yet.",missingAmount:"Add an amount, for example 200M or 1.5B.",unknownAction:"I did not recognize the action. Try renewables, reforestation, adaptation, water, health, education, food, technology, climate agreement, joint project or donation.",needsReceiver:"This action needs a receiving country. Write both countries in the sentence.",invalidAmount:"The amount is above this country's available maximum for this simulation.",illustrative:"Provisional COP TYCOON rules. This is an educational simulation, not a scientific prediction.",motives:{renewables:"investment in renewable energy",reforestation:"reforestation and ecosystem restoration",adaptation:"climate adaptation",water:"water and water-resilience measures",health:"public health",education:"education and training",food:"food security",technology:"clean-technology transfer",agreement:"climate agreement",joint:"joint project",donation:"aid or donation"}},
+      fr:{result:"Résultat de la simulation",actor:"Pays qui agit",receiver:"Pays bénéficiaire",amount:"Montant",action:"Action",horizon5:"Dans 5 ans",horizon15:"Dans 15 ans",budget:"Fonds disponibles",ecology:"Écologie",health:"Santé",education:"Éducation",relations:"Coopération",emissions:"Émissions",benefit:"Bénéfice relatif",benefitsMore:"La simulation indique un bénéfice relatif plus important pour",sameBenefit:"La simulation indique un bénéfice relatif similaire pour les deux pays",missingCountry:"Je n’ai pas pu identifier le pays qui agit.",missingData:"Nous n’avons pas encore de données de référence pour ce pays.",missingAmount:"Ajoutez un montant, par exemple 200M ou 1,5B.",unknownAction:"Je n’ai pas reconnu l’action. Essayez renouvelables, reboisement, adaptation, eau, santé, éducation, alimentation, technologie, accord climatique, projet commun ou don.",needsReceiver:"Cette action nécessite un pays bénéficiaire. Écrivez les deux pays dans la phrase.",invalidAmount:"Le montant dépasse le maximum disponible de ce pays pour cette simulation.",illustrative:"Règles provisoires de COP TYCOON. Il s’agit d’une simulation éducative, pas d’une prévision scientifique.",motives:{renewables:"investissement dans les énergies renouvelables",reforestation:"reboisement et restauration des écosystèmes",adaptation:"adaptation climatique",water:"eau et résilience hydrique",health:"santé publique",education:"éducation et formation",food:"sécurité alimentaire",technology:"transfert de technologies propres",agreement:"accord climatique",joint:"projet commun",donation:"aide ou don"}}}
 
     const countryRoster = [
       {es:"Alemania",en:"Germany",fr:"Allemagne",flag:"🇩🇪",reps:["Juan"],budget2025:{total:2320000000000,defense:2.5,health:15,education:9,ecology:3.5,maxAmount:325000000}},
@@ -1044,7 +1037,7 @@
       document.getElementById("lobby-count").textContent=visible+" / "+cards.length;
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
-    document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);populateSimulator();});
+    document.getElementById("language").addEventListener("change",event=>applyLanguage(event.target.value));
     function normalizeSimText(value){
       return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"");
     }
@@ -1063,16 +1056,6 @@
       {key:"donation",words:["donacion","donación","dona","donar","donate","donates","don","donation","don"],base:{ecology:.4,health:.7,education:.2,relations:1,emissions:0},long:{ecology:.8,health:1.4,education:.5,relations:1.8,emissions:-.2},self:false}
     ];
 
-    function populateSimulator(){
-      const lang=document.getElementById("language").value;
-      const actor=document.getElementById("sim-actor"),receiver=document.getElementById("sim-receiver"),action=document.getElementById("sim-action");
-      if(!actor||!receiver||!action)return;
-      const name=c=>c.flag+" "+(c[lang]||c.en);
-      actor.innerHTML=countryRoster.map(c=>`<option value="${escapeHTML(c.en)}">${escapeHTML(name(c))}</option>`).join("");
-      receiver.innerHTML='<option value="">— Sin país receptor —</option>'+countryRoster.map(c=>`<option value="${escapeHTML(c.en)}">${escapeHTML(name(c))}</option>`).join("");
-      const labels={renewables:["Renovables","Renewables","Énergies renouvelables"],reforestation:["Reforestación","Reforestation","Reboisement"],adaptation:["Adaptación climática","Climate adaptation","Adaptation climatique"],water:["Agua y resiliencia","Water resilience","Eau et résilience"],health:["Salud","Health","Santé"],education:["Educación","Education","Éducation"],food:["Seguridad alimentaria","Food security","Sécurité alimentaire"],technology:["Tecnología limpia","Clean technology","Technologies propres"],agreement:["Acuerdo climático","Climate agreement","Accord climatique"],joint:["Proyecto conjunto","Joint project","Projet commun"],donation:["Donación","Donation","Don"]};
-      action.innerHTML=SIM_ACTIONS.map(a=>`<option value="${a.key}">${a.self?"🏛️":"🤝"} ${escapeHTML(labels[a.key]?.[lang==="en"?1:lang==="fr"?2:0]||a.key)}</option>`).join("");
-    }
     function parseSimulationInput(text){
       const normalized=normalizeSimText(text);
       const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length)-(a.es.length+a.en.length));
@@ -1149,7 +1132,6 @@
       event.preventDefault();
       const text=document.getElementById("transaction").value.trim();
       const lang=document.getElementById("language").value;
-      const t=translations[lang]||translations.es;
       const s=simulatorText[lang]||simulatorText.es;
       const result=document.getElementById("simulation-result");
       const parsed=parseSimulationInput(text);
@@ -1159,25 +1141,20 @@
       if(!parsed.amount){result.innerHTML=`<div class="sim-error">${s.missingAmount}</div>`;return;}
       if(!parsed.action){result.innerHTML=`<div class="sim-error">${s.unknownAction}</div>`;return;}
 
-      const actor=parsed.countries[0];
-      const action=parsed.action;
-      const transferAction=!action.self;
-      const receiver=parsed.countries[1]||null;
-      if(transferAction && !receiver){result.innerHTML=`<div class="sim-error">${s.needsReceiver}</div>`;return;}
-      if(actor.budget2025 && parsed.amount>(actor.budget2025.maxAmount||0)){result.innerHTML=`<div class="sim-error">${s.invalidAmount}</div>`;return;}
-      if(receiver && !receiver.budget2025){
-        /* El motor puede seguir calculando impactos aunque falte una referencia presupuestaria. */
-      }
+      const actor=parsed.countries[0],action=parsed.action,receiver=parsed.countries[1]||null;
+      if(!action.self&&!receiver){result.innerHTML=`<div class="sim-error">${s.needsReceiver}</div>`;return;}
+      const state=actor.budget2025?getBudgetState(actor):null;
+      if(state&&parsed.amount>state.available){result.innerHTML=`<div class="sim-error">${s.invalidAmount}</div>`;return;}
 
       const actorEffects=scaledEffects(action,parsed.amount,actor);
       const receiverEffects=receiver?scaledEffects(action,parsed.amount,receiver):null;
-      const actorScore=actorEffects.fifteen.ecology+actorEffects.fifteen.health+actorEffects.fifteen.education+actorEffects.fifteen.relations-(actor.budget2025?(parsed.amount/Math.max(actor.budget2025.total,1))*8:0);
-      const receiverScore=receiver?(receiverEffects.fifteen.ecology+receiverEffects.fifteen.health+receiverEffects.fifteen.education+receiverEffects.fifteen.relations+(receiver.budget2025?(parsed.amount/Math.max(receiver.budget2025.total,1))*8:0)):actorScore;
-      const benefitText=receiver?(Math.abs(actorScore-receiverScore)<.6?s.sameBenefit:`${s.benefitsMore} <strong>${escapeHTML((receiverScore>actorScore?receiver[lang]:actor[lang])|| (receiverScore>actorScore?receiver.en:actor.en))}</strong>.`):`${s.benefitsMore} <strong>${escapeHTML(actor[lang]||actor.en)}</strong>.`;
+      const actorScore=actorEffects.fifteen.ecology+actorEffects.fifteen.health+actorEffects.fifteen.education+actorEffects.fifteen.relations+actorEffects.fifteen.emissions-(state?parsed.amount/Math.max(state.available,1):0);
+      const receiverScore=receiver?(receiverEffects.fifteen.ecology+receiverEffects.fifteen.health+receiverEffects.fifteen.education+receiverEffects.fifteen.relations+receiverEffects.fifteen.emissions+(receiver.budget2025?parsed.amount/Math.max(receiver.budget2025.total,1):0)):actorScore;
+      const benefitText=receiver?(Math.abs(actorScore-receiverScore)<.6?s.sameBenefit:`${s.benefitsMore} <strong>${escapeHTML((receiverScore>actorScore?receiver[lang]:actor[lang])||(receiverScore>actorScore?receiver.en:actor.en))}</strong>.`):`${s.benefitsMore} <strong>${escapeHTML(actor[lang]||actor.en)}</strong>.`;
 
       result.innerHTML=`<h3>${s.result}</h3>
         <p><strong>${s.actor}:</strong> ${escapeHTML(actor[lang]||actor.en)} · <strong>${s.amount}:</strong> ${formatSimMoney(parsed.amount,lang)}</p>
-        <p><strong>${s.action}:</strong> ${escapeHTML(s.motives[action.key])}</p>
+        <p><strong>${s.action}:</strong> ${escapeHTML(s.motives[action.key]||action.key)}</p>
         <div class="simulation-result-grid">
           ${renderSimCountry(actor,"actor",parsed.amount,action,lang)}
           ${receiver?renderSimCountry(receiver,"receiver",parsed.amount,action,lang):""}
@@ -1186,7 +1163,6 @@
         <p class="note">${s.illustrative}</p>`;
       document.getElementById("wolf").textContent="🐺💭";
     });
-
     function escapeHTML(value) {
       return String(value).replace(/[&<>"']/g, char => ({
         "&": "&amp;",
@@ -1229,7 +1205,7 @@
         else{transactions=demoTransactions.map(item=>({...item,sender:item.country,receiver:"",amount:0}));const {error:seedError}=await supabaseClient.from(HISTORY_TABLE).upsert(transactions.map(historyPayload),{onConflict:"id"});if(seedError)throw seedError;}
         historyLoadedFromSupabase=true;
       }catch(error){console.warn("Historial compartido no disponible todavía.",error);try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}catch(localError){transactions=[...demoTransactions];}}
-      renderHistory();renderCountryRoster();populateSimulator();subscribeToHistory();
+      renderHistory();renderCountryRoster();subscribeToHistory();
     }
     function subscribeToHistory(){
       if(historyRealtimeChannel)return;
