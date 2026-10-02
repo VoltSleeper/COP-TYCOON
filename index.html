@@ -959,15 +959,6 @@
       return countryRoster.find(country=>[country.es,country.en,country.fr].some(name=>normalizeSimText(name)===normalized)) || null;
     }
 
-    function parseMoney(value){
-      const raw=String(value||"").trim().toLowerCase().replace(/[$€£\s]/g,"").replace(/,/g,".");
-      const match=raw.match(/^(\d+(?:\.\d+)?)(b|bn|billion|billions|mil millones|m|million|millions|millones)?$/i);
-      if(!match)return NaN;
-      const n=Number(match[1]), unit=(match[2]||"").toLowerCase();
-      const multiplier=["b","bn","billion","billions","mil millones"].includes(unit)?1e9:["m","million","millions","millones"].includes(unit)?1e6:1;
-      return n*multiplier;
-    }
-
     function transactionData(item){
       if(item.sender&&item.receiver&&Number(item.amount)>0)return item;
       const sender=findCountry(item.country||"");
@@ -1039,7 +1030,77 @@
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);if(lastSimulation){lastSimulation.lang=event.target.value;renderSimulationResult();}});
     function normalizeSimText(value){
+      return String(value??"")
+        .toLocaleLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g,"")
+        .replace(/[’']/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+    }
+
+    function simTermRegex(term){
+      const escaped=normalizeSimText(term).replace(/[.*+?^$()|[\]\\]/g,"\\    function normalizeSimText(value){
       return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    }
+
+    const SIM_ACTIONS").replace(/\{/g,"\\{").replace(/\}/g,"\\}");
+      return new RegExp("(^|[^a-z0-9])"+escaped+"(?=$|[^a-z0-9])","i");
+    }
+
+    function simContains(text,term){
+      return !!term && simTermRegex(term).test(normalizeSimText(text));
+    }
+
+    function parseNumericToken(value){
+      let raw=String(value??"").trim().replace(/\s/g,"");
+      if(!raw)return NaN;
+      const lastComma=raw.lastIndexOf(","),lastDot=raw.lastIndexOf(".");
+      if(lastComma>=0 && lastDot>=0){
+        const decimal=lastComma>lastDot?",":".";
+        const thousands=decimal===","?".":",";
+        raw=raw.split(thousands).join("").replace(decimal,".");
+      }else if(lastComma>=0 || lastDot>=0){
+        const sep=lastComma>=0?",":".";
+        const digits=raw.length-raw.lastIndexOf(sep)-1;
+        raw=digits===3?raw.replace(sep,""):raw.replace(sep,".");
+      }
+      return Number(raw);
+    }
+
+    function parseMoney(value){
+      const source=normalizeSimText(value)
+        .replace(/[$€£¥]/g," ")
+        .replace(/\b(?:usd|us dollars?|dollars?|eur|euros?|gbp|pounds?|jpy|yen)\b/g," ")
+        .replace(/\b(?:de|del|d|of)\b/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+      const match=source.match(/^(\d[\d.,]*)\s*(trillion|trillions|tn|t|billion|billions|bn|b|milliard|milliards|md|million|millions|m|mil|thousand|thousands|k)?$/i);
+      if(!match)return NaN;
+      const n=parseNumericToken(match[1]);
+      if(!Number.isFinite(n))return NaN;
+      const unit=(match[2]||"").toLowerCase();
+      const multiplier={trillion:1e12,trillions:1e12,tn:1e12,t:1e12,billion:1e9,billions:1e9,bn:1e9,b:1e9,milliard:1e9,milliards:1e9,md:1e9,million:1e6,millions:1e6,m:1e6,mil:1e3,thousand:1e3,thousands:1e3,k:1e3}[unit]||1;
+      return n*multiplier;
+    }
+
+    function parseMoneyFromText(value){
+      const text=normalizeSimText(value);
+      const moneyUnit="trillion|trillions|tn|billion|billions|bn|milliard|milliards|md|million|millions|m|mil|thousand|thousands|k";
+      const currency="[$€£¥]|\\b(?:usd|us dollars?|dollars?|eur|euros?|gbp|pounds?|jpy|yen)\\b";
+      const withUnit=new RegExp("(?:"+currency+"\\s*)?(\\d[\\d.,]*)\\s*("+moneyUnit+")(?:\\s*"+currency+")?","i");
+      const withCurrency=new RegExp("(?:"+currency+"\\s*)(\\d[\\d.,]*)(?:\\s*"+currency+")?","i");
+      const unitMatch=text.match(withUnit);
+      const currencyMatch=text.match(withCurrency);
+      if(unitMatch){
+        const amount=parseMoney(unitMatch[0]);
+        if(Number.isFinite(amount))return amount;
+      }
+      if(currencyMatch){
+        const amount=parseMoney(currencyMatch[0]);
+        if(Number.isFinite(amount))return amount;
+      }
+      return null;
     }
 
     const SIM_ACTIONS = [
@@ -1069,22 +1130,17 @@
 
     function parseSimulationInput(text){
       const normalized=normalizeSimText(text);
-      const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length)-(a.es.length+a.en.length));
+      const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length+b.fr.length)-(a.es.length+a.en.length+a.fr.length));
       const found=[];
       countries.forEach(country=>{
-        const aliases=[country.es,country.en,country.fr].map(normalizeSimText);
-        if(aliases.some(alias=>alias && normalized.includes(alias)) && !found.includes(country)) found.push(country);
+        const aliases=[country.es,country.en,country.fr];
+        if(aliases.some(alias=>simContains(normalized,alias)) && !found.includes(country)) found.push(country);
       });
-      const numberMatch=normalized.match(/(?:\$|€)?\s*(\d+(?:[.,]\d+)?)\s*(billion|billions|bn|b|mil millones|millon(?:es)?|millions?|m|millones?)(?:\b|$)/i);
-      let amount=null;
-      if(numberMatch){
-        const n=parseFloat(numberMatch[1].replace(",","."));
-        const unit=numberMatch[2].toLowerCase();
-        const multiplier=["billion","billions","bn","b","mil millones"].includes(unit)?1e9:["millon","millones","million","millions"].includes(unit)?1e6:1e6;
-        amount=n*multiplier;
-      }
-      const action=SIM_ACTIONS.find(item=>item.words.some(word=>normalized.includes(normalizeSimText(word))));
-      return {normalized,countries:found,amount,action};
+      const amount=parseMoneyFromText(normalized);
+      const action=[...SIM_ACTIONS]
+        .sort((a,b)=>Math.max(...b.words.map(word=>normalizeSimText(word).length))-Math.max(...a.words.map(word=>normalizeSimText(word).length)))
+        .find(item=>item.words.some(word=>simContains(normalized,word)))||null;
+      return {normalized,countries,amount,action};
     }
 
     function simArrow(value){
