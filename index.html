@@ -1040,11 +1040,16 @@
     }
 
     function simTermRegex(term){
+      const escaped=normalizeSimText(term).replace(/[.*+?^$()|[\\]\\\\]/g,"\\\\function simTermRegex(term){
       const escaped=normalizeSimText(term).replace(/[.*+?^$()|[\]\\]/g,"\\    function normalizeSimText(value){
       return String(value).toLocaleLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
     }
 
     const SIM_ACTIONS").replace(/\{/g,"\\{").replace(/\}/g,"\\}");
+      return new RegExp("(^|[^a-z0-9])"+escaped+"(?=$|[^a-z0-9])","i");
+    }
+
+    function simContains(text,term){");
       return new RegExp("(^|[^a-z0-9])"+escaped+"(?=$|[^a-z0-9])","i");
     }
 
