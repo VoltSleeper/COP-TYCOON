@@ -1039,13 +1039,11 @@
         .trim();
     }
 
-    function simTermRegex(term){
-      const escaped=normalizeSimText(term).replace(/[.*+?^$()|[\\]\\\\]/g,"\\\\$&");
-      return new RegExp("(^|[^a-z0-9])"+escaped+"(?=$|[^a-z0-9])","i");
-    }
-
     function simContains(text,term){
-      return !!term && simTermRegex(term).test(normalizeSimText(text));
+      if(!term)return false;
+      const source=" "+normalizeSimText(text).replace(/[^a-z0-9]+/g," ").trim()+" ";
+      const target=normalizeSimText(term).replace(/[^a-z0-9]+/g," ").trim();
+      return !!target && source.includes(" "+target+" ");
     }
 
     function parseNumericToken(value){
@@ -1126,12 +1124,23 @@
 
     function parseSimulationInput(text){
       const normalized=normalizeSimText(text);
-      const countries=[...countryRoster].sort((a,b)=>(b.es.length+b.en.length+b.fr.length)-(a.es.length+a.en.length+a.fr.length));
-      const found=[];
-      countries.forEach(country=>{
+      const matches=[];
+      countryRoster.forEach(country=>{
         const aliases=[country.es,country.en,country.fr];
-        if(aliases.some(alias=>simContains(normalized,alias)) && !found.includes(country)) found.push(country);
+        aliases.forEach(alias=>{
+          const target=normalizeSimText(alias).replace(/[^a-z0-9]+/g," ").trim();
+          const padded=" "+normalized.replace(/[^a-z0-9]+/g," ").trim()+" ";
+          const index=target ? padded.indexOf(" "+target+" ") : -1;
+          if(index>=0){
+            matches.push({country,index:index,aliasLength:target.length});
+          }
+        });
       });
+      const countries=[...new Map(
+        matches
+          .sort((a,b)=>a.index-b.index || b.aliasLength-a.aliasLength)
+          .map(item=>[item.country.en,item.country])
+      ).values()];
       const amount=parseMoneyFromText(normalized);
       const action=[...SIM_ACTIONS]
         .sort((a,b)=>Math.max(...b.words.map(word=>normalizeSimText(word).length))-Math.max(...a.words.map(word=>normalizeSimText(word).length)))
