@@ -944,7 +944,26 @@
 
     // Source-backed inputs will be filled country by country during the data pass.
     // Keeping missing inputs as null prevents us from inventing numbers.
-    const budgetFiscalData = Object.fromEntries(countryRoster.map(country=>[country.iso3,{country:country.en,realPublicBudget:null,debtGDP:null,balanceGDP:null,governmentEffectiveness:null,climateCommitment:null,status:"pending"}]));
+    const budgetFiscalData = Object.fromEntries(countryRoster.map(country=>[country.iso3,{country:country.en,realPublicBudget:null,debtGDP:null,balanceGDP:null,governmentEffectiveness:null,climateCommitment:null,status:"pending",sources:{publicBudget:null,fiscalSpace:null,governmentEffectiveness:null,climateCommitment:null}}]));
+    // First country batch: verified 2024 World Bank WGI Government Effectiveness scores.
+    // These are inputs only; fiscal and climate fields remain pending until a consistent
+    // source/year definition is verified for all countries in the batch.
+    const firstCountryBatchBudgetInputs = {
+      DEU:{governmentEffectiveness:81.4,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      SAU:{governmentEffectiveness:66.6,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      AUS:{governmentEffectiveness:86.5,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      BRA:{governmentEffectiveness:47.0,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      CAN:{governmentEffectiveness:85.5,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      CHL:{governmentEffectiveness:70.1,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      CHN:{governmentEffectiveness:68.8,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}},
+      COL:{governmentEffectiveness:49.2,sources:{governmentEffectiveness:"World Bank WGI 2025 revision, 2024"}}
+    };
+    Object.entries(firstCountryBatchBudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3].governmentEffectiveness=input.governmentEffectiveness;
+        budgetFiscalData[iso3].sources.governmentEffectiveness=input.sources.governmentEffectiveness;
+      }
+    });
 
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
