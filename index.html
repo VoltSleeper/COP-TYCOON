@@ -900,6 +900,82 @@
       {es:"Ucrania",en:"Ukraine",fr:"Ukraine",flag:"🇺🇦",reps:["Javier"]},
       {es:"Venezuela",en:"Venezuela",fr:"Venezuela",flag:"🇻🇪",reps:["Paolo"]}
     ];
+
+    // COP TYCOON budget model v1.
+    // This layer is intentionally independent from the simulator's Health/Defence/Education/Ecology percentages.
+    // It will only become active for a country once its source-backed fiscal inputs are complete.
+    const budgetModelConfig = {
+      version: "1.0",
+      budgetYear: 2024,
+      fiscalYear: 2026,
+      formula: "realPublicBudget * fiscalSpace * mobilizationCapacity",
+      factors: {
+        fiscalSpace: {
+          debtWeight: 0.6,
+          balanceWeight: 0.4,
+          floor: 0.15,
+          ceiling: 1
+        },
+        mobilizationCapacity: {
+          governmentEffectivenessWeight: 0.5,
+          climateCommitmentWeight: 0.5,
+          floor: 0.25,
+          ceiling: 1
+        }
+      },
+      sources: {
+        publicBudget: "IMF Public Finances in Modern History / Government expenditure (% GDP), latest verified historical year",
+        fiscalSpace: "IMF World Economic Outlook / Fiscal Monitor",
+        governmentEffectiveness: "World Bank Worldwide Governance Indicators",
+        climateCommitment: "Official national climate commitments / UNFCCC"
+      }
+    };
+
+    // Source-backed inputs will be filled country by country during the data pass.
+    // Keeping missing inputs as null prevents us from inventing numbers.
+    const budgetFiscalData = {};
+
+    function clampBudgetFactor(value, min, max){
+      return Math.min(max, Math.max(min, Number(value)));
+    }
+
+    function calculateMaximumAvailable(country){
+      const budget = country?.budgetModel;
+      if(!budget || !Number.isFinite(Number(budget.realPublicBudget))) return null;
+
+      const debt = Number(budget.debtGDP);
+      const balance = Number(budget.balanceGDP);
+      const effectiveness = Number(budget.governmentEffectiveness);
+      const climateCommitment = Number(budget.climateCommitment);
+
+      if([debt,balance,effectiveness,climateCommitment].some(value=>!Number.isFinite(value))) return null;
+
+      // Fiscal space: lower debt and a stronger fiscal balance increase room.
+      const debtFactor = clampBudgetFactor(1 - (debt / 150), 0, 1);
+      const balanceFactor = clampBudgetFactor((balance + 10) / 20, 0, 1);
+      const fiscalSpace = clampBudgetFactor(
+        budgetModelConfig.factors.fiscalSpace.debtWeight * debtFactor +
+        budgetModelConfig.factors.fiscalSpace.balanceWeight * balanceFactor,
+        budgetModelConfig.factors.fiscalSpace.floor,
+        budgetModelConfig.factors.fiscalSpace.ceiling
+      );
+
+      // Mobilization is based on documented institutional capacity and climate commitment,
+      // not a subjective judgement about a government's intentions.
+      const effectivenessFactor = clampBudgetFactor(effectiveness / 100, 0, 1);
+      const commitmentFactor = clampBudgetFactor(climateCommitment / 100, 0, 1);
+      const mobilizationCapacity = clampBudgetFactor(
+        budgetModelConfig.factors.mobilizationCapacity.governmentEffectivenessWeight * effectivenessFactor +
+        budgetModelConfig.factors.mobilizationCapacity.climateCommitmentWeight * commitmentFactor,
+        budgetModelConfig.factors.mobilizationCapacity.floor,
+        budgetModelConfig.factors.mobilizationCapacity.ceiling
+      );
+
+      return Math.round(
+        Number(budget.realPublicBudget) * fiscalSpace * mobilizationCapacity
+      );
+    }
+
     const roomRoster = [
       {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu"},{room:1,country:"Samoa"},
       {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
@@ -983,10 +1059,15 @@
         if(sender===country)outgoing+=Number(item.amount);
         if(receiver===country)incoming+=Number(item.amount);
       });
-      const baseAvailable=Number(country.budget2025.maxAmount||0);
+      const calculatedMaximum=calculateMaximumAvailable(country);
+      const baseAvailable=calculatedMaximum===null
+        ? Number(country.budget2025.maxAmount||0)
+        : calculatedMaximum;
       return {
         current:Number(country.budget2025.total),
-        available:Math.max(0,baseAvailable-outgoing+incoming)
+        available:Math.max(0,baseAvailable-outgoing+incoming),
+        maximumAvailable:baseAvailable,
+        modelActive:calculatedMaximum!==null
       };
     }
 
