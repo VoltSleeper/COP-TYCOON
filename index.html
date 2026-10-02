@@ -990,15 +990,19 @@
 
     function getBudgetState(country){
       if(!country?.budget2025)return null;
-      let current=country.budget2025.total,outgoing=0;
+      let incoming=0,outgoing=0;
       transactions.forEach(raw=>{
         const item=transactionData(raw);
         if(item.reversed||!item.amount)return;
         const sender=findCountry(item.sender),receiver=findCountry(item.receiver);
-        if(sender===country){current-=Number(item.amount);outgoing+=Number(item.amount);}
-        if(receiver===country)current+=Number(item.amount);
+        if(sender===country)outgoing+=Number(item.amount);
+        if(receiver===country)incoming+=Number(item.amount);
       });
-      return {current:Math.max(0,current),available:Math.max(0,(country.budget2025.maxAmount||0)-outgoing)};
+      const baseAvailable=Number(country.budget2025.maxAmount||0);
+      return {
+        current:Number(country.budget2025.total),
+        available:Math.max(0,baseAvailable-outgoing+incoming)
+      };
     }
 
     function renderCountryRoster(){
