@@ -1007,6 +1007,23 @@
         budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
     });
+
+    // Current Lobby batch 2: Italy, France, Poland, Russia, United Kingdom, Norway, China, India.
+    // Russia/China/India already have entries; this batch fills the countries still missing
+    // comparable fiscal inputs without overwriting their existing source-backed data.
+    const currentLobbyBatch2BudgetInputs = {
+      ITA:{realPublicBudget:1200000000000,debtGDP:135.3,balanceGDP:-2.7,governmentEffectiveness:66.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure €1,108.4bn; converted using rounded 2024 EUR/USD reference ≈ 1.08",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 135.3% GDP and net lending/borrowing -2.7% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Italy/EU NDC; numeric scoring pending methodology"}},
+      FRA:{realPublicBudget:1671000000000,debtGDP:113.1,balanceGDP:-5.8,governmentEffectiveness:74.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure 57.2% of GDP; derived public expenditure ≈ €1.671tn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 113.1% GDP and balance -5.8% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: France/EU NDC; numeric scoring pending methodology"}},
+      POL:{realPublicBudget:null,debtGDP:54.1,balanceGDP:-5.9,governmentEffectiveness:64.4,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2024 Article IV, 2024 general-government expenditures 49.3% GDP; absolute amount left pending consistent FX extraction",fiscalSpace:"IMF 2024 Article IV, 2024 general-government debt 54.1% GDP and net lending/borrowing -5.9% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Poland/EU NDC; numeric scoring pending methodology"}},
+      GBR:{realPublicBudget:null,debtGDP:101.0,balanceGDP:-5.0,governmentEffectiveness:74.4,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024/25 public-sector expenditure 44.2% GDP; absolute amount left pending consistent fiscal-year conversion",fiscalSpace:"IMF 2025 Article IV, 2024/25 general-government gross debt 101.0% GDP and overall balance -5.0% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: United Kingdom NDC; numeric scoring pending methodology"}},
+      NOR:{realPublicBudget:null,debtGDP:41.1,balanceGDP:16.9,governmentEffectiveness:87.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure NOK 2,565bn; absolute USD amount left pending consistent FX extraction",fiscalSpace:"IMF 2025 Article IV, 2024 general-government gross debt 41.1% GDP and overall balance 16.9% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Norway NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyBatch2BudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
