@@ -1218,7 +1218,7 @@
     }
 
     function getBudgetState(country){
-      if(!country?.budget2025)return null;
+      if(!country)return null;
       let incoming=0,outgoing=0;
       transactions.forEach(raw=>{
         const item=transactionData(raw);
@@ -1228,12 +1228,13 @@
         if(receiver===country)incoming+=Number(item.amount);
       });
       const calculatedMaximum=calculateMaximumAvailable(country);
-      const baseAvailable=calculatedMaximum===null
-        ? Number(country.budget2025.maxAmount||0)
-        : calculatedMaximum;
+      const modelBudget=Number(country.budgetModel?.realPublicBudget);
+      const historicalBudget=Number(country.budget2025?.total);
+      const current=Number.isFinite(modelBudget)?modelBudget:(Number.isFinite(historicalBudget)?historicalBudget:null);
+      const baseAvailable=calculatedMaximum===null?null:calculatedMaximum;
       return {
-        current:Number(country.budget2025.total),
-        available:Math.max(0,baseAvailable-outgoing+incoming),
+        current,
+        available:baseAvailable===null?null:Math.max(0,baseAvailable-outgoing+incoming),
         maximumAvailable:baseAvailable,
         modelActive:calculatedMaximum!==null
       };
