@@ -1733,39 +1733,21 @@
 
 
 
-    function historySearchText(item){
-      const sender=findCountry(item.sender),receiver=findCountry(item.receiver),stakeholder=findStakeholder(item.receiver);
-      return normalizeSimText([
-        item.sender,item.country,item.receiver,item.title,item.reason,
-        ...(sender?[sender.es,sender.en,sender.fr]:[]),
-        ...(receiver?[receiver.es,receiver.en,receiver.fr]:[]),
-        ...(stakeholder?[stakeholder.es,stakeholder.en,stakeholder.fr,...(stakeholder.aliases||[])]:[])
-      ].filter(Boolean).join(" "));
-    }
-
     function renderHistory(){
-      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es;
+      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
       const all=transactions.map(transactionData);
-      const query=normalizeSimText(document.getElementById("history-search")?.value||"");
-      const filtered=query?all.filter(item=>historySearchText(item).includes(query)):all;
+      const filtered=all.filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
       host.innerHTML=filtered.map((item,index)=>{
-        const sender=findCountry(item.sender),receiver=findCountry(item.receiver),stakeholder=findStakeholder(item.receiver);
-        const countryName=sender?(sender[lang]||sender.es):item.sender||item.country;
-        const title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount);
-        const reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
+        const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
         const controls=adminUnlocked?'<div class="chat-admin-actions"><button type="button" onclick="editTransaction('+item.id+')">✏️ '+t.edit+'</button><button type="button" class="reverse-action" onclick="reverseTransaction('+item.id+')">'+(item.reversed?"↩ "+t.restore:"↶ "+t.reverse)+'</button><button type="button" class="delete-action" onclick="deleteTransaction('+item.id+')">🗑 '+t.delete+"</button></div>":"";
-        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+escapeHTML(countryName)+'</div></div><div class="chat-bubble"><span class="live">● '+t.live+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div><div class="chat-meta">→ '+escapeHTML(receiver?.[lang]||receiver?.es||stakeholder?.[lang]||stakeholder?.es||item.receiver||"—")+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+'</div>'+controls+"</div></article>";
+        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+escapeHTML(countryName)+'</div></div><div class="chat-bubble"><span class="live">● '+t.live+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div><div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+'</div>'+controls+"</div></article>";
       }).join("")||'<p class="note">'+t.emptyHistory+"</p>";
       const count=document.getElementById("history-count");
       if(count)count.textContent=filtered.length+" / "+all.length;
     }
 
     const historySearch=document.getElementById("history-search");
-    if(historySearch){
-      historySearch.addEventListener("input",renderHistory);
-      historySearch.addEventListener("search",renderHistory);
-    }
-
+    if(historySearch)historySearch.addEventListener("input",renderHistory);
     function toggleAdmin() {
       if (!adminUnlocked) {
         const code = prompt((translations[document.getElementById("language").value] || translations.es).adminPrompt);
