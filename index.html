@@ -1008,7 +1008,7 @@
         </form>
         <p class="admin-warning" id="admin-warning">Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.</p>
       </div>
-      <div class="country-search"><input id="history-search" type="search" placeholder="Buscar país en el historial…" aria-label="Buscar país en el historial"></div><div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
+      <div class="country-search"><input id="history-search" type="search" placeholder="Buscar país en el historial…" aria-label="Buscar país en el historial"><span class="search-count" id="history-count"></span></div><div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
     </section>
   </main>
 
@@ -1741,9 +1741,36 @@
         const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
         return `<article class="chat-message ${index%2?"is-right":""} ${item.reversed?"is-reversed":""}"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${sender?.flag||"🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div><div class="chat-bubble"><span class="live">● ${t.live}</span>${reversed}<h3 class="chat-title">${escapeHTML(title)}</h3><div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div><div class="chat-meta">→ ${escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))} · ${item.amount?formatSimMoney(item.amount,lang):"—"} · ${escapeHTML(item.time||"—")}</div>${controls}</div></article>`;
       }).join("")||`<p class="note">${t.emptyHistory}</p>`;
+      const count=document.getElementById("history-count");
+      if(count)count.textContent=filtered.length+" / "+transactions.length;
+      const search=document.getElementById("history-search");
+      if(search&&search.value)filterHistoryQuick();
     }
 
-    document.getElementById("history-search").addEventListener("input",renderHistory);
+    function filterHistoryQuick(){
+      const input=document.getElementById("history-search");
+      const query=normalizeSimText(input?.value||"");
+      const messages=[...document.querySelectorAll("#history-chat .chat-message")];
+      let visible=0;
+      messages.forEach(message=>{
+        const haystack=normalizeSimText(message.textContent||"");
+        const show=!query||haystack.includes(query);
+        message.hidden=!show;
+        message.style.display=show?"":"none";
+        if(show)visible++;
+      });
+      const count=document.getElementById("history-count");
+      if(count)count.textContent=visible+" / "+messages.length;
+      const empty=document.querySelector("#history-chat .history-filter-empty");
+      if(empty)empty.remove();
+      if(query&&!visible){
+        const note=document.createElement("p");
+        note.className="note history-filter-empty";
+        note.textContent=(translations[document.getElementById("language").value]||translations.es).emptyHistory;
+        document.getElementById("history-chat").appendChild(note);
+      }
+    }
+    document.getElementById("history-search").addEventListener("input",filterHistoryQuick);
 
     function toggleAdmin() {
       if (!adminUnlocked) {
