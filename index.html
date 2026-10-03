@@ -406,9 +406,6 @@
     .live { color: var(--slate); font-weight: 800; background: #A2B447; border-radius: 999px; padding: 4px 9px; }
 
     /* Chat-style history: mascot beside each connected speech bubble */
-    .history-search-suggestions{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
-    .history-search-suggestion{border:1px solid var(--green-border);border-radius:999px;padding:5px 10px;background:var(--forest-soft);color:var(--forest);font:inherit;font-size:.78rem;font-weight:800;cursor:pointer}
-    .history-search-suggestion:hover{filter:brightness(1.06)}
     .history-chat { display: flex; flex-direction: column; gap: 22px; margin-top: 24px; }
     .chat-message { display: flex; align-items: center; gap: 14px; width: min(760px, 100%); animation: chat-enter .45s ease both; }
     .chat-message:nth-child(even) { align-self: flex-end; flex-direction: row-reverse; }
@@ -1011,7 +1008,7 @@
         </form>
         <p class="admin-warning" id="admin-warning">Modo demo: los cambios se guardan solo en este navegador. Revertir marca una transacción como anulada; no mueve dinero ni modifica presupuestos reales.</p>
       </div>
-      <div class="country-search"><input id="history-search" type="search" placeholder="Buscar país en el historial…" aria-label="Buscar país en el historial"><div id="history-search-suggestions" class="history-search-suggestions" aria-live="polite"></div></div><div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
+      <div class="country-search"><input id="history-search" type="search" placeholder="Buscar país en el historial…" aria-label="Buscar país en el historial"></div><div class="history-chat" id="history-chat" aria-label="Mensajes del historial"></div>
     </section>
   </main>
 
@@ -1467,13 +1464,11 @@
     budgetInfoModal.addEventListener("click",event=>{if(event.target===budgetInfoModal)closeBudgetInfo();});
     document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!budgetInfoModal.hidden)closeBudgetInfo();});
     function filterCountries() {
-      const input=document.getElementById("lobby-search");
-      const query=normalizeSimText(input?.value||"");
+      const query=document.getElementById("lobby-search").value.trim().toLocaleLowerCase();
       const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
       let visible=0;
       cards.forEach(card=>{
-        const haystack=normalizeSimText(card.dataset.search||card.textContent||"");
-        const show=!query||haystack.includes(query);
+        const show=(card.dataset.search||"").includes(query);
         card.hidden=!show;
         card.style.display=show?"":"none";
         if(show)visible++;
@@ -1483,8 +1478,7 @@
         group.hidden=!hasVisible;
         group.style.display=hasVisible?"":"none";
       });
-      const count=document.getElementById("lobby-count");
-      if(count)count.textContent=visible+" / "+cards.length;
+      document.getElementById("lobby-count").textContent=visible+" / "+cards.length;
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);if(lastSimulation){lastSimulation.lang=event.target.value;renderSimulationResult();}});
@@ -1737,31 +1731,8 @@
 
 
     function renderHistory(){
-      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es;
-      const rawQuery=document.getElementById("history-search")?.value||"";
-      const query=normalizeSimText(rawQuery).replace(/[^a-z0-9]+/g," ").trim();
-      const suggestions=document.getElementById("history-search-suggestions");
-      if(suggestions){
-        if(query){
-          const matches=countryRoster.filter(country=>[country.es,country.en,country.fr].some(name=>normalizeSimText(name).includes(query)));
-          suggestions.innerHTML=matches.slice(0,6).map(country=>{
-            const label=escapeHTML(country[lang]||country.es||country.en);
-            return `<button type="button" class="history-search-suggestion" data-history-country="${escapeHTML(country.es||country.en)}">${label}</button>`;
-          }).join("");
-        }else suggestions.innerHTML="";
-      }
-      const filtered=transactions.map(transactionData).filter(item=>{
-        if(!query)return true;
-        const sender=findCountry(item.sender),receiver=findCountry(item.receiver),stake=findStakeholder(item.receiver);
-        const names=[
-          item.sender,item.receiver,item.title,item.reason,
-          sender?.es,sender?.en,sender?.fr,
-          receiver?.es,receiver?.en,receiver?.fr,
-          stake?.es,stake?.en,stake?.fr,
-          ...(stake?.aliases||[])
-        ].filter(Boolean).map(value=>normalizeSimText(value)).join(" ");
-        return names.includes(query) || query.split(" ").every(part=>names.includes(part));
-      });
+      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
+      const filtered=transactions.map(transactionData).filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
       host.innerHTML=filtered.map((item,index)=>{
         const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?`<span class="reversed-tag">${t.reversed}</span>`:"";
         const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
@@ -1770,14 +1741,6 @@
     }
 
     document.getElementById("history-search").addEventListener("input",renderHistory);
-    document.getElementById("history-search-suggestions").addEventListener("click",event=>{
-      const button=event.target.closest("[data-history-country]");
-      if(!button)return;
-      const input=document.getElementById("history-search");
-      input.value=button.dataset.historyCountry||"";
-      renderHistory();
-      input.focus();
-    });
 
     function toggleAdmin() {
       if (!adminUnlocked) {
