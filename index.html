@@ -1041,6 +1041,22 @@
       }
     });
 
+    // Current Lobby batch 3: Poland, United Kingdom, Norway, Ukraine, Türkiye, Iraq, Brazil, Colombia.
+    // Poland/UK/Norway/Brazil already have source-backed entries; this pass fills the four
+    // countries that were still missing in this exact Lobby sequence.
+    const currentLobbyBatch3BudgetInputs = {
+      UKR:{realPublicBudget:null,debtGDP:89.7,balanceGDP:-23.1,governmentEffectiveness:39.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2026 Ukraine EFF review: 2024 general-government expenditure 71.2% GDP; absolute amount left pending a consistent GDP/FX extraction",fiscalSpace:"IMF 2026 Ukraine EFF review: 2024 public debt 89.7% GDP and overall balance excluding grants -23.1% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Ukraine NDC; numeric scoring pending methodology"}},
+      TUR:{realPublicBudget:null,debtGDP:null,balanceGDP:-5.0,governmentEffectiveness:50.0,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2026 publication for the 2025 Article IV: absolute 2024 expenditure amount left pending a consistent comparable extraction",fiscalSpace:"IMF 2026 publication for the 2025 Article IV: 2024 overall fiscal deficit 5.0% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Türkiye NDC; numeric scoring pending methodology"}},
+      IRQ:{realPublicBudget:null,debtGDP:47.2,balanceGDP:-4.2,governmentEffectiveness:29.9,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 expenditure and net lending 43.5% GDP; absolute amount left pending a consistent GDP/FX extraction",fiscalSpace:"IMF 2025 Article IV, 2024 total government debt 47.2% GDP and fiscal balance -4.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Iraq NDC; numeric scoring pending methodology"}},
+      COL:{realPublicBudget:null,debtGDP:61.2,balanceGDP:-6.7,governmentEffectiveness:49.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure data; absolute amount left pending a consistent public-budget extraction",fiscalSpace:"IMF 2025 Article IV: 2024 central-government deficit -6.7% GDP and gross public debt 61.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Colombia NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyBatch3BudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
+
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
