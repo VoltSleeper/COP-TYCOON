@@ -1230,8 +1230,11 @@
       const calculatedMaximum=calculateMaximumAvailable(country);
       const modelBudget=Number(country.budgetModel?.realPublicBudget);
       const historicalBudget=Number(country.budget2025?.total);
+      const historicalMaximum=Number(country.budget2025?.maxAmount);
       const current=Number.isFinite(modelBudget)?modelBudget:(Number.isFinite(historicalBudget)?historicalBudget:null);
-      const baseAvailable=calculatedMaximum===null?null:calculatedMaximum;
+      const baseAvailable=calculatedMaximum!==null
+        ?calculatedMaximum
+        :(Number.isFinite(historicalMaximum)?historicalMaximum:null);
       return {
         current,
         available:baseAvailable===null?null:Math.max(0,baseAvailable-outgoing+incoming),
