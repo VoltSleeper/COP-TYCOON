@@ -1024,6 +1024,23 @@
         budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
     });
+    // Current Lobby batch 2 continuation, in first-appearance order:
+    // Chile, Democratic Republic of the Congo, United Arab Emirates, Indonesia, Tuvalu, Samoa, Italy, France.
+    // CHL/ARE/ITA/FRA were already populated in earlier source-backed passes; this fills the four
+    // countries that were still missing from this exact Lobby sequence.
+    const currentLobbyBatch2ContinuationBudgetInputs = {
+      COD:{realPublicBudget:null,debtGDP:24.1,balanceGDP:-2.3,governmentEffectiveness:18.4,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2024 Article IV, 2024 central-government expenditure 16.5% of GDP; absolute amount left pending a consistent CDF/USD conversion",fiscalSpace:"IMF 2024 Article IV, 2024 public debt 24.1% GDP and overall fiscal balance -2.3% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Democratic Republic of the Congo NDC; numeric scoring pending methodology"}},
+      IDN:{realPublicBudget:218700000000,debtGDP:39.6,balanceGDP:-1.6,governmentEffectiveness:54.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure 16.6% GDP and nominal GDP Rp20,892tn; converted using 2024 average IDR/USD ≈ 15,855",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 39.6% GDP and balance -1.6% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Indonesia NDC; numeric scoring pending methodology"}},
+      TUV:{realPublicBudget:72600000,debtGDP:7.7,balanceGDP:0.6,governmentEffectiveness:37.9,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 expenditure 122.3% GDP and nominal GDP A$90.0m; converted using rounded 2024 AUD/USD ≈ 0.66",fiscalSpace:"IMF 2025 Article IV, 2024 gross public debt 7.7% GDP and net lending/borrowing 0.6% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Tuvalu NDC; numeric scoring pending methodology"}},
+      WSM:{realPublicBudget:383800000,debtGDP:22.5,balanceGDP:-0.1,governmentEffectiveness:59.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2024 Article IV, 2024/25 expenditure 33.1% GDP and nominal GDP 3,200.3m tala; converted at 2024/25 average tala/USD ≈ 2.76",fiscalSpace:"IMF 2024 Article IV, 2024/25 gross debt 22.5% GDP and overall balance -0.1% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Samoa NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyBatch2ContinuationBudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
+
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
