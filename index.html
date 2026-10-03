@@ -967,6 +967,14 @@
       PHL:{realPublicBudget:103400000000,debtGDP:60.7,balanceGDP:-5.7,governmentEffectiveness:54.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 national-government expenditure 22.4% GDP; nominal GDP US$461.6bn",fiscalSpace:"IMF 2025 Article IV, 2024 national-government gross debt 60.7% GDP and overall balance -5.7% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Philippines NDC; numeric scoring pending methodology"}}
     };
 
+    // Third country batch: source-backed 2024 fiscal inputs where the source definition is comparable.
+    const thirdCountryBatchBudgetInputs = {
+      PRK:{realPublicBudget:null,debtGDP:null,balanceGDP:null,governmentEffectiveness:26.6,climateCommitment:null,status:"partial",sources:{publicBudget:null,fiscalSpace:null,governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: DPR Korea NDC; numeric scoring pending methodology"}},
+      ESP:{realPublicBudget:722800000000,debtGDP:101.8,balanceGDP:-3.2,governmentEffectiveness:72.9,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure €722.8bn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 101.8% GDP and balance -3.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Spain/EU NDC; numeric scoring pending methodology"}},
+      USA:{realPublicBudget:null,debtGDP:123.9,balanceGDP:-7.9,governmentEffectiveness:77.8,climateCommitment:null,status:"partial",sources:{publicBudget:null,fiscalSpace:"IMF 2026 Article IV, 2025 general-government debt 123.9% GDP and balance -6.8%; 2024 general-government balance -7.9% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: United States climate commitment; numeric scoring pending methodology"}},
+      FRA:{realPublicBudget:1671000000000,debtGDP:113.1,balanceGDP:-5.8,governmentEffectiveness:74.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 expenditure 57.2% of GDP and nominal GDP €2.921tn; derived public expenditure ≈ €1.671tn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 113.1% GDP and balance -5.8% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: France/EU NDC; numeric scoring pending methodology"}}
+    };
+
     Object.entries(firstCountryBatchBudgetInputs).forEach(([iso3,input])=>{
       if(budgetFiscalData[iso3]){
         budgetFiscalData[iso3]={
@@ -981,7 +989,12 @@
         budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
     });
-    countryRoster.forEach(country=>{
+
+    Object.entries(thirdCountryBatchBudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });    countryRoster.forEach(country=>{
       const fiscal=budgetFiscalData[country.iso3];
       if(fiscal) country.budgetModel=fiscal;
     });
