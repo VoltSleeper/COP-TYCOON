@@ -715,6 +715,30 @@
     @media (max-width:900px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
     @media (max-width:680px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
     @media (max-width:460px){#lobby-grid .room-cards{grid-template-columns:1fr!important}}
+
+    /* Lobby grid hard-lock: every country is one equal square cell */
+    #lobby-grid .room-cards{
+      display:grid!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      grid-auto-rows:auto!important;
+      gap:16px!important;
+      width:100%!important;
+      align-items:start!important;
+    }
+    #lobby-grid .room-cards > .country-card{
+      display:flex!important;
+      width:100%!important;
+      min-width:0!important;
+      max-width:none!important;
+      height:auto!important;
+      min-height:0!important;
+      aspect-ratio:1 / 1!important;
+      align-self:start!important;
+      overflow:hidden!important;
+    }
+    @media (max-width:1100px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+    @media (max-width:760px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+    @media (max-width:520px){#lobby-grid .room-cards{grid-template-columns:1fr!important}}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
