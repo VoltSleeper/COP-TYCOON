@@ -1343,7 +1343,7 @@
       {room:3,es:"Lobby Grupo ACS",en:"ACS Group lobby",fr:"Lobby Groupe ACS",people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
       {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
       {room:3,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
-      {room:0,es:"DTB · WWF",en:"DTB · WWF",fr:"DTB · WWF",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
+      {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
     ];
     const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
 
@@ -1715,15 +1715,38 @@
       }catch(error){console.warn("Historial compartido no disponible todavía.",error);try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}catch(localError){transactions=[...demoTransactions];}}
       renderHistory();renderCountryRoster();subscribeToHistory();
     }
+    let historySyncTimer=null;
+    let historySyncing=false;
     function subscribeToHistory(){
       if(historyRealtimeChannel)return;
-      historyRealtimeChannel=supabaseClient.channel("cop-tycoon-history-live").on("postgres_changes",{event:"*",schema:"public",table:HISTORY_TABLE},payload=>{
+      const channel=supabaseClient.channel("cop-tycoon-history-live");
+      channel.on("postgres_changes",{event:"*",schema:"public",table:HISTORY_TABLE},payload=>{
         if(payload.eventType==="INSERT"){const incoming=normalizeHistoryRow(payload.new);transactions=[incoming,...transactions.filter(item=>item.id!==incoming.id)];}
         else if(payload.eventType==="UPDATE"){const incoming=normalizeHistoryRow(payload.new);transactions=transactions.map(item=>item.id===incoming.id?incoming:item);}
         else if(payload.eventType==="DELETE"){transactions=transactions.filter(item=>item.id!==payload.old.id);}
         renderHistory();renderCountryRoster();
-      }).subscribe();
+      });
+      channel.subscribe(status=>{
+        if(status==="SUBSCRIBED"){historyRealtimeChannel=channel;}
+        if(status==="CHANNEL_ERROR"||status==="TIMED_OUT"||status==="CLOSED"){
+          if(historyRealtimeChannel===channel)historyRealtimeChannel=null;
+          console.warn("Supabase Realtime no está disponible:",status);
+        }
+      });
     }
+    async function syncHistoryFallback(){
+      if(historySyncing||!historyLoadedFromSupabase)return;
+      historySyncing=true;
+      try{
+        const {data,error}=await supabaseClient.from(HISTORY_TABLE).select("id,country,sender,receiver,amount,title,reason,time,reversed").order("id",{ascending:false});
+        if(!error&&Array.isArray(data)){
+          transactions=data.map(normalizeHistoryRow);
+          renderHistory();renderCountryRoster();
+        }
+      }catch(error){console.warn("Sincronización periódica del historial no disponible.",error)}
+      finally{historySyncing=false}
+    }
+
 
     function renderHistory(){
       const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
@@ -1849,6 +1872,13 @@
       if(!event.target.closest("#admin-country-label"))adminCountrySuggestions.hidden=true;
     });
 
+    function findStakeholder(value){
+      const query=String(value||"").trim().toLocaleLowerCase();
+      if(!query)return null;
+      return stakeholderRoster.find(item=>[item.es,item.en,item.fr].some(name=>String(name).toLocaleLowerCase()===query))
+        || stakeholderRoster.find(item=>[item.es,item.en,item.fr].some(name=>String(name).toLocaleLowerCase().includes(query)))||null;
+    }
+
     document.getElementById("admin-transaction-form").addEventListener("submit",async event=>{
       event.preventDefault();
       if(!adminUnlocked)return;
@@ -1858,10 +1888,11 @@
       const reason=document.getElementById("admin-reason").value.trim();
       const sender=findCountry(senderName);
       const receiverCountry=findCountry(receiverName);
+      const stakeholder=findStakeholder(receiverName);
       const lobbyMatch=receiverName.match(/^lobby\s*([123])$/i);
-      const receiver=receiverCountry|| (lobbyMatch ? "Lobby "+lobbyMatch[1] : (receiverName ? null : sender));
+      const receiver=receiverCountry || (stakeholder ? stakeholder.es : null) || (lobbyMatch ? "Lobby "+lobbyMatch[1] : (receiverName ? null : sender));
       if(!sender){alert("Selecciona un país emisor válido.");return;}
-      if(receiverName && !receiver){alert("El receptor debe ser un país, Lobby 1, Lobby 2, Lobby 3 o dejarse vacío para el mismo país.");return;}
+      if(receiverName && !receiver){alert("El receptor debe ser un país, Lobby 1, Lobby 2, Lobby 3, activistas, DTB (WWF), ChatGPT u otro participante del lobby.");return;}
       if(!Number.isFinite(amount)||amount<=0){alert("Introduce una cantidad válida, por ejemplo 20M o 20000000.");return;}
       const currentState=getBudgetState(sender);
       if(currentState&&Number.isFinite(currentState.available)&&amount>currentState.available){alert("La cantidad supera el máximo disponible actual ("+formatSimMoney(currentState.available,document.getElementById("language").value)+").");return;}
@@ -1883,6 +1914,7 @@
     filterCountries();
     renderHistory();
     loadTransactions();
+    if(!historySyncTimer) historySyncTimer=setInterval(syncHistoryFallback,5000);
   </script>
 </body>
 </html>
