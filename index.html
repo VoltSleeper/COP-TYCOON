@@ -759,6 +759,39 @@
       #lobby-grid .country-card{justify-content:center}
       #lobby-grid .country-info{margin-top:8px}
     }
+
+/* Lobby fit + visible budget info */
+.lobby-note-row{display:flex!important;align-items:center!important;justify-content:center!important;gap:10px!important;width:100%!important;margin:4px 0 10px!important}
+.lobby-note-row .note{margin:0!important;text-align:center!important}
+.lobby-info-trigger{flex:0 0 26px!important;width:26px!important;height:26px!important;margin:0!important;border:2px solid #6F9DBB!important;border-radius:50%!important;background:#102B3C!important;color:#EAF6FF!important;box-shadow:0 0 12px #6F9DBB44!important;font-size:.8rem!important;line-height:1!important;z-index:5!important}
+.lobby-info-trigger:hover,.lobby-info-trigger:focus-visible{transform:scale(1.08);background:#18364A!important;box-shadow:0 0 18px #A9D2EC77!important}
+#lobby-grid .country-card{aspect-ratio:1 / 1!important;min-height:0!important;padding:14px 12px!important;justify-content:center!important;overflow:hidden!important}
+#lobby-grid .country-flag{width:58px!important;height:58px!important;border-radius:17px!important;font-size:2.35rem!important}
+#lobby-grid .country-info{margin-top:8px!important}
+#lobby-grid .country-name{font-size:1rem!important;line-height:1.02!important;min-height:2.05em!important;margin-bottom:7px!important}
+#lobby-grid .room-chip{font-size:.62rem!important;padding:3px 7px!important;line-height:1!important}
+#lobby-grid .country-detail{gap:3px!important;font-size:.68rem!important;line-height:1.05!important}
+#lobby-grid .country-detail span{font-size:.59rem!important;line-height:1.05!important}
+#lobby-grid .budget-value{font-size:.72rem!important;padding:2px 5px!important;line-height:1.05!important}
+@media (min-width:761px){#lobby-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:14px!important}}
+@media (min-width:761px) and (max-width:1100px){
+  #lobby-grid{gap:12px!important}
+  #lobby-grid .country-card{padding:12px 10px!important}
+  #lobby-grid .country-flag{width:52px!important;height:52px!important;font-size:2.1rem!important}
+  #lobby-grid .country-name{font-size:.92rem!important}
+  #lobby-grid .country-detail{font-size:.62rem!important}
+  #lobby-grid .country-detail span{font-size:.55rem!important}
+  #lobby-grid .budget-value{font-size:.66rem!important}
+}
+@media (max-width:760px){
+  #lobby-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  #lobby-grid .country-card{padding:11px 8px!important}
+  #lobby-grid .country-flag{width:50px!important;height:50px!important;font-size:2rem!important}
+  #lobby-grid .country-name{font-size:.84rem!important}
+  #lobby-grid .country-detail{font-size:.58rem!important}
+  #lobby-grid .country-detail span{font-size:.52rem!important}
+  #lobby-grid .budget-value{font-size:.62rem!important}
+}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
