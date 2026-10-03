@@ -969,9 +969,7 @@
 
     // Third country batch: source-backed 2024 fiscal inputs where the source definition is comparable.
     const thirdCountryBatchBudgetInputs = {
-      PRK:{realPublicBudget:null,debtGDP:null,balanceGDP:null,governmentEffectiveness:26.6,climateCommitment:null,status:"partial",sources:{publicBudget:null,fiscalSpace:null,governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: DPR Korea NDC; numeric scoring pending methodology"}},
       ESP:{realPublicBudget:722800000000,debtGDP:101.8,balanceGDP:-3.2,governmentEffectiveness:72.9,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure €722.8bn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 101.8% GDP and balance -3.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Spain/EU NDC; numeric scoring pending methodology"}},
-      USA:{realPublicBudget:null,debtGDP:123.9,balanceGDP:-7.9,governmentEffectiveness:77.8,climateCommitment:null,status:"partial",sources:{publicBudget:null,fiscalSpace:"IMF 2026 Article IV, 2025 general-government debt 123.9% GDP and balance -6.8%; 2024 general-government balance -7.9% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: United States climate commitment; numeric scoring pending methodology"}},
       FRA:{realPublicBudget:1671000000000,debtGDP:113.1,balanceGDP:-5.8,governmentEffectiveness:74.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 expenditure 57.2% of GDP and nominal GDP €2.921tn; derived public expenditure ≈ €1.671tn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government debt 113.1% GDP and balance -5.8% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: France/EU NDC; numeric scoring pending methodology"}}
     };
 
@@ -994,11 +992,7 @@
       if(budgetFiscalData[iso3]){
         budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
-    });    countryRoster.forEach(country=>{
-      const fiscal=budgetFiscalData[country.iso3];
-      if(fiscal) country.budgetModel=fiscal;
     });
-
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
@@ -1045,6 +1039,20 @@
       {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
       {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu"}
     ];
+
+    // Current-year Lobby is the single source of truth for the active country roster.
+    // Budget data is only wired into countries that actually appear in these rooms.
+    const currentLobbyCountryNames = [...new Set(roomRoster.map(entry=>entry.country))];
+    const currentLobbyCountryIso3 = new Set(
+      currentLobbyCountryNames
+        .map(name=>countryRoster.find(country=>country.en===name)?.iso3)
+        .filter(Boolean)
+    );
+    countryRoster.forEach(country=>{
+      const fiscal=budgetFiscalData[country.iso3];
+      if(fiscal && currentLobbyCountryIso3.has(country.iso3)) country.budgetModel=fiscal;
+    });
+
     const stakeholderRoster = [
       {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"},
       {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
