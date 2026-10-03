@@ -958,6 +958,15 @@
       CHN:{realPublicBudget:4750000000000,debtGDP:60.9,balanceGDP:-3.0,governmentEffectiveness:68.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-budgetary expenditure 33.0% GDP; converted using IMF 2024 nominal GDP RMB 134,921bn",fiscalSpace:"IMF 2025 Article IV, 2024 general-budgetary debt 60.9% GDP and official fiscal balance -3.0% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: China NDC; numeric scoring pending methodology"}},
       COL:{realPublicBudget:221000000000,debtGDP:61.2,balanceGDP:-6.7,governmentEffectiveness:49.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government primary expenditure 18.0% GDP; exact public expenditure reference pending extraction",fiscalSpace:"IMF 2025 Article IV, 2024 central-government overall deficit 6.7% GDP and gross public debt 61.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Colombia NDC; numeric scoring pending methodology"}}
     };
+
+    // Second country batch: source-backed fiscal inputs gathered from IMF 2025 Article IV materials.
+    const secondCountryBatchBudgetInputs = {
+      ARE:{realPublicBudget:118200000000,debtGDP:34.9,balanceGDP:6.4,governmentEffectiveness:75.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 general-government expenditure AED 434.3bn; converted at AED 3.6725/USD",fiscalSpace:"IMF 2025 Article IV, 2024 gross general-government debt 34.9% GDP and net lending 6.4% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: UAE NDC; numeric scoring pending methodology"}},
+      ETH:{realPublicBudget:21000000000,debtGDP:34.8,balanceGDP:-2.0,governmentEffectiveness:38.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 government expenditure and net lending 12.0% GDP; converted using 2024 nominal GDP ≈ US$175.4bn",fiscalSpace:"IMF 2025 Article IV, 2024 public debt 34.8% GDP and fiscal balance -2.0% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Ethiopia NDC; numeric scoring pending methodology"}},
+      FJI:{realPublicBudget:1844000000,debtGDP:79.5,balanceGDP:-3.5,governmentEffectiveness:63.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure 31.0% GDP; nominal GDP US$5.949bn",fiscalSpace:"IMF 2025 Article IV, 2024 central-government debt 79.5% GDP and overall balance -3.5% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Fiji NDC; numeric scoring pending methodology"}},
+      PHL:{realPublicBudget:103400000000,debtGDP:60.7,balanceGDP:-5.7,governmentEffectiveness:54.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 national-government expenditure 22.4% GDP; nominal GDP US$461.6bn",fiscalSpace:"IMF 2025 Article IV, 2024 national-government gross debt 60.7% GDP and overall balance -5.7% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Philippines NDC; numeric scoring pending methodology"}}
+    };
+
     Object.entries(firstCountryBatchBudgetInputs).forEach(([iso3,input])=>{
       if(budgetFiscalData[iso3]){
         budgetFiscalData[iso3]={
@@ -965,6 +974,11 @@
           ...input,
           sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}
         };
+      }
+    });
+    Object.entries(secondCountryBatchBudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
     });
     countryRoster.forEach(country=>{
