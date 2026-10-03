@@ -993,6 +993,20 @@
         budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
       }
     });
+
+    // Current Lobby batch 1: Germany, Ireland, Japan, Canada, Russia, China, India, Venezuela.
+    // Only source-backed fields are added; climate commitment scoring remains pending.
+    const currentLobbyBatch1BudgetInputs = {
+      IRL:{realPublicBudget:125686000000,debtGDP:36.4,balanceGDP:4.3,governmentEffectiveness:82.7,climateCommitment:null,status:"partial",sources:{publicBudget:"Ireland CSO IMF Summary Data, 2024 general-government expenditure €125.686bn",fiscalSpace:"IMF 2025 Article IV, 2024 general-government gross debt 36.4% GDP and overall balance 4.3% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Ireland/EU NDC; numeric scoring pending methodology"}},
+      RUS:{realPublicBudget:null,debtGDP:20.3,balanceGDP:-2.5,governmentEffectiveness:45.1,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF Fiscal Monitor 2026 / IMF fiscal data: 2024 general-government expenditure 36.66% GDP; amount conversion pending a consistent GDP/FX extraction",fiscalSpace:"IMF Global Debt Database 2025, 2024 general-government debt 20.3% GDP; IMF Fiscal Monitor 2026, 2024 overall balance -2.5% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Russian Federation NDC; numeric scoring pending methodology"}},
+      VEN:{realPublicBudget:null,debtGDP:164.27,balanceGDP:-5.1,governmentEffectiveness:22.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF Fiscal Monitor 2026, 2024 general-government expenditure 17.5% GDP; amount conversion pending because IMF notes significant information gaps",fiscalSpace:"IMF Global Debt Database 2025, 2024 general-government debt 164.27% GDP; IMF Fiscal Monitor 2026, 2024 overall balance -5.1% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Venezuela NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyBatch1BudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
