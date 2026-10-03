@@ -863,11 +863,11 @@
 #lobby-grid .country-flag{width:54px!important;height:54px!important;min-height:54px!important;font-size:2.15rem!important;border-radius:16px!important;margin-bottom:2px!important}
 #lobby-grid .country-info{margin-top:3px!important}
 #lobby-grid .country-name{font-size:1.22rem!important;line-height:1.02!important;min-height:2.04em!important;margin:0 0 3px!important}
-#lobby-grid .room-chip{font-size:.74rem!important;padding:2px 7px!important;line-height:1!important;margin:0!important}
-#lobby-grid .country-detail{gap:2px!important;font-size:.88rem!important;line-height:1.02!important;margin-top:3px!important}
-#lobby-grid .country-detail span{font-size:.74rem!important;line-height:1!important}
+#lobby-grid .room-chip{font-size:.8rem!important;padding:2px 7px!important;line-height:1!important;margin:0!important}
+#lobby-grid .country-detail{gap:2px!important;font-size:.96rem!important;line-height:1.02!important;margin-top:3px!important}
+#lobby-grid .country-detail span{font-size:.82rem!important;line-height:1!important}
 #lobby-grid .country-detail strong{line-height:1.02!important}
-#lobby-grid .budget-value{font-size:.92rem!important;padding:1px 6px!important;line-height:1!important}
+#lobby-grid .budget-value{font-size:1rem!important;padding:1px 6px!important;line-height:1!important}
 #lobby-grid .country-card > *{margin-top:2px!important;margin-bottom:2px!important}
 @media (min-width:761px) and (max-width:1100px){
   #lobby-grid .country-card{padding:14px 11px!important}
@@ -1333,19 +1333,14 @@
     });
 
     const stakeholderRoster = [
-      {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"},
-      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
-      {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
-      {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",people:{es:"Julia D. + 1 persona por asignar",en:"Julia D. + 1 participant to be assigned",fr:"Julia D. + 1 personne à attribuer"},icon:"🏢"},
-      {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",people:{es:"Sacha",en:"Sacha",fr:"Sacha"},icon:"💬"},
-      {room:2,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
-      {room:2,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
-      {room:3,es:"Lobby Grupo ACS",en:"ACS Group lobby",fr:"Lobby Groupe ACS",people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
-      {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
-      {room:3,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
-      {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",people:{es:"Nuria · Transacciones y donaciones",en:"Nuria · Transactions and donations",fr:"Nuria · Transactions et dons"},icon:"🤝"}
-    ];
-    const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
+      {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",aliases:["DTB","WWF","Transactions and Donations Booth (WWF)"],people:{es:"Nuria",en:"Nuria",fr:"Nuria"},icon:"🤝"},
+      {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",aliases:["Activistas","Activistas climáticos","Climate activists"],people:{es:"Aproximadamente 2 participantes · nombres por asignar",en:"About 2 participants · names to be assigned",fr:"Environ 2 personnes · noms à attribuer"},icon:"🌱"},
+      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"1 persona por asignar",en:"1 participant to be assigned",fr:"1 personne à attribuer"},icon:"🌴"},
+      {room:2,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
+      {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",aliases:["Nestlé","Nestle","Lobby Nestlé"],people:{es:"Julia D. + 1 persona por asignar",en:"Julia D. + 1 participant to be assigned",fr:"Julia D. + 1 personne à attribuer"},icon:"🏢"},
+      {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",aliases:["ChatGPT","Lobby ChatGPT"],people:{es:"Sacha",en:"Sacha",fr:"Sacha"},icon:"💬"},
+      {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",aliases:["Exxon Mobil","Exxon","Lobby Exxon Mobil"],people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"}
+    ];    const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
 
     function applyLanguage(lang) {
       const t=translations[lang]||translations.es;
@@ -1702,7 +1697,7 @@
     function normalizeHistoryRow(row){return transactionData({id:row.id,country:row.country||row.sender||"",sender:row.sender||"",receiver:row.receiver||"",amount:Number(row.amount||0),title:row.title||"",reason:row.reason||"",time:row.time||"—",reversed:!!row.reversed});}
     function historyPayload(item){const data=transactionData(item);return {id:data.id,country:data.sender||data.country||"🌍",sender:data.sender||data.country||"",receiver:data.receiver||"",amount:Number(data.amount||0),title:data.title||buildTransactionTitle(data.sender,data.receiver,data.amount),reason:data.reason||"",time:data.time||"—",reversed:!!data.reversed};}
     function buildTransactionTitle(sender,receiver,amount){
-      const a=findCountry(sender),b=findCountry(receiver),lang=document.getElementById("language")?.value||"es",an=a?(a[lang]||a.es):sender,bn=b?(b[lang]||b.es):receiver,money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
+      const a=findCountry(sender),b=findCountry(receiver),stake=findStakeholder(receiver),lang=document.getElementById("language")?.value||"es",an=a?(a[lang]||a.es):sender,bn=b?(b[lang]||b.es):stake?(stake[lang]||stake.es):receiver||"—",money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
       return lang==="en"?an+" donated "+money+" to "+bn:lang==="fr"?an+" a fait un don de "+money+" à "+bn:an+" ha donado "+money+" a "+bn;
     }
     async function loadTransactions(){
@@ -1754,7 +1749,7 @@
       host.innerHTML=filtered.map((item,index)=>{
         const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?`<span class="reversed-tag">${t.reversed}</span>`:"";
         const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
-        return `<article class="chat-message ${index%2?"is-right":""} ${item.reversed?"is-reversed":""}"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${sender?.flag||"🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div><div class="chat-bubble"><span class="live">● ${t.live}</span>${reversed}<h3 class="chat-title">${escapeHTML(title)}</h3><div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div><div class="chat-meta">→ ${escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||item.receiver||"—"))} · ${item.amount?formatSimMoney(item.amount,lang):"—"} · ${escapeHTML(item.time||"—")}</div>${controls}</div></article>`;
+        return `<article class="chat-message ${index%2?"is-right":""} ${item.reversed?"is-reversed":""}"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${sender?.flag||"🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div><div class="chat-bubble"><span class="live">● ${t.live}</span>${reversed}<h3 class="chat-title">${escapeHTML(title)}</h3><div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div><div class="chat-meta">→ ${escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))} · ${item.amount?formatSimMoney(item.amount,lang):"—"} · ${escapeHTML(item.time||"—")}</div>${controls}</div></article>`;
       }).join("")||`<p class="note">${t.emptyHistory}</p>`;
     }
 
@@ -1875,8 +1870,8 @@
     function findStakeholder(value){
       const query=String(value||"").trim().toLocaleLowerCase();
       if(!query)return null;
-      return stakeholderRoster.find(item=>[item.es,item.en,item.fr].some(name=>String(name).toLocaleLowerCase()===query))
-        || stakeholderRoster.find(item=>[item.es,item.en,item.fr].some(name=>String(name).toLocaleLowerCase().includes(query)))||null;
+      return stakeholderRoster.find(item=>[item.es,item.en,item.fr,...(item.aliases||[])].some(name=>String(name).toLocaleLowerCase()===query))
+        || stakeholderRoster.find(item=>[item.es,item.en,item.fr,...(item.aliases||[])].some(name=>String(name).toLocaleLowerCase().includes(query)))||null;
     }
 
     document.getElementById("admin-transaction-form").addEventListener("submit",async event=>{
