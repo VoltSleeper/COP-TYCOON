@@ -1057,6 +1057,23 @@
       }
     });
 
+    // Current Lobby batch 4: Ethiopia, Tonga, Spain, Sweden, Israel, Australia, Singapore, Morocco.
+    // Ethiopia/Spain/Australia were already populated; this pass fills the five countries
+    // that were still missing in this exact Lobby sequence.
+    const currentLobbyBatch4BudgetInputs = {
+      TON:{realPublicBudget:286000000,debtGDP:37.0,balanceGDP:4.2,governmentEffectiveness:50.6,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, FY2024 central-government expenditure 51.3% GDP and nominal GDP US$558.1m; derived public expenditure ≈ US$286m",fiscalSpace:"IMF 2025 Article IV, FY2024 public debt 37.0% GDP and overall balance 4.2% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Tonga NDC; numeric scoring pending methodology"}},
+      SWE:{realPublicBudget:null,debtGDP:33.9,balanceGDP:-0.7,governmentEffectiveness:85.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 total expenditure 48.2% GDP; absolute amount left pending a consistent SEK/USD extraction",fiscalSpace:"IMF 2025 Article IV, 2024 general-government gross debt 33.9% GDP and net lending -0.7% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Sweden/EU NDC; numeric scoring pending methodology"}},
+      ISR:{realPublicBudget:null,debtGDP:67.7,balanceGDP:-8.1,governmentEffectiveness:74.1,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2026 Article IV, 2024 general-government expenditure 43.7% GDP; absolute amount left pending a consistent ILS/USD extraction",fiscalSpace:"IMF 2026 Article IV, 2024 general-government public debt 67.7% GDP and fiscal balance -8.1% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Israel NDC; numeric scoring pending methodology"}},
+      SGP:{realPublicBudget:null,debtGDP:173.0,balanceGDP:3.5,governmentEffectiveness:95.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure series; absolute amount left pending a consistent SGD/USD extraction",fiscalSpace:"IMF 2025 Article IV, 2024 net lending/borrowing 3.5% GDP and gross debt 173% GDP; IMF notes substantial government deposits alongside gross debt",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Singapore NDC; numeric scoring pending methodology"}},
+      MAR:{realPublicBudget:null,debtGDP:70.0,balanceGDP:-4.1,governmentEffectiveness:54.8,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure 34.2% GDP; absolute amount left pending a consistent MAD/USD extraction",fiscalSpace:"IMF 2025 Article IV, 2024 central-government debt 70.0% GDP and budget balance -4.1% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Morocco NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyBatch4BudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
+
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
