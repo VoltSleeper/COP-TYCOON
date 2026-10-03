@@ -1464,11 +1464,13 @@
     budgetInfoModal.addEventListener("click",event=>{if(event.target===budgetInfoModal)closeBudgetInfo();});
     document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!budgetInfoModal.hidden)closeBudgetInfo();});
     function filterCountries() {
-      const query=document.getElementById("lobby-search").value.trim().toLocaleLowerCase();
+      const input=document.getElementById("lobby-search");
+      const query=normalizeSimText(input?.value||"");
       const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
       let visible=0;
       cards.forEach(card=>{
-        const show=(card.dataset.search||"").includes(query);
+        const haystack=normalizeSimText(card.dataset.search||card.textContent||"");
+        const show=!query||haystack.includes(query);
         card.hidden=!show;
         card.style.display=show?"":"none";
         if(show)visible++;
@@ -1478,7 +1480,8 @@
         group.hidden=!hasVisible;
         group.style.display=hasVisible?"":"none";
       });
-      document.getElementById("lobby-count").textContent=visible+" / "+cards.length;
+      const count=document.getElementById("lobby-count");
+      if(count)count.textContent=visible+" / "+cards.length;
     }
     document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);if(lastSimulation){lastSimulation.lang=event.target.value;renderSimulationResult();}});
