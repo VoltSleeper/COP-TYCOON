@@ -935,11 +935,7 @@
         <h2 id="lobby-heading">🌍 Lobby</h2>
         <button class="back" onclick="goHome()" id="back-lobby">← Inicio</button>
       </div>
-      <div class="country-search">
-      <input id="lobby-search" type="search" placeholder="Buscar país o representante…" aria-label="Buscar país o representante">
-      <span class="search-count" id="lobby-count"></span>
-    </div>
-    <div class="lobby-note-row">
+      <div class="lobby-note-row">
         <p class="note" id="lobby-note">
           Datos de demostración. El presupuesto oficial se actualizará cuando exista un registro autorizado.
         </p>
@@ -1356,8 +1352,8 @@
       document.querySelectorAll(".country-detail").forEach((el,i)=>{const spans=el.querySelectorAll("span");const strongs=el.querySelectorAll("strong");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;if(strongs[0])strongs[0].textContent=t.repExample;if(strongs[1])strongs[1].textContent=t.rooms[i]||t.rooms[0];if(strongs[2])strongs[2].textContent=t.budgetSample;});
       const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames?.[i]||el.textContent);
       document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
-    document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
-      renderCountryRoster();filterCountries();
+    document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
+      renderCountryRoster();
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
       document.getElementById("admin-receiver").placeholder=t.receiverPlaceholder;
       document.getElementById("admin-amount").placeholder=t.amountPlaceholder;
@@ -1455,28 +1451,6 @@
       document.getElementById("admin-country-options").innerHTML=countryRoster.map(country=>"<option value=\"" + escapeHTML(country[lang]||country.en) + "\"></option>").join("");
     }
 
-
-    function filterCountries(){
-      const input=document.getElementById("lobby-search");
-      const query=normalizeSimText(input?.value||"");
-      const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
-      let visible=0;
-      cards.forEach(card=>{
-        const source=normalizeSimText((card.dataset.search||"")+" "+(card.textContent||""));
-        const show=!query||source.includes(query);
-        card.hidden=!show;
-        card.style.display=show?"":"none";
-        if(show)visible++;
-      });
-      document.querySelectorAll("#lobby-grid .room-group").forEach(group=>{
-        const hasVisible=[...group.querySelectorAll(".country-card")].some(card=>!card.hidden);
-        group.hidden=!hasVisible;
-        group.style.display=hasVisible?"":"none";
-      });
-      const count=document.getElementById("lobby-count");
-      if(count)count.textContent=visible+" / "+cards.length;
-    }
-    document.getElementById("lobby-search")?.addEventListener("input",filterCountries);
 
     const budgetInfoModal=document.getElementById("budget-info-modal");
     function openBudgetInfo(countryName){const lang=document.getElementById("language").value,t=translations[lang]||translations.es;document.getElementById("budget-info-title").textContent=t.budgetInfoTitle;document.getElementById("budget-info-copy").textContent=t.budgetInfoCopy;document.getElementById("budget-info-budget").textContent=t.budgetInfoBudget;document.getElementById("budget-info-fiscal").textContent=t.budgetInfoFiscal;document.getElementById("budget-info-mobilization").textContent=t.budgetInfoMobilization;document.getElementById("budget-info-maximum").textContent=t.budgetInfoMaximum;document.getElementById("budget-info-method").textContent=t.budgetInfoMethod;document.getElementById("budget-info-sources").textContent=t.budgetInfoSources;document.getElementById("budget-info-tag").textContent=t.budgetInfoTag;document.getElementById("budget-info-previous-cop").textContent=t.budgetInfoPreviousCOP;budgetInfoModal.hidden=false;}
@@ -1900,7 +1874,6 @@
     });
 
     renderCountryRoster();
-    filterCountries();
     renderHistory();
     loadTransactions();
   </script>
