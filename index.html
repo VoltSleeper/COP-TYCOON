@@ -1074,6 +1074,21 @@
       }
     });
 
+    // Current Lobby final batch: Peru, Saudi Arabia, Philippines, Fiji.
+    // All four receive the latest source-backed fiscal inputs available in this pass.
+    const currentLobbyFinalBatchBudgetInputs = {
+      PER:{realPublicBudget:null,debtGDP:32.8,balanceGDP:-3.5,governmentEffectiveness:69.7,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 NFPS primary expenditure 27.1% GDP; absolute public-budget amount left pending a consistent comparable extraction",fiscalSpace:"IMF 2025 Article IV, 2024 gross public debt 32.8% GDP and NFPS overall balance -3.5% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Peru NDC; numeric scoring pending methodology"}},
+      SAU:{realPublicBudget:298000000000,debtGDP:26.2,balanceGDP:-2.5,governmentEffectiveness:66.6,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure 29.6% GDP; converted using IMF 2024 nominal GDP",fiscalSpace:"IMF 2025 Article IV, 2024 debt 26.2% GDP and fiscal balance -2.5% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Saudi Arabia NDC; numeric scoring pending methodology"}},
+      PHL:{realPublicBudget:103400000000,debtGDP:60.7,balanceGDP:-5.7,governmentEffectiveness:54.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 national-government expenditure 22.4% GDP; nominal GDP US$461.6bn",fiscalSpace:"IMF 2025 Article IV, 2024 national-government gross debt 60.7% GDP and overall balance -5.7% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Philippines NDC; numeric scoring pending methodology"}},
+      FJI:{realPublicBudget:1844000000,debtGDP:79.5,balanceGDP:-3.5,governmentEffectiveness:63.2,climateCommitment:null,status:"partial",sources:{publicBudget:"IMF 2025 Article IV, 2024 central-government expenditure 31.0% GDP; nominal GDP US$5.949bn",fiscalSpace:"IMF 2025 Article IV, 2024 central-government debt 79.5% GDP and overall balance -3.5% GDP",governmentEffectiveness:"World Bank WGI 2025 revision, 2024",climateCommitment:"UNFCCC: Fiji NDC; numeric scoring pending methodology"}}
+    };
+
+    Object.entries(currentLobbyFinalBatchBudgetInputs).forEach(([iso3,input])=>{
+      if(budgetFiscalData[iso3]){
+        budgetFiscalData[iso3]={...budgetFiscalData[iso3],...input,sources:{...budgetFiscalData[iso3].sources,...(input.sources||{})}};
+      }
+    });
+
     function clampBudgetFactor(value, min, max){
       return Math.min(max, Math.max(min, Number(value)));
     }
