@@ -792,7 +792,8 @@
   #lobby-grid .country-detail span{font-size:.55rem!important}
   #lobby-grid .budget-value{font-size:.66rem!important}
 }
-.budget-info-method{margin:12px 0 0;padding:12px 14px;border-left:3px solid #6F9DBB;background:#091E2B;border-radius:0 10px 10px 0;color:#B7C9D5;font-size:.78rem;line-height:1.5}\n
+.budget-info-method{margin:12px 0 0;padding:12px 14px;border-left:3px solid #6F9DBB;background:#091E2B;border-radius:0 10px 10px 0;color:#B7C9D5;font-size:.78rem;line-height:1.5}
+
 /* Lobby typography: readable, balanced and uniform */
 #lobby-grid .country-card{padding:18px 16px!important}
 #lobby-grid .country-flag{width:58px!important;height:58px!important;font-size:2.15rem!important;border-radius:16px!important}
@@ -1631,7 +1632,13 @@
       const text=document.getElementById("transaction").value.trim(),lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result"),parsed=parseSimulationInput(text);
       result.hidden=false;
       if(!parsed.countries.length){result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
-      if(!parsed.action){result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}\n      const actor=parsed.countries[0],action=parsed.action,receiver=parsed.countries[1]||null;\n      if(!action.self&&!receiver){result.innerHTML='<div class="sim-error">'+s.needsReceiver+'</div>';return;}\n      const simulationAmount=Number.isFinite(parsed.amount)?parsed.amount:0;\n      const state=actor.budget2025?getBudgetState(actor):null;\n      if(parsed.amount!==null&&state&&Number.isFinite(state.available)&&parsed.amount>state.available){result.innerHTML='<div class="sim-error">'+s.invalidAmount+'</div>';return;}\n      lastSimulation={parsed,lang,actor,receiver,action,amount:simulationAmount};simHorizon=5;renderSimulationResult();document.getElementById("wolf").textContent="🐺💭";
+      if(!parsed.action){result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}
+      const actor=parsed.countries[0],action=parsed.action,receiver=parsed.countries[1]||null;
+      if(!action.self&&!receiver){result.innerHTML='<div class="sim-error">'+s.needsReceiver+'</div>';return;}
+      const simulationAmount=Number.isFinite(parsed.amount)?parsed.amount:0;
+      const state=actor.budget2025?getBudgetState(actor):null;
+      if(parsed.amount!==null&&state&&Number.isFinite(state.available)&&parsed.amount>state.available){result.innerHTML='<div class="sim-error">'+s.invalidAmount+'</div>';return;}
+      lastSimulation={parsed,lang,actor,receiver,action,amount:simulationAmount};simHorizon=5;renderSimulationResult();document.getElementById("wolf").textContent="🐺💭";
     });
 
     function escapeHTML(value) {
