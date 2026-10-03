@@ -1734,50 +1734,31 @@
 
 
     function renderHistory(){
-      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
-      const filtered=transactions.map(transactionData).filter(item=>{
+      const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es;
+      const all=transactions.map(transactionData);
+      host.innerHTML=all.map((item,index)=>{
         const sender=findCountry(item.sender),receiver=findCountry(item.receiver),stakeholder=findStakeholder(item.receiver);
-        const senderNames=sender?[sender.es,sender.en,sender.fr]:[item.sender,item.country];
-        const receiverNames=receiver?[receiver.es,receiver.en,receiver.fr]:stakeholder?[stakeholder.es,stakeholder.en,stakeholder.fr,...(stakeholder.aliases||[])]:[item.receiver];
-        const searchable=[...senderNames,...receiverNames,item.title,item.reason].filter(Boolean).map(value=>normalizeSimText(value)).join(" ");
-        return !query||searchable.includes(query);
-      });
-      host.innerHTML=filtered.map((item,index)=>{
-        const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?`<span class="reversed-tag">${t.reversed}</span>`:"";
-        const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
-        return `<article class="chat-message ${index%2?"is-right":""} ${item.reversed?"is-reversed":""}"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">${sender?.flag||"🌍"}</div><div class="mascot-name">${escapeHTML(countryName)}</div></div><div class="chat-bubble"><span class="live">● ${t.live}</span>${reversed}<h3 class="chat-title">${escapeHTML(title)}</h3><div class="chat-reason">${t.reasonPrefix} ${escapeHTML(item.reason)}</div><div class="chat-meta">→ ${escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))} · ${item.amount?formatSimMoney(item.amount,lang):"—"} · ${escapeHTML(item.time||"—")}</div>${controls}</div></article>`;
-      }).join("")||`<p class="note">${t.emptyHistory}</p>`;
-      const count=document.getElementById("history-count");
-      if(count)count.textContent=filtered.length+" / "+transactions.length;
-      const search=document.getElementById("history-search");
-      if(search&&search.value)filterHistoryQuick();
+        const countryName=sender?(sender[lang]||sender.es):item.sender||item.country;
+        const title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount);
+        const reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
+        const controls=adminUnlocked?'<div class="chat-admin-actions"><button type="button" onclick="editTransaction('+item.id+')">✏️ '+t.edit+'</button><button type="button" class="reverse-action" onclick="reverseTransaction('+item.id+')">'+(item.reversed?"↩ "+t.restore:"↶ "+t.reverse)+'</button><button type="button" class="delete-action" onclick="deleteTransaction('+item.id+')">🗑 '+t.delete+"</button></div>":"";
+        const names=[item.sender,item.country,item.receiver,item.title,item.reason,...(sender?[sender.es,sender.en,sender.fr]:[]),...(receiver?[receiver.es,receiver.en,receiver.fr]:[]),...(stakeholder?[stakeholder.es,stakeholder.en,stakeholder.fr,...(stakeholder.aliases||[])]:[])].filter(Boolean).map(value=>normalizeSimText(value)).join(" ");
+        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"") + '" data-history-search="'+escapeHTML(names)+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+escapeHTML(countryName)+'</div></div><div class="chat-bubble"><span class="live">● '+t.live+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div><div class="chat-meta">→ '+escapeHTML(receiver?.[lang]||receiver?.es||stakeholder?.[lang]||stakeholder?.es||item.receiver||"—")+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+'</div>'+controls+"</div></article>";
+      }).join("")||'<p class="note">'+t.emptyHistory+"</p>";
+      filterHistoryQuick();
     }
 
     function filterHistoryQuick(){
-      const input=document.getElementById("history-search");
-      const query=normalizeSimText(input?.value||"");
+      const input=document.getElementById("history-search"),query=normalizeSimText(input?.value||"");
       const messages=[...document.querySelectorAll("#history-chat .chat-message")];
       let visible=0;
-      messages.forEach(message=>{
-        const haystack=normalizeSimText(message.textContent||"");
-        const show=!query||haystack.includes(query);
-        message.hidden=!show;
-        message.style.display=show?"":"none";
-        if(show)visible++;
-      });
+      messages.forEach(message=>{const show=!query||(message.dataset.historySearch||"").includes(query);message.hidden=!show;message.style.display=show?"":"none";if(show)visible++;});
       const count=document.getElementById("history-count");
       if(count)count.textContent=visible+" / "+messages.length;
-      const empty=document.querySelector("#history-chat .history-filter-empty");
-      if(empty)empty.remove();
-      if(query&&!visible){
-        const note=document.createElement("p");
-        note.className="note history-filter-empty";
-        note.textContent=(translations[document.getElementById("language").value]||translations.es).emptyHistory;
-        document.getElementById("history-chat").appendChild(note);
-      }
     }
-    document.getElementById("history-search").addEventListener("input",filterHistoryQuick);
 
+    const historySearch=document.getElementById("history-search");
+    if(historySearch){historySearch.addEventListener("input",filterHistoryQuick);historySearch.addEventListener("search",filterHistoryQuick);}
     function toggleAdmin() {
       if (!adminUnlocked) {
         const code = prompt((translations[document.getElementById("language").value] || translations.es).adminPrompt);
