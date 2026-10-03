@@ -941,10 +941,6 @@
         </p>
         <button class="budget-info-trigger lobby-info-trigger" type="button" data-budget-info="general" aria-label="Información sobre cómo se calcula el máximo">i</button>
       </div>
-      <div class="country-search">
-        <input id="lobby-search" type="search" placeholder="Buscar país o representante…" aria-label="Buscar país o representante">
-        <span class="search-count" id="lobby-count"></span>
-      </div>
       <div class="lobby-grid" id="lobby-grid" aria-label="Países participantes"></div>
       <h3 class="roster-subhead" id="stakeholder-heading">Otros participantes</h3>
       <p class="roster-subnote" id="stakeholder-note">Grupos de lobby y activismo climático (datos provisionales).</p>
@@ -1463,27 +1459,6 @@
     document.getElementById("budget-info-close").addEventListener("click",closeBudgetInfo);
     budgetInfoModal.addEventListener("click",event=>{if(event.target===budgetInfoModal)closeBudgetInfo();});
     document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!budgetInfoModal.hidden)closeBudgetInfo();});
-    function filterCountries() {
-      const input=document.getElementById("lobby-search");
-      const query=normalizeSimText(input?.value||"");
-      const cards=[...document.querySelectorAll("#lobby-grid .country-card")];
-      let visible=0;
-      cards.forEach(card=>{
-        const source=normalizeSimText((card.dataset.search||"")+" "+(card.textContent||""));
-        const show=!query||source.includes(query);
-        card.hidden=!show;
-        card.style.display=show?"":"none";
-        if(show)visible++;
-      });
-      document.querySelectorAll("#lobby-grid .room-group").forEach(group=>{
-        const hasVisible=[...group.querySelectorAll(".country-card")].some(card=>!card.hidden);
-        group.hidden=!hasVisible;
-        group.style.display=hasVisible?"":"none";
-      });
-      const count=document.getElementById("lobby-count");
-      if(count)count.textContent=visible+" / "+cards.length;
-    }
-    document.getElementById("lobby-search").addEventListener("input",filterCountries);
     document.getElementById("language").addEventListener("change",event=>{applyLanguage(event.target.value);if(lastSimulation){lastSimulation.lang=event.target.value;renderSimulationResult();}});
     function normalizeSimText(value){
       return String(value??"")
