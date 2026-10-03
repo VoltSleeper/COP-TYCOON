@@ -1735,7 +1735,13 @@
 
     function renderHistory(){
       const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
-      const filtered=transactions.map(transactionData).filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
+      const filtered=transactions.map(transactionData).filter(item=>{
+        const sender=findCountry(item.sender),receiver=findCountry(item.receiver),stakeholder=findStakeholder(item.receiver);
+        const senderNames=sender?[sender.es,sender.en,sender.fr]:[item.sender,item.country];
+        const receiverNames=receiver?[receiver.es,receiver.en,receiver.fr]:stakeholder?[stakeholder.es,stakeholder.en,stakeholder.fr,...(stakeholder.aliases||[])]:[item.receiver];
+        const searchable=[...senderNames,...receiverNames,item.title,item.reason].filter(Boolean).map(value=>normalizeSimText(value)).join(" ");
+        return !query||searchable.includes(query);
+      });
       host.innerHTML=filtered.map((item,index)=>{
         const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?`<span class="reversed-tag">${t.reversed}</span>`:"";
         const controls=adminUnlocked?`<div class="chat-admin-actions"><button type="button" onclick="editTransaction(${item.id})">✏️ ${t.edit}</button><button type="button" class="reverse-action" onclick="reverseTransaction(${item.id})">${item.reversed?"↩ "+t.restore:"↶ "+t.reverse}</button><button type="button" class="delete-action" onclick="deleteTransaction(${item.id})">🗑 ${t.delete}</button></div>`:"";
