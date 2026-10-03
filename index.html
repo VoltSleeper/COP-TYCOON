@@ -860,22 +860,22 @@
 .admin-amount-help{margin:-8px 0 4px;color:#9EB5C2;font-size:.78rem;line-height:1.35;text-align:center}
 /* Lobby card readability: larger subtext without stretching the cards */
 #lobby-grid .country-card{padding:12px 13px!important;justify-content:center!important;align-items:center!important}
-#lobby-grid .country-flag{width:54px!important;height:54px!important;min-height:54px!important;font-size:2.15rem!important;border-radius:16px!important;margin-bottom:2px!important}
-#lobby-grid .country-info{margin-top:3px!important}
-#lobby-grid .country-name{font-size:1.22rem!important;line-height:1.02!important;min-height:2.04em!important;margin:0 0 3px!important}
-#lobby-grid .room-chip{font-size:.8rem!important;padding:2px 7px!important;line-height:1!important;margin:0!important}
-#lobby-grid .country-detail{gap:2px!important;font-size:.96rem!important;line-height:1.02!important;margin-top:3px!important}
-#lobby-grid .country-detail span{font-size:.82rem!important;line-height:1!important}
-#lobby-grid .country-detail strong{line-height:1.02!important}
-#lobby-grid .budget-value{font-size:1rem!important;padding:1px 6px!important;line-height:1!important}
-#lobby-grid .country-card > *{margin-top:2px!important;margin-bottom:2px!important}
+#lobby-grid .country-flag{width:52px!important;height:52px!important;min-height:52px!important;font-size:2.05rem!important;border-radius:15px!important;margin-bottom:1px!important}
+#lobby-grid .country-info{margin-top:1px!important}
+#lobby-grid .country-name{font-size:1.34rem!important;line-height:1!important;min-height:2em!important;margin:0 0 2px!important}
+#lobby-grid .room-chip{font-size:.86rem!important;padding:2px 7px!important;line-height:1!important;margin:0!important}
+#lobby-grid .country-detail{gap:1px!important;font-size:1rem!important;line-height:1!important;margin-top:2px!important}
+#lobby-grid .country-detail span{font-size:.86rem!important;line-height:1!important}
+#lobby-grid .country-detail strong{line-height:1!important}
+#lobby-grid .budget-value{font-size:1.06rem!important;padding:1px 6px!important;line-height:1!important}
+#lobby-grid .country-card > *{margin-top:1px!important;margin-bottom:1px!important}
 @media (min-width:761px) and (max-width:1100px){
   #lobby-grid .country-card{padding:14px 11px!important}
   #lobby-grid .country-flag{width:46px!important;height:46px!important;min-height:46px!important;font-size:1.85rem!important}
-  #lobby-grid .country-name{font-size:1.16rem!important}
-  #lobby-grid .country-detail{font-size:.84rem!important}
-  #lobby-grid .country-detail span{font-size:.71rem!important}
-  #lobby-grid .budget-value{font-size:.88rem!important}
+  #lobby-grid .country-name{font-size:1.24rem!important}
+  #lobby-grid .country-detail{font-size:.9rem!important}
+  #lobby-grid .country-detail span{font-size:.77rem!important}
+  #lobby-grid .budget-value{font-size:.96rem!important}
 }
 @media (max-width:760px){
   #lobby-grid .country-card{padding:9px 8px!important}
@@ -1710,8 +1710,6 @@
       }catch(error){console.warn("Historial compartido no disponible todavía.",error);try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}catch(localError){transactions=[...demoTransactions];}}
       renderHistory();renderCountryRoster();subscribeToHistory();
     }
-    let historySyncTimer=null;
-    let historySyncing=false;
     function subscribeToHistory(){
       if(historyRealtimeChannel)return;
       const channel=supabaseClient.channel("cop-tycoon-history-live");
@@ -1729,15 +1727,7 @@
         }
       });
     }
-    async function syncHistoryFallback(){
-      if(historySyncing||!historyLoadedFromSupabase)return;
-      historySyncing=true;
-      try{
-        const {data,error}=await supabaseClient.from(HISTORY_TABLE).select("id,country,sender,receiver,amount,title,reason,time,reversed").order("id",{ascending:false});
-        if(!error&&Array.isArray(data)){
-          transactions=data.map(normalizeHistoryRow);
-          renderHistory();renderCountryRoster();
-        }
+
       }catch(error){console.warn("Sincronización periódica del historial no disponible.",error)}
       finally{historySyncing=false}
     }
@@ -1909,7 +1899,6 @@
     filterCountries();
     renderHistory();
     loadTransactions();
-    if(!historySyncTimer) historySyncTimer=setInterval(syncHistoryFallback,5000);
   </script>
 </body>
 </html>
