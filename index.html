@@ -792,7 +792,33 @@
   #lobby-grid .country-detail span{font-size:.55rem!important}
   #lobby-grid .budget-value{font-size:.66rem!important}
 }
-.budget-info-method{margin:12px 0 0;padding:12px 14px;border-left:3px solid #6F9DBB;background:#091E2B;border-radius:0 10px 10px 0;color:#B7C9D5;font-size:.78rem;line-height:1.5}\n</style>
+.budget-info-method{margin:12px 0 0;padding:12px 14px;border-left:3px solid #6F9DBB;background:#091E2B;border-radius:0 10px 10px 0;color:#B7C9D5;font-size:.78rem;line-height:1.5}\n
+/* Lobby typography: readable, balanced and uniform */
+#lobby-grid .country-card{padding:18px 16px!important}
+#lobby-grid .country-flag{width:58px!important;height:58px!important;font-size:2.15rem!important;border-radius:16px!important}
+#lobby-grid .country-info{margin-top:10px!important;width:100%!important}
+#lobby-grid .country-name{font-size:1.16rem!important;line-height:1.08!important;min-height:2.2em!important;margin-bottom:9px!important}
+#lobby-grid .room-chip{font-size:.72rem!important;padding:4px 8px!important}
+#lobby-grid .country-detail{gap:5px!important;font-size:.78rem!important;line-height:1.15!important}
+#lobby-grid .country-detail span{font-size:.66rem!important;line-height:1.1!important}
+#lobby-grid .budget-value{font-size:.8rem!important;padding:3px 7px!important;line-height:1.1!important}
+.lobby-info-trigger{width:30px!important;height:30px!important;flex-basis:30px!important;font-size:.9rem!important;cursor:pointer!important;pointer-events:auto!important}
+@media (min-width:761px) and (max-width:1100px){
+ #lobby-grid .country-card{padding:16px 13px!important}
+ #lobby-grid .country-name{font-size:1.06rem!important}
+ #lobby-grid .country-detail{font-size:.72rem!important}
+ #lobby-grid .country-detail span{font-size:.62rem!important}
+ #lobby-grid .budget-value{font-size:.74rem!important}
+}
+@media (max-width:760px){
+ #lobby-grid .country-card{padding:14px 10px!important}
+ #lobby-grid .country-flag{width:54px!important;height:54px!important;font-size:2rem!important}
+ #lobby-grid .country-name{font-size:1rem!important}
+ #lobby-grid .country-detail{font-size:.68rem!important}
+ #lobby-grid .country-detail span{font-size:.59rem!important}
+ #lobby-grid .budget-value{font-size:.7rem!important}
+}
+</style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1355,7 +1381,7 @@
     const budgetInfoModal=document.getElementById("budget-info-modal");
     function openBudgetInfo(countryName){const lang=document.getElementById("language").value,t=translations[lang]||translations.es;document.getElementById("budget-info-title").textContent=t.budgetInfoTitle;document.getElementById("budget-info-copy").textContent=t.budgetInfoCopy;document.getElementById("budget-info-budget").textContent=t.budgetInfoBudget;document.getElementById("budget-info-maximum").textContent=t.budgetInfoMaximum;document.getElementById("budget-info-sources").textContent=t.budgetInfoSources;document.getElementById("budget-info-tag").textContent=t.budgetInfoTag;document.getElementById("budget-info-previous-cop").textContent=t.budgetInfoPreviousCOP;budgetInfoModal.hidden=false;}
     function closeBudgetInfo(){budgetInfoModal.hidden=true;}
-    document.getElementById("lobby-grid").addEventListener("click",event=>{const button=event.target.closest("[data-budget-info]");if(button)openBudgetInfo(button.dataset.budgetInfo);});
+    document.querySelector(".lobby-note-row").addEventListener("click",event=>{const button=event.target.closest("[data-budget-info]");if(button)openBudgetInfo(button.dataset.budgetInfo);});
     document.getElementById("budget-info-close").addEventListener("click",closeBudgetInfo);
     budgetInfoModal.addEventListener("click",event=>{if(event.target===budgetInfoModal)closeBudgetInfo();});
     document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!budgetInfoModal.hidden)closeBudgetInfo();});
