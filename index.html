@@ -707,7 +707,13 @@
     #lobby-grid .country-detail .budget-line{display:flex;flex-direction:column;align-items:center;gap:2px}
     #lobby-grid .country-detail .budget-line span{margin:0;font-size:.76rem;letter-spacing:.02em}
     #lobby-grid .country-detail .budget-value{display:inline-block}
-</style>
+
+    /* Lobby: casillitas uniformes */
+    #lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+    #lobby-grid .country-card{width:100%;aspect-ratio:1 / 1;min-height:0;height:auto}
+    @media (max-width:900px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    @media (max-width:560px){#lobby-grid .room-cards{grid-template-columns:1fr}#lobby-grid .country-card{aspect-ratio:1 / 1;min-height:0}}
+  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
