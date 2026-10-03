@@ -708,7 +708,14 @@
     #lobby-grid .country-detail .budget-line span{margin:0;font-size:.76rem;letter-spacing:.02em}
     #lobby-grid .country-detail .budget-value{display:inline-block}
 
-  </style>
+  
+    /* Lobby: cuatro cuadraditos por fila */
+    #lobby-grid .room-cards{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important;align-items:stretch!important}
+    #lobby-grid .country-card{width:100%!important;aspect-ratio:1 / 1!important;min-width:0!important;min-height:0!important;height:auto!important}
+    @media (max-width:900px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+    @media (max-width:680px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+    @media (max-width:460px){#lobby-grid .room-cards{grid-template-columns:1fr!important}}
+</style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -1255,7 +1262,7 @@
           const search=[name,country.es,country.en,country.fr,...country.reps,roomName(room)].join(" ").toLocaleLowerCase(),state=getBudgetState(country);
           const formatUSD=value=>{const n=Number(value);if(!Number.isFinite(n))return t.pending;const abs=Math.abs(n);let amount=abs,label="";if(abs>=1e12){amount=abs/1e12;label="T";}else if(abs>=1e9){amount=abs/1e9;label="B";}else if(abs>=1e6){amount=abs/1e6;label="M";}else if(abs>=1e3){amount=abs/1e3;label="K";}const formatted=new Intl.NumberFormat("en-US",{maximumSignificantDigits:3}).format(amount);return(n<0?"-$":"$")+formatted+(label?" "+label:"");};const budgetTotal=Number(country.budget2025?.total);const budgetMaximum=Number(country.budget2025?.maxAmount);const displayedBudget=Number.isFinite(budgetTotal)?budgetTotal:state?.current;const displayedMaximum=Number.isFinite(budgetMaximum)?budgetMaximum:state?.maximumAvailable;const displayedAvailable=state?.available;
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
-          return "<article class=\"country-card\" data-search=\"" + escapeHTML(search) + "\"><div class=\"country-flag\" aria-hidden=\"true\">"+flagMarkup(country.flag)+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(name)+"</h3>"+provisional+"<div class=\"country-detail\"><strong class=\"country-representatives\">"+escapeHTML(reps)+"</strong><span class=\"country-room\">"+roomName(room)+"</span><div class=\"budget-line\"><span>"+t.budget+"</span><strong class=\"budget-value\">"+formatUSD(displayedBudget)+"</strong></div><div class=\"budget-line\"><span>"+t.maxAmount+"</span><strong class=\"budget-value\">"+formatUSD(displayedMaximum)+"</strong></div></div></div></div></article>";
+          return "<article class=\"country-card\" data-search=\"" + escapeHTML(search) + "\"><div class=\"country-flag\" aria-hidden=\"true\">"+flagMarkup(country.flag)+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(name)+"</h3>"+provisional+"<div class=\"country-detail\"><strong class=\"country-representatives\">"+escapeHTML(reps)+"</strong><span class=\"country-room\">"+roomName(room)+"</span><div class=\"budget-line\"><span>"+t.budget+"</span><strong class=\"budget-value\">"+formatUSD(displayedBudget)+"</strong></div><div class=\"budget-line\"><span>"+t.maxAmount+"</span><strong class=\"budget-value\">"+formatUSD(displayedMaximum)+"</strong></div></div></div></article>";
         }).join("");
         return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+" <span class=\"room-topic\">· "+t.roomTopics[room-1]+"</span></h3><div class=\"room-cards\">"+cards+"</div></section>";
       }).join("");
