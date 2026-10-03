@@ -745,6 +745,20 @@
     #lobby-grid .country-name + .room-chip{line-height:1.1}
     #lobby-grid .country-detail{line-height:1.18!important}
     @media (max-width:760px){#lobby-grid .country-name{min-height:2.18em}}
+    @media (min-width:761px) and (max-width:1100px){
+      #lobby-grid .country-card{padding:16px 14px 15px;justify-content:center}
+      #lobby-grid .country-flag{width:64px;height:64px;border-radius:18px;font-size:2.45rem}
+      #lobby-grid .country-info{margin-top:9px}
+      #lobby-grid .country-name{font-size:1.12rem;margin-bottom:9px}
+      #lobby-grid .country-detail{gap:4px;font-size:.76rem;line-height:1.12!important}
+      #lobby-grid .country-detail span{font-size:.67rem}
+      #lobby-grid .budget-value{font-size:.88rem;padding:2px 6px}
+      #lobby-grid .room-chip{font-size:.68rem}
+    }
+    @media (max-width:760px){
+      #lobby-grid .country-card{justify-content:center}
+      #lobby-grid .country-info{margin-top:8px}
+    }
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -793,9 +807,12 @@
         <h2 id="lobby-heading">🌍 Lobby</h2>
         <button class="back" onclick="goHome()" id="back-lobby">← Inicio</button>
       </div>
-      <p class="note" id="lobby-note">
-        Datos de demostración. El presupuesto oficial se actualizará cuando exista un registro autorizado.
-      </p>
+      <div class="lobby-note-row">
+        <p class="note" id="lobby-note">
+          Datos de demostración. El presupuesto oficial se actualizará cuando exista un registro autorizado.
+        </p>
+        <button class="budget-info-trigger lobby-info-trigger" type="button" data-budget-info="general" aria-label="Información sobre cómo se calcula el máximo">i</button>
+      </div>
       <div class="country-search">
         <input id="lobby-search" type="search" placeholder="Buscar país o representante…" aria-label="Buscar país o representante">
         <span class="search-count" id="lobby-count"></span>
@@ -1303,7 +1320,7 @@
 
 
     const budgetInfoModal=document.getElementById("budget-info-modal");
-    function openBudgetInfo(countryName){const country=findCountry(countryName);if(!country)return;const lang=document.getElementById("language").value,t=translations[lang]||translations.es;document.getElementById("budget-info-title").textContent=t.budgetInfoTitle;document.getElementById("budget-info-copy").textContent=t.budgetInfoCopy;document.getElementById("budget-info-budget").textContent=t.budgetInfoBudget;document.getElementById("budget-info-maximum").textContent=t.budgetInfoMaximum;document.getElementById("budget-info-sources").textContent=t.budgetInfoSources;document.getElementById("budget-info-tag").textContent=t.budgetInfoTag;budgetInfoModal.hidden=false;}
+    function openBudgetInfo(countryName){const lang=document.getElementById("language").value,t=translations[lang]||translations.es;document.getElementById("budget-info-title").textContent=t.budgetInfoTitle;document.getElementById("budget-info-copy").textContent=t.budgetInfoCopy;document.getElementById("budget-info-budget").textContent=t.budgetInfoBudget;document.getElementById("budget-info-maximum").textContent=t.budgetInfoMaximum;document.getElementById("budget-info-sources").textContent=t.budgetInfoSources;document.getElementById("budget-info-tag").textContent=t.budgetInfoTag;budgetInfoModal.hidden=false;}
     function closeBudgetInfo(){budgetInfoModal.hidden=true;}
     document.getElementById("lobby-grid").addEventListener("click",event=>{const button=event.target.closest("[data-budget-info]");if(button)openBudgetInfo(button.dataset.budgetInfo);});
     document.getElementById("budget-info-close").addEventListener("click",closeBudgetInfo);
