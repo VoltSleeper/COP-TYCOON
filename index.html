@@ -739,6 +739,12 @@
     @media (max-width:1100px){#lobby-grid .room-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
     @media (max-width:760px){#lobby-grid .room-cards{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
     @media (max-width:520px){#lobby-grid .room-cards{grid-template-columns:1fr!important}}
+
+    /* Country names: stable line spacing inside equal cards */
+    #lobby-grid .country-name{line-height:1.08!important;min-height:2.32em;display:flex;align-items:center;justify-content:center;text-align:center}
+    #lobby-grid .country-name + .room-chip{line-height:1.1}
+    #lobby-grid .country-detail{line-height:1.18!important}
+    @media (max-width:760px){#lobby-grid .country-name{min-height:2.18em}}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
