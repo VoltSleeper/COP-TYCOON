@@ -1756,21 +1756,7 @@
       }).join("")||`<p class="note">${t.emptyHistory}</p>`;
     }
 
-    function filterHistoryLive(){
-      const query=normalizeSimText(document.getElementById("history-search")?.value||"");
-      const messages=[...document.querySelectorAll("#history-chat .chat-message")];
-      let visible=0;
-      messages.forEach(message=>{
-        const haystack=normalizeSimText(message.textContent||"");
-        const show=!query||haystack.includes(query);
-        message.hidden=!show;
-        message.style.display=show?"":"none";
-        if(show)visible++;
-      });
-      const empty=document.querySelector("#history-chat > .note");
-      if(empty) empty.hidden=!!query;
-    }
-    document.getElementById("history-search").addEventListener("input",filterHistoryLive);
+    document.getElementById("history-search").addEventListener("input",renderHistory);
 
     function toggleAdmin() {
       if (!adminUnlocked) {
