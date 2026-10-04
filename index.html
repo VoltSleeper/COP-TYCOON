@@ -941,6 +941,7 @@
         </p>
         <button class="budget-info-trigger lobby-info-trigger" type="button" data-budget-info="general" aria-label="Información sobre cómo se calcula el máximo">i</button>
       </div>
+      <div class="country-search lobby-quick-search"><input id="lobby-search" type="search" placeholder="Buscar país o representante…" aria-label="Buscar país o representante"><span class="search-count" id="lobby-count"></span></div>
       <div class="lobby-grid" id="lobby-grid" aria-label="Países participantes"></div>
       <h3 class="roster-subhead" id="stakeholder-heading">Otros participantes</h3>
       <p class="roster-subnote" id="stakeholder-note">Grupos de lobby y activismo climático (datos provisionales).</p>
@@ -1352,7 +1353,7 @@
       document.querySelectorAll(".country-detail").forEach((el,i)=>{const spans=el.querySelectorAll("span");const strongs=el.querySelectorAll("strong");if(spans[0])spans[0].textContent=t.representative;if(spans[1])spans[1].textContent=t.room;if(spans[2])spans[2].textContent=t.budget;if(strongs[0])strongs[0].textContent=t.repExample;if(strongs[1])strongs[1].textContent=t.rooms[i]||t.rooms[0];if(strongs[2])strongs[2].textContent=t.budgetSample;});
       const countryNames=Array.from(document.querySelectorAll(".country-name"));countryNames.forEach((el,i)=>el.textContent=t.countryNames?.[i]||el.textContent);
       document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
-    document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
+    document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
       renderCountryRoster();
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
       document.getElementById("admin-receiver").placeholder=t.receiverPlaceholder;
@@ -1433,9 +1434,22 @@
 
     function renderCountryRoster(){
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es,host=document.getElementById("lobby-grid");
+      const query=normalizeSimText(document.getElementById("lobby-search")?.value||"");
       const roomName=room=>t.rooms[room-1]||("Sala "+room);
+      let totalMatches=0;
       host.innerHTML=[1,2,3].map(room=>{
-        const entries=roomRoster.filter(entry=>entry.room===room);
+        const entries=roomRoster.filter(entry=>{
+          if(entry.room!==room)return false;
+          if(!query)return true;
+          const country=countryRoster.find(item=>item.en===entry.country);
+          if(!country)return false;
+          const name=country[lang]||country.en;
+          const reps=entry.representative||(country.reps.length?country.reps.join(" "):"");
+          const source=[name,country.es,country.en,country.fr,...country.reps,reps,roomName(room)].join(" ");
+          return normalizeSimText(source).includes(query);
+        });
+        totalMatches+=entries.length;
+        if(!entries.length)return "";
         const cards=entries.map(entry=>{
           const country=countryRoster.find(item=>item.en===entry.country);if(!country)return "";
           const name=country[lang]||country.en,reps=entry.representative||(country.reps.length?country.reps.map(person=>person==="pending"?t.pending:person).join(", "):t.pending);
@@ -1449,7 +1463,12 @@
       const renderStakeholders=items=>items.map(item=>"<article class=\"country-card stakeholder-card\"><div class=\"country-flag\" aria-hidden=\"true\">"+item.icon+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(item[lang]||item.en)+"</h3><div class=\"country-detail\"><span>"+t.representative+"</span><strong class=\"country-representatives\">"+escapeHTML(item.people[lang]||item.people.en)+"</strong></div></div></article>").join("");
       document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{const items=stakeholderRoster.filter(item=>item.room===room);return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+"</h3><div class=\"room-cards\">"+renderStakeholders(items)+"</div></section>";}).join("")+"<section class=\"room-group\"><h3 class=\"room-heading\">"+(lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas")+"</h3><div class=\"room-cards\">"+renderStakeholders(stakeholderRoster.filter(item=>item.room===0))+"</div></section>";
       document.getElementById("admin-country-options").innerHTML=countryRoster.map(country=>"<option value=\"" + escapeHTML(country[lang]||country.en) + "\"></option>").join("");
+      const count=document.getElementById("lobby-count");
+      if(count)count.textContent=query?(totalMatches+" / "+roomRoster.length):"";
     }
+
+    const lobbySearch=document.getElementById("lobby-search");
+    if(lobbySearch)lobbySearch.addEventListener("input",renderCountryRoster);
 
 
     const budgetInfoModal=document.getElementById("budget-info-modal");
