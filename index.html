@@ -1445,7 +1445,7 @@
         const reps=entry.representative||(country.reps.length?country.reps.join(" "):"");
         const normalizedNames=[country.es,country.en,country.fr].map(normalizeSimText);
         const prefixMatch=!query || normalizedNames.some(value=>value.startsWith(query));
-        if(prefixMatch) matchedEntries.push({entry,country,name,reps,source:normalizedSource});
+        if(prefixMatch) matchedEntries.push({entry,country,name,reps});
       });
       if(query){
         matchedEntries.sort((a,b)=>{
