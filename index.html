@@ -1445,14 +1445,17 @@
         const reps=entry.representative||(country.reps.length?country.reps.join(" "):"");
         const source=[name,country.es,country.en,country.fr,...country.reps,reps,roomName(entry.room)].join(" ");
         const normalizedSource=normalizeSimText(source);
-        if(!query || normalizedSource.includes(query)) matchedEntries.push({entry,country,name,reps,source:normalizedSource});
+        const normalizedNames=[name,country.es,country.en,country.fr].map(normalizeSimText);
+        const normalizedReps=[...country.reps,reps].map(normalizeSimText);
+        const prefixMatch=!query || normalizedNames.some(value=>value.startsWith(query)) || normalizedReps.some(value=>value.startsWith(query));
+        if(prefixMatch) matchedEntries.push({entry,country,name,reps,source:normalizedSource});
       });
       if(query){
         matchedEntries.sort((a,b)=>{
           const aName=normalizeSimText(a.name),bName=normalizeSimText(b.name);
-          const aExact=aName===query?0:aName.startsWith(query)?1:aName.includes(query)?2:3;
-          const bExact=bName===query?0:bName.startsWith(query)?1:bName.includes(query)?2:3;
-          return aExact-bExact;
+          const aExact=aName===query?0:aName.startsWith(query)?1:2;
+          const bExact=bName===query?0:bName.startsWith(query)?1:2;
+          return aExact-bExact || aName.localeCompare(bName);
         });
       }
       totalMatches=matchedEntries.length;
