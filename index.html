@@ -1015,7 +1015,34 @@
         overflow-x:auto!important;
       }
     }
-  </style>
+  
+    /* Mobile lobby: match the roomy stakeholder/lobbyist card proportions instead of squeezing four columns. */
+    @media(max-width:760px){
+      #lobby-grid{
+        grid-template-columns:1fr!important;
+        gap:18px!important;
+        overflow:visible!important;
+      }
+      #lobby-grid .country-card{
+        width:100%!important;
+        height:auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        aspect-ratio:1 / 1!important;
+        padding:18px 16px!important;
+      }
+      #lobby-grid .country-flag{
+        width:64px!important;
+        height:64px!important;
+        min-height:64px!important;
+        font-size:2.5rem!important;
+      }
+      #lobby-grid .country-name{font-size:1.15rem!important}
+      #lobby-grid .country-detail{font-size:.78rem!important;line-height:1.2!important}
+      #lobby-grid .country-detail span{font-size:.65rem!important}
+      #lobby-grid .budget-value{font-size:.78rem!important}
+    }
+</style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
