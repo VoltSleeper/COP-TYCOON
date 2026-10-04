@@ -935,13 +935,13 @@
       object-fit:contain!important;
     }
     /* Final lobby layout: four compact cards per row. */
-    /* Lobby: every country card keeps Germany's compact fixed size. */
+    /* Lobby: always 4 cards per row, with the same card size across countries. */
     #lobby-grid .room-cards{
       display:grid!important;
-      grid-template-columns:repeat(4,250px)!important;
-      grid-auto-columns:250px!important;
-      width:max-content!important;
-      max-width:none!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      grid-auto-flow:row!important;
+      width:100%!important;
+      max-width:100%!important;
       margin-left:0!important;
       margin-right:0!important;
       gap:14px!important;
@@ -950,9 +950,9 @@
     }
     #lobby-grid .country-card{
       box-sizing:border-box!important;
-      width:250px!important;
-      min-width:250px!important;
-      max-width:250px!important;
+      width:100%!important;
+      min-width:0!important;
+      max-width:none!important;
       height:235px!important;
       min-height:235px!important;
       max-height:235px!important;
