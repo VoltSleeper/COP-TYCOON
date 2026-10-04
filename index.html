@@ -1743,28 +1743,36 @@
 
     function parseSimulationInput(text){
       const normalized=normalizeSimText(text);
+      const padded=" "+normalized.replace(/[^a-z0-9]+/g," ").trim()+" ";
       const matches=[];
-      countryRoster.forEach(country=>{
-        const aliases=[country.es,country.en,country.fr];
-        aliases.forEach(alias=>{
-          const target=normalizeSimText(alias).replace(/[^a-z0-9]+/g," ").trim();
-          const padded=" "+normalized.replace(/[^a-z0-9]+/g," ").trim()+" ";
-          const index=target ? padded.indexOf(" "+target+" ") : -1;
-          if(index>=0){
-            matches.push({country,index:index,aliasLength:target.length});
-          }
+      const addMatches=(items,type)=>{
+        items.forEach(item=>{
+          const aliases=type==="country"
+            ?[item.es,item.en,item.fr]
+            :[item.es,item.en,item.fr,...(item.aliases||[])];
+          aliases.forEach(alias=>{
+            const target=normalizeSimText(alias).replace(/[^a-z0-9]+/g," ").trim();
+            const index=target ? padded.indexOf(" "+target+" ") : -1;
+            if(index>=0)matches.push({participant:item,type,index,aliasLength:target.length});
+          });
         });
-      });
-      const countries=[...new Map(
+      };
+      addMatches(countryRoster,"country");
+      addMatches(stakeholderRoster,"stakeholder");
+      const participants=[...new Map(
         matches
           .sort((a,b)=>a.index-b.index || b.aliasLength-a.aliasLength)
-          .map(item=>[item.country.en,item.country])
-      ).values()];
+          .map(item=>[item.type+":"+((item.participant.en||item.participant.es)),item.participant])
+      ).values()].map(item=>{
+        if(item.flag||item.icon)return item;
+        return {...item,flag:item.icon||"🏛️"};
+      });
+      const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
       const action=[...SIM_ACTIONS]
         .sort((a,b)=>Math.max(...b.words.map(word=>normalizeSimText(word).length))-Math.max(...a.words.map(word=>normalizeSimText(word).length)))
         .find(item=>item.words.some(word=>simContains(normalized,word)))||null;
-      return {normalized,countries,amount,action};
+      return {normalized,participants,countries,amount,action};
     }
 
     function simArrow(value){
@@ -1813,9 +1821,9 @@
       event.preventDefault();
       const text=document.getElementById("transaction").value.trim(),lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result"),parsed=parseSimulationInput(text);
       result.hidden=false;
-      if(!parsed.countries.length){result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
+      if(!parsed.participants.length){result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
       if(!parsed.action){result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}
-      const actor=parsed.countries[0],action=parsed.action,receiver=parsed.countries[1]||null;
+      const actor=parsed.participants[0],action=parsed.action,receiver=parsed.participants[1]||null;
       if(!action.self&&!receiver){result.innerHTML='<div class="sim-error">'+s.needsReceiver+'</div>';return;}
       const simulationAmount=Number.isFinite(parsed.amount)?parsed.amount:0;
       const state=actor.budget2025?getBudgetState(actor):null;
