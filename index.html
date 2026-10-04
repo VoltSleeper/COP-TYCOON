@@ -1787,6 +1787,68 @@
       return new Intl.NumberFormat(lang==="fr"?"fr-FR":lang==="en"?"en-US":"es-ES",{style:"currency",currency:"USD",notation:"compact",compactDisplay:"short",maximumFractionDigits:1}).format(Math.max(0,value));
     }
 
+    const stakeholderProfiles = {
+      "Lobby Nestlé": {
+        icon:"🏢",
+        reaction:{
+          es:"⚠️ Esta ayuda puede generar polémica pública: en COP TYCOON, apoyar a este lobby puede aumentar la cooperación económica, pero también provocar debate ambiental y reputacional.",
+          en:"⚠️ This support may trigger public controversy: in COP TYCOON, backing this lobby can increase economic cooperation while also creating environmental and reputational debate.",
+          fr:"⚠️ Ce soutien peut provoquer une controverse publique : dans COP TYCOON, soutenir ce lobby peut renforcer la coopération économique tout en créant un débat environnemental et réputationnel."
+        },
+        effects:{climate:-.25,wellbeing:-.15,development:.45,cooperation:.8,emissions:.2},
+        longEffects:{climate:-.45,wellbeing:-.3,development:.7,cooperation:1.1,emissions:.35}
+      },
+      "Lobby ACS": {
+        icon:"🏢",
+        reaction:{
+          es:"🏢 El apoyo se interpreta principalmente como una decisión de influencia económica y cooperación.",
+          en:"🏢 Support is mainly interpreted as a decision about economic influence and cooperation.",
+          fr:"🏢 Le soutien est surtout interprété comme une décision d’influence économique et de coopération."
+        },
+        effects:{climate:0,wellbeing:.1,development:.35,cooperation:.7,emissions:0},
+        longEffects:{climate:.1,wellbeing:.2,development:.6,cooperation:1,emissions:-.05}
+      },
+      "Lobby Exxon Mobil": {
+        icon:"🏢",
+        reaction:{
+          es:"🏢 El apoyo puede abrir cooperación económica, pero también generar debate sobre combustibles fósiles y clima.",
+          en:"🏢 Support can create economic cooperation, while also sparking debate about fossil fuels and climate.",
+          fr:"🏢 Le soutien peut renforcer la coopération économique, tout en suscitant un débat sur les combustibles fossiles et le climat."
+        },
+        effects:{climate:-.45,wellbeing:.05,development:.55,cooperation:.7,emissions:.7},
+        longEffects:{climate:-1,wellbeing:0,development:.8,cooperation:1,emissions:1.4}
+      },
+      "Lobby ChatGPT": {
+        icon:"💬",
+        reaction:{
+          es:"💬 El efecto depende sobre todo del objetivo de la colaboración y de cómo se utilice el apoyo.",
+          en:"💬 The effect mainly depends on the goal of the collaboration and how the support is used.",
+          fr:"💬 L’effet dépend surtout de l’objectif de la collaboration et de la manière dont le soutien est utilisé."
+        },
+        effects:{climate:.15,wellbeing:.15,development:.5,cooperation:.8,emissions:-.05},
+        longEffects:{climate:.35,wellbeing:.3,development:1,cooperation:1.2,emissions:-.15}
+      }
+    };
+    function stakeholderProfile(participant){
+      if(!participant||!participant.icon)return null;
+      return stakeholderProfiles[participant.es]||null;
+    }
+    function participantIcon(participant){
+      return participant?.flag||participant?.icon||"🏛️";
+    }
+    function participantName(participant,lang){
+      return participant?.[lang]||participant?.es||participant?.en||"Participante";
+    }
+    function stakeholderEffects(action,amount,participant){
+      const profile=stakeholderProfile(participant);
+      if(!profile)return null;
+      const ratio=Math.min(1,Math.max(.15,amount>0?amount/200000000:.5));
+      const scale=.65+.35*ratio;
+      return {
+        five:Object.fromEntries(Object.entries(profile.effects).map(([k,v])=>[k,v*scale])),
+        fifteen:Object.fromEntries(Object.entries(profile.longEffects).map(([k,v])=>[k,v*scale]))
+      };
+    }
     function scaledEffects(action,amount,country){
       const referenceMax=country.budget2025 ? Math.max(country.budget2025.maxAmount||country.budget2025.total*.01,1) : Math.max(amount,1);
       const ratio=country.budget2025 ? Math.min(1,amount/referenceMax) : .5;
@@ -1804,15 +1866,21 @@
     function economyScale(country,lang){const total=Number(country?.budget2025?.total||0),s=simulatorText[lang]||simulatorText.es,key=total<1e10?"tiny":total<1e11?"small":total<5e11?"medium":total<1.5e12?"large":"huge";return s.economyLevels[key];}
     function wolfLine(values,lang){const s=simulatorText[lang]||simulatorText.es;if(values.climate<=-2.5||values.emissions>=2.5)return s.wolf.negative;if(values.climate>=2.5&&values.emissions<=-1.5)return s.wolf.positive;if(Math.abs(values.climate)+Math.abs(values.emissions)>1.2)return s.wolf.mixed;return s.wolf.neutral;}
     function renderSimCountry(country,role,amount,action,lang,horizon){
-      const s=simulatorText[lang]||simulatorText.es,effects=scaledEffects(action,amount,country),values=effects[horizon===15?"fifteen":"five"];
+      const s=simulatorText[lang]||simulatorText.es;
+      const profile=stakeholderProfile(country);
+      const effects=profile?stakeholderEffects(action,amount,country):scaledEffects(action,amount,country);
+      const values=effects[horizon===15?"fifteen":"five"];
       const items=[["climate","🌱",s.climate,values.climate*(role==="receiver"?1:.9)],["wellbeing","❤️",s.wellbeing,values.wellbeing*(role==="receiver"?1:.85)],["development","🎓",s.development,values.development*(role==="receiver"?1:.8)],["cooperation","🤝",s.cooperation,values.cooperation],["emissions","🌫️",s.emissions,values.emissions]];
       const cards=items.map(([key,icon,label,value])=>'<div class="sim-impact-card"><div class="sim-impact-icon">'+icon+'</div><span class="sim-impact-label">'+label+'</span><div class="sim-impact-arrow">'+simArrow(value)+'</div><div class="sim-impact-phrase">'+simPhrase(key,value,lang)+'</div></div>').join("");
-      return '<div class="sim-country-result"><div class="sim-country-head"><span class="sim-impact-icon">'+country.flag+'</span><strong>'+escapeHTML(country[lang]||country.en)+'</strong></div><div class="sim-impact-grid">'+cards+'</div><div class="sim-economy"><span>🏦 '+s.economy+'</span><strong>'+escapeHTML(economyScale(country,lang))+'</strong><div class="sim-economy-change">'+(values.development>=.65?"↑ "+(lang==="fr"?"en hausse":lang==="en"?"increased":"ha aumentado"):values.development<=-.65?"↓ "+(lang==="fr"?"en baisse":lang==="en"?"decreased":"ha disminuido"):"→ "+(lang==="fr"?"stable":lang==="en"?"stable":"se mantiene"))+'</div></div></div>';
+      const economy=profile
+        ? '<div class="sim-economy"><span>🏛️ '+(lang==="fr"?"Type de participant":lang==="en"?"Participant type":"Tipo de participante")+'</span><strong>'+(lang==="fr"?"Lobby / acteur non étatique":lang==="en"?"Lobby / non-state actor":"Lobby / actor no estatal")+'</strong><div class="sim-economy-change">'+escapeHTML(profile.reaction[lang]||profile.reaction.es)+'</div></div>'
+        : '<div class="sim-economy"><span>🏦 '+s.economy+'</span><strong>'+escapeHTML(economyScale(country,lang))+'</strong><div class="sim-economy-change">'+(values.development>=.65?"↑ "+(lang==="fr"?"en hausse":lang==="en"?"increased":"ha aumentado"):values.development<=-.65?"↓ "+(lang==="fr"?"en baisse":lang==="en"?"decreased":"ha disminuido"):"→ "+(lang==="fr"?"stable":lang==="en"?"stable":"se mantiene"))+'</div></div>';
+      return '<div class="sim-country-result"><div class="sim-country-head"><span class="sim-impact-icon">'+participantIcon(country)+'</span><strong>'+escapeHTML(participantName(country,lang))+'</strong></div><div class="sim-impact-grid">'+cards+'</div>'+economy+'</div>';
     }
     function renderSimulationResult(){
       if(!lastSimulation)return;
       const {lang,actor,receiver,action,amount}=lastSimulation,s=simulatorText[lang]||simulatorText.es,values=scaledEffects(action,amount,actor)[simHorizon===15?"fifteen":"five"];
-      const route=receiver?actor.flag+" "+escapeHTML(actor[lang]||actor.en)+' <span class="sim-arrow-route">→</span> '+receiver.flag+" "+escapeHTML(receiver[lang]||receiver.en):actor.flag+" "+escapeHTML(actor[lang]||actor.en);
+      const route=receiver?participantIcon(actor)+" "+escapeHTML(participantName(actor,lang))+' <span class="sim-arrow-route">→</span> '+participantIcon(receiver)+" "+escapeHTML(participantName(receiver,lang)):participantIcon(actor)+" "+escapeHTML(participantName(actor,lang));
       const cards=renderSimCountry(actor,"actor",amount,action,lang,simHorizon)+(receiver?renderSimCountry(receiver,"receiver",amount,action,lang,simHorizon):"");
       document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">💸 '+formatSimMoney(amount,lang)+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+'</div></div><div class="sim-result-actions"><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
