@@ -988,7 +988,34 @@
       #lobby-grid .country-detail{font-size:.62rem!important}
       #lobby-grid .country-flag{font-size:2rem!important}
     }
-</style>
+/* FINAL LOBBY GRID: one shared 4-column flow across all rooms. */
+    #lobby-grid{
+      display:grid!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      gap:18px 14px!important;
+      align-items:stretch!important;
+    }
+    #lobby-grid .room-group{display:contents!important}
+    #lobby-grid .room-heading{
+      grid-column:1 / -1!important;
+      margin:0!important;
+    }
+    #lobby-grid .room-cards{display:contents!important}
+    #lobby-grid .country-card{
+      width:100%!important;
+      min-width:0!important;
+      max-width:none!important;
+      height:235px!important;
+      min-height:235px!important;
+      max-height:235px!important;
+    }
+    @media(max-width:760px){
+      #lobby-grid{
+        grid-template-columns:repeat(4,minmax(0,1fr))!important;
+        overflow-x:auto!important;
+      }
+    }
+  </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
