@@ -1871,7 +1871,15 @@
       const effects=profile?stakeholderEffects(action,amount,country):scaledEffects(action,amount,country);
       const values=effects[horizon===15?"fifteen":"five"];
       const items=[["climate","🌱",s.climate,values.climate*(role==="receiver"?1:.9)],["wellbeing","❤️",s.wellbeing,values.wellbeing*(role==="receiver"?1:.85)],["development","🎓",s.development,values.development*(role==="receiver"?1:.8)],["cooperation","🤝",s.cooperation,values.cooperation],["emissions","🌫️",s.emissions,values.emissions]];
-      const cards=items.map(([key,icon,label,value])=>'<div class="sim-impact-card"><div class="sim-impact-icon">'+icon+'</div><span class="sim-impact-label">'+label+'</span><div class="sim-impact-arrow">'+simArrow(value)+'</div><div class="sim-impact-phrase">'+simPhrase(key,value,lang)+'</div></div>').join("");
+      const cards=items.map(([key,icon,label,value])=>{
+        const labelText=key==="emissions"
+          ?(lang==="fr"?"Émissions de CO₂ (plus = pire)":lang==="en"?"CO₂ emissions (higher = worse)":"Emisiones de CO₂ (más = peor)")
+          :label;
+        const phrase=key==="emissions"
+          ?(value>=.65?(lang==="fr"?"plus d’émissions":lang==="en"?"higher emissions":"más emisiones"):value<=-.65?(lang==="fr"?"moins d’émissions":lang==="en"?"lower emissions":"menos emisiones"):(lang==="fr"?"changement modéré":lang==="en"?"moderate change":"cambio moderado"))
+          :simPhrase(key,value,lang);
+        return '<div class="sim-impact-card"><div class="sim-impact-icon">'+icon+'</div><span class="sim-impact-label">'+labelText+'</span><div class="sim-impact-arrow">'+simArrow(value)+'</div><div class="sim-impact-phrase">'+phrase+'</div></div>';
+      }).join("");
       const economy=profile
         ? '<div class="sim-economy"><span>🏛️ '+(lang==="fr"?"Type de participant":lang==="en"?"Participant type":"Tipo de participante")+'</span><strong>'+(lang==="fr"?"Lobby / acteur non étatique":lang==="en"?"Lobby / non-state actor":"Lobby / actor no estatal")+'</strong><div class="sim-economy-change">'+escapeHTML(profile.reaction[lang]||profile.reaction.es)+'</div></div>'
         : '<div class="sim-economy"><span>🏦 '+s.economy+'</span><strong>'+escapeHTML(economyScale(country,lang))+'</strong><div class="sim-economy-change">'+(values.development>=.65?"↑ "+(lang==="fr"?"en hausse":lang==="en"?"increased":"ha aumentado"):values.development<=-.65?"↓ "+(lang==="fr"?"en baisse":lang==="en"?"decreased":"ha disminuido"):"→ "+(lang==="fr"?"stable":lang==="en"?"stable":"se mantiene"))+'</div></div>';
