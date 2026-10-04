@@ -1432,6 +1432,24 @@
       };
     }
 
+    const countryAllies={
+      Germany:["France","Italy","Poland"],Ireland:["France","Germany","Spain"],Japan:["Australia","Canada","France"],Canada:["France","United Kingdom","Australia"],
+      Russia:["China","India","Türkiye"],China:["Russia","India","Indonesia"],India:["Japan","Australia","France"],Venezuela:["Russia","China","Brazil"],
+      Chile:["Argentina","Peru","Brazil"],"Democratic Republic of the Congo":["Ethiopia","France","Morocco"],"United Arab Emirates":["Saudi Arabia","France","United Kingdom"],
+      Indonesia:["Australia","Singapore","Japan"],Tuvalu:["Australia","Fiji","Samoa"],Samoa:["New Zealand","Australia","Fiji"],Italy:["France","Germany","Spain"],
+      France:["Germany","Italy","Spain"],Poland:["Germany","United Kingdom","France"],"United Kingdom":["France","Canada","Germany"],Norway:["Sweden","United Kingdom","Germany"],
+      Ukraine:["Poland","United Kingdom","Canada"],"Türkiye":["Azerbaijan","Qatar","United Kingdom"],Iraq:["Türkiye","Saudi Arabia","Jordan"],Brazil:["Argentina","Chile","Colombia"],
+      Colombia:["Brazil","Peru","Chile"],Ethiopia:["Kenya","Djibouti","Uganda"],Tonga:["Fiji","Samoa","Australia"],Spain:["France","Portugal","Italy"],
+      Sweden:["Norway","France","Germany"],Israel:["Germany","France","United Kingdom"],Australia:["Japan","India","United Kingdom"],Singapore:["Malaysia","Indonesia","Australia"],
+      Morocco:["France","Spain","Italy"],Peru:["Chile","Colombia","Brazil"],"Saudi Arabia":["United Arab Emirates","Egypt","Türkiye"],Philippines:["Japan","Australia","Indonesia"],Fiji:["Australia","New Zealand","Samoa"]
+    };
+    function renderAllyFlags(country){
+      return (countryAllies[country.en]||[]).slice(0,3).map(name=>{
+        const ally=findCountry(name);
+        return ally?'<span class="ally-flag" aria-hidden="true">'+flagMarkup(ally.flag)+'</span>':'';
+      }).join("");
+    }
+
     function renderCountryRoster(){
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es,host=document.getElementById("lobby-grid");
       const query=normalizeSimText(document.getElementById("lobby-search")?.value||"");
