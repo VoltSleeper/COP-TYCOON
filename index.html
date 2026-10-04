@@ -935,32 +935,37 @@
       object-fit:contain!important;
     }
     /* Final lobby layout: four compact cards per row. */
+    /* Lobby: every country card keeps Germany's compact fixed size. */
     #lobby-grid .room-cards{
       display:grid!important;
-      grid-template-columns:repeat(4,minmax(0,1fr))!important;
-      grid-auto-columns:minmax(0,1fr)!important;
-      width:min(100%,960px)!important;
-      max-width:960px!important;
-      margin-left:auto!important;
-      margin-right:auto!important;
+      grid-template-columns:repeat(4,250px)!important;
+      grid-auto-columns:250px!important;
+      width:max-content!important;
+      max-width:none!important;
+      margin-left:0!important;
+      margin-right:0!important;
       gap:14px!important;
       align-items:stretch!important;
-      overflow:hidden!important;
+      overflow:visible!important;
     }
     #lobby-grid .country-card{
       box-sizing:border-box!important;
-      width:100%!important;
-      min-width:0!important;
-      max-width:100%!important;
-      height:200px!important;
-      min-height:200px!important;
-      max-height:200px!important;
-      aspect-ratio:1 / 1!important;
+      width:250px!important;
+      min-width:250px!important;
+      max-width:250px!important;
+      height:235px!important;
+      min-height:235px!important;
+      max-height:235px!important;
+      aspect-ratio:auto!important;
       padding:10px 8px 11px!important;
       gap:3px!important;
       overflow:hidden!important;
     }
     #lobby-grid .country-card>*{min-width:0!important;max-width:100%!important}
+    @media(max-width:760px){
+      #lobby-grid .room-cards{grid-template-columns:repeat(4,250px)!important}
+      #lobby-grid .country-card{width:250px!important;min-width:250px!important;max-width:250px!important;height:235px!important;min-height:235px!important;max-height:235px!important}
+    }
     #lobby-grid .country-flag{
       font-size:2.5rem!important;
       min-height:0!important;
