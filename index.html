@@ -1437,18 +1437,27 @@
       const query=normalizeSimText(document.getElementById("lobby-search")?.value||"");
       const roomName=room=>t.rooms[room-1]||("Sala "+room);
       let totalMatches=0;
-      host.innerHTML=[1,2,3].map(room=>{
-        const entries=roomRoster.filter(entry=>{
-          if(entry.room!==room)return false;
-          if(!query)return true;
-          const country=countryRoster.find(item=>item.en===entry.country);
-          if(!country)return false;
-          const name=country[lang]||country.en;
-          const reps=entry.representative||(country.reps.length?country.reps.join(" "):"");
-          const source=[name,country.es,country.en,country.fr,...country.reps,reps,roomName(room)].join(" ");
-          return normalizeSimText(source).includes(query);
+      const matchedEntries=[];
+      roomRoster.forEach(entry=>{
+        const country=countryRoster.find(item=>item.en===entry.country);
+        if(!country)return;
+        const name=country[lang]||country.en;
+        const reps=entry.representative||(country.reps.length?country.reps.join(" "):"");
+        const source=[name,country.es,country.en,country.fr,...country.reps,reps,roomName(entry.room)].join(" ");
+        const normalizedSource=normalizeSimText(source);
+        if(!query || normalizedSource.includes(query)) matchedEntries.push({entry,country,name,reps,source:normalizedSource});
+      });
+      if(query){
+        matchedEntries.sort((a,b)=>{
+          const aName=normalizeSimText(a.name),bName=normalizeSimText(b.name);
+          const aExact=aName===query?0:aName.startsWith(query)?1:aName.includes(query)?2:3;
+          const bExact=bName===query?0:bName.startsWith(query)?1:bName.includes(query)?2:3;
+          return aExact-bExact;
         });
-        totalMatches+=entries.length;
+      }
+      totalMatches=matchedEntries.length;
+      host.innerHTML=[1,2,3].map(room=>{
+        const entries=matchedEntries.filter(match=>match.entry.room===room).map(match=>match.entry);
         if(!entries.length)return "";
         const cards=entries.map(entry=>{
           const country=countryRoster.find(item=>item.en===entry.country);if(!country)return "";
