@@ -937,26 +937,30 @@
     /* Final lobby layout: four compact cards per row. */
     #lobby-grid .room-cards{
       display:grid!important;
-      grid-template-columns:repeat(4,minmax(0,220px))!important;
-      justify-content:center!important;
-      width:100%!important;
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      grid-auto-columns:minmax(0,1fr)!important;
+      width:min(100%,960px)!important;
       max-width:960px!important;
       margin-left:auto!important;
       margin-right:auto!important;
       gap:14px!important;
       align-items:stretch!important;
+      overflow:hidden!important;
     }
     #lobby-grid .country-card{
       box-sizing:border-box!important;
       width:100%!important;
       min-width:0!important;
-      height:220px!important;
-      min-height:220px!important;
-      max-height:220px!important;
+      max-width:100%!important;
+      height:200px!important;
+      min-height:200px!important;
+      max-height:200px!important;
       aspect-ratio:1 / 1!important;
-      padding:12px 10px 13px!important;
-      gap:4px!important;
+      padding:10px 8px 11px!important;
+      gap:3px!important;
+      overflow:hidden!important;
     }
+    #lobby-grid .country-card>*{min-width:0!important;max-width:100%!important}
     #lobby-grid .country-flag{
       font-size:2.5rem!important;
       min-height:0!important;
