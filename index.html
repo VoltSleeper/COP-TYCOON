@@ -934,33 +934,49 @@
       height:22px!important;
       object-fit:contain!important;
     }
-    /* Final lobby layout: always four cards per row; cards shrink with the available width. */
+    /* Final lobby layout: four compact cards per row. */
     #lobby-grid .room-cards{
       display:grid!important;
-      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      grid-template-columns:repeat(4,minmax(0,220px))!important;
+      justify-content:center!important;
       width:100%!important;
-      max-width:1120px!important;
+      max-width:960px!important;
       margin-left:auto!important;
       margin-right:auto!important;
-      gap:16px!important;
+      gap:14px!important;
       align-items:stretch!important;
     }
     #lobby-grid .country-card{
       box-sizing:border-box!important;
       width:100%!important;
       min-width:0!important;
-      height:auto!important;
-      min-height:0!important;
-      max-height:none!important;
+      height:220px!important;
+      min-height:220px!important;
+      max-height:220px!important;
       aspect-ratio:1 / 1!important;
+      padding:12px 10px 13px!important;
+      gap:4px!important;
     }
+    #lobby-grid .country-flag{
+      font-size:2.5rem!important;
+      min-height:0!important;
+      margin:0 0 1px!important;
+    }
+    #lobby-grid .country-name{font-size:.98rem!important;margin-bottom:4px!important}
+    #lobby-grid .country-detail{font-size:.74rem!important;line-height:1.18!important}
+    #lobby-grid .ally-flag{width:30px!important;height:22px!important;flex-basis:30px!important}
+    #lobby-grid .ally-flag img{width:28px!important;height:20px!important}
     @media(max-width:760px){
-      #lobby-grid .room-cards{gap:10px!important}
-      #lobby-grid .country-card{padding:10px 7px 12px!important}
-      #lobby-grid .country-name{font-size:.88rem!important}
-      #lobby-grid .country-detail{font-size:.68rem!important}
-      #lobby-grid .ally-flag{width:28px!important;height:21px!important;flex-basis:28px!important}
-      #lobby-grid .ally-flag img{width:27px!important;height:19px!important}
+      #lobby-grid .room-cards{gap:8px!important}
+      #lobby-grid .country-card{
+        height:auto!important;
+        min-height:0!important;
+        max-height:none!important;
+        padding:9px 6px 10px!important;
+      }
+      #lobby-grid .country-name{font-size:.78rem!important}
+      #lobby-grid .country-detail{font-size:.62rem!important}
+      #lobby-grid .country-flag{font-size:2rem!important}
     }
 </style>
 
