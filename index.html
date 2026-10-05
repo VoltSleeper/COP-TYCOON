@@ -1133,7 +1133,7 @@
       </p>
       <div class="history-admin-bar">
         <p class="admin-caption" id="history-demo-label">Registro de demostración</p>
-        <button class="admin-toggle" id="admin-toggle" type="button" onclick="toggleAdmin()">🔐 Modo admin</button>
+        <button class="admin-toggle" id="admin-toggle" type="button" onclick="toggleAdmin()">🔐 Admin</button>
       </div>
       <div class="admin-panel" id="admin-panel" hidden>
         <div class="admin-panel-head">
@@ -2089,14 +2089,30 @@
 
 
 
-    function renderHistory(){
+    function localizedUi(key,lang){
+      const map={
+        anonymous:{es:"Anónimo",en:"Anonymous",fr:"Anonyme"},
+        anonymousDonor:{es:"Donante anónimo",en:"Anonymous donor",fr:"Donateur anonyme"},
+        gift:{es:"Donación con clavel",en:"Carnation donation",fr:"Don avec œillet"},
+        syncUpdate:{es:"No se pudo sincronizar el cambio con Supabase.",en:"Could not sync the change with Supabase.",fr:"Impossible de synchroniser la modification avec Supabase."},
+        syncDelete:{es:"No se pudo sincronizar la eliminación con Supabase.",en:"Could not sync the deletion with Supabase.",fr:"Impossible de synchroniser la suppression avec Supabase."},
+        syncNew:{es:"No se pudo sincronizar la nueva transacción con Supabase.",en:"Could not sync the new transaction with Supabase.",fr:"Impossible de synchroniser la nouvelle transaction avec Supabase."},
+        validSender:{es:"Selecciona un país emisor válido.",en:"Select a valid sending country.",fr:"Sélectionnez un pays émetteur valide."},
+        validReceiver:{es:"El receptor debe ser un país o participante válido del lobby.",en:"The recipient must be a valid country or lobby participant.",fr:"Le destinataire doit être un pays ou un participant valide du lobby."},
+        validAmount:{es:"Introduce una cantidad válida, por ejemplo 20M o 20000000.",en:"Enter a valid amount, for example 20M or 20000000.",fr:"Saisissez un montant valide, par exemple 20M ou 20000000."},
+        noFunds:{es:"La cantidad supera el máximo disponible actual",en:"The amount exceeds the current available maximum",fr:"Le montant dépasse le maximum actuellement disponible"}
+      };
+      return map[key]?.[lang]||map[key]?.es||key;
+    }
+    
+function renderHistory(){
       const host=document.getElementById("history-chat"),lang=document.getElementById("language").value,t=translations[lang]||translations.es,query=(document.getElementById("history-search")?.value||"").trim().toLocaleLowerCase();
       const all=transactions.map(transactionData).filter(item=>item&&item.sender!==undefined&&item.receiver!==undefined);
       const filtered=all.filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
       host.innerHTML=filtered.map((item,index)=>{
-        const sender=findCountry(item.sender),actualCountryName=(sender?(sender[lang]||sender.es):item.sender||item.country||"Donante"),countryName=item.anonymous&&!adminUnlocked?"Anónimo":actualCountryName,title=item.anonymous&&!adminUnlocked?buildTransactionTitle("Anónimo",item.receiver,item.amount):item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
+        const sender=findCountry(item.sender),actualCountryName=(sender?(sender[lang]||sender.es):item.sender||item.country||"Donante"),countryName=item.anonymous&&!adminUnlocked?"Anónimo":actualCountryName,title=item.anonymous&&!adminUnlocked?buildTransactionTitle(localizedUi("anonymous",lang),item.receiver,item.amount):buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
         const controls=adminUnlocked?'<div class="chat-admin-actions"><button type="button" onclick="editTransaction('+item.id+')">✏️ '+t.edit+'</button><button type="button" class="reverse-action" onclick="reverseTransaction('+item.id+')">'+(item.reversed?"↩ "+t.restore:"↶ "+t.reverse)+'</button><button type="button" class="delete-action" onclick="deleteTransaction('+item.id+')">🗑 '+t.delete+"</button></div>":"";
-        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+(item.anonymous&&!adminUnlocked?'<span class="anonymous-name" aria-label="Donante anónimo">Anónimo</span>':escapeHTML(countryName))+'</div></div><div class="chat-bubble"><span class="live">● '+(t.live||"LIVE")+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(localizeHistoryReason(item.reason,lang))+'</div>'+'<div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+(item.rose?'<span class="chat-gift" aria-label="Donación con clavel">🏵️</span>':"")+'</div>'+controls+"</div></article>";
+        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+(item.anonymous&&!adminUnlocked?'<span class="anonymous-name" aria-label="'+localizedUi("anonymousDonor",lang)+'">+localizedUi("anonymous",lang)</span>':escapeHTML(countryName))+'</div></div><div class="chat-bubble"><span class="live">● '+(t.live||"LIVE")+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(localizeHistoryReason(item.reason,lang))+'</div>'+'<div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+(item.rose?'<span class="chat-gift" aria-label="'+localizedUi("gift",lang)+'">+`🏵️`</span>':"")+'</div>'+controls+"</div></article>";
       }).join("")||'<p class="note">'+t.emptyHistory+"</p>";
       const count=document.getElementById("history-count");
       if(count)count.textContent=filtered.length+" / "+all.length;
@@ -2167,7 +2183,7 @@
         const { error } = await supabaseClient.from(HISTORY_TABLE).update({ reversed: nextReversed }).eq("id", id);
         if (error) {
           console.warn("No se pudo actualizar el estado compartido.", error);
-          alert("No se pudo sincronizar el cambio con Supabase.");
+          alert(localizedUi("syncUpdate",document.getElementById("language").value));
           return;
         }
       }
@@ -2184,7 +2200,7 @@
         const { error } = await supabaseClient.from(HISTORY_TABLE).delete().eq("id", id);
         if (error) {
           console.warn("No se pudo eliminar del historial compartido.", error);
-          alert("No se pudo sincronizar la eliminación con Supabase.");
+          alert(localizedUi("syncDelete",document.getElementById("language").value));
           return;
         }
       }
@@ -2241,9 +2257,9 @@
       const stakeholder=findStakeholder(receiverName);
       const lobbyMatch=receiverName.match(/^lobby\s*([123])$/i);
       const receiver=receiverCountry || (stakeholder ? stakeholder.es : null) || (lobbyMatch ? "Lobby "+lobbyMatch[1] : (receiverName ? null : sender));
-      if(!sender){alert("Selecciona un país emisor válido.");return;}
-      if(receiverName && !receiver){alert("El receptor debe ser un país, Lobby 1, Lobby 2, Lobby 3, activistas, DTB (WWF), ChatGPT u otro participante del lobby.");return;}
-      if(!Number.isFinite(amount)||amount<=0){alert("Introduce una cantidad válida, por ejemplo 20M o 20000000.");return;}
+      if(!sender){alert(localizedUi("validSender",document.getElementById("language").value));return;}
+      if(receiverName && !receiver){alert(localizedUi("validReceiver",document.getElementById("language").value));return;}
+      if(!Number.isFinite(amount)||amount<=0){alert(localizedUi("validAmount",document.getElementById("language").value));return;}
       const currentState=getBudgetState(sender);
       if(currentState&&Number.isFinite(currentState.available)&&amount>currentState.available){alert("La cantidad supera el máximo disponible actual ("+formatSimMoney(currentState.available,document.getElementById("language").value)+").");return;}
       const now=new Date();
@@ -2254,7 +2270,7 @@
         transactions=transactions.map(item=>item.id===existing.id?updated:item);
       }else{
         const newItem={id:Date.now(),country:sender.es,sender:sender.es,receiver:typeof receiver==="string"?receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,typeof receiver==="string"?receiver:receiver.es,amount),reason,rose,anonymous,time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:false};
-        if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).insert(historyPayload(newItem));if(error){console.warn(error);alert("No se pudo sincronizar la nueva transacción con Supabase.");return;}}
+        if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).insert(historyPayload(newItem));if(error){console.warn(error);alert(localizedUi("syncNew",document.getElementById("language").value));return;}}
         transactions.unshift(newItem);
       }
       cancelEdit();renderHistory();renderCountryRoster();
