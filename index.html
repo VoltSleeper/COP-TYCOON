@@ -1612,9 +1612,10 @@
       Kenya:"🇰🇪",Djibouti:"🇩🇯",Uganda:"🇺🇬",Portugal:"🇵🇹",Malaysia:"🇲🇾",Egypt:"🇪🇬"
     };
     function renderAllyFlags(country){
-      return (countryAllies[country.en]||[]).slice(0,3).map(name=>{
+      const activeCountries=new Set(currentLobbyCountryNames||[]);
+      return (countryAllies[country.en]||[]).filter(name=>activeCountries.has(name)).slice(0,3).map(name=>{
         const ally=findCountry(name);
-        const flag=ally?.flag||externalAllyFlags[name]||"";
+        const flag=ally?.flag||"";
         return flag?'<span class="ally-flag" aria-hidden="true">'+flagMarkup(flag)+'</span>':'';
       }).join("");
     }
