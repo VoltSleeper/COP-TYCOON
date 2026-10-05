@@ -1712,7 +1712,7 @@
     function parseMoney(value){
       const source=normalizeSimText(value)
         .replace(/[$€£¥]/g," ")
-        .replace(/\b(?:usd|us dollars?|dollars?|eur|euros?|gbp|pounds?|jpy|yen)\b/g," ")
+        .replace(/(?:usd|us dollars?|dollars?|cad|canadian dollars?|aud|australian dollars?|nzd|new zealand dollars?|eur|euros?|gbp|pounds?|jpy|yen|cny|yuan|renminbi|rmb|chf|swiss francs?|sek|swedish kronor?|nok|norwegian kroner?|dkk|danish kroner?|brl|reais?|mxn|mexican pesos?|ars|argentine pesos?|clp|chilean pesos?|cop|colombian pesos?|inr|rupees?|aed|dirhams?|sar|riyal|riyals?|try|turkish lira|lira|krw|won)/g," ")
         .replace(/\b(?:de|del|d|of)\b/g," ")
         .replace(/\s+/g," ")
         .trim();
@@ -2033,8 +2033,31 @@
     function normalizeHistoryRow(row){return transactionData({id:row.id,country:row.country||row.sender||"",sender:row.sender||"",receiver:row.receiver||"",amount:Number(row.amount||0),title:row.title||"",reason:row.reason||"",time:row.time||"—",reversed:!!row.reversed});}
     function historyPayload(item){const data=transactionData(item);const encodedReason=(data.rose?"[rose=1] ":"")+(data.anonymous?"[anonymous=1] ":"")+(data.reason||"");return {id:data.id,country:data.sender||data.country||"🌍",sender:data.sender||data.country||"",receiver:data.receiver||"",amount:Number(data.amount||0),title:data.title||buildTransactionTitle(data.sender,data.receiver,data.amount),reason:encodedReason,time:data.time||"—",reversed:!!data.reversed};}
     function buildTransactionTitle(sender,receiver,amount){
-      const a=findCountry(sender),sa=findStakeholder(sender),b=findCountry(receiver),stake=findStakeholder(receiver),lang=document.getElementById("language")?.value||"es",an=a?(a[lang]||a.es):sa?(sa[lang]||sa.es):sender||"Donante",bn=b?(b[lang]||b.es):stake?(stake[lang]||stake.es):receiver||"Receptor",money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
+      const a=findCountry(sender),sa=findStakeholder(sender),b=findCountry(receiver),stake=findStakeholder(receiver),lang=document.getElementById("language")?.value||"es";
+      const an=a?(a[lang]||a.es):sa?(sa[lang]||sa.es):sender||({es:"Donante",en:"Donor",fr:"Donateur"}[lang]||"Donante");
+      const bn=b?(b[lang]||b.es):stake?(stake[lang]||stake.es):receiver||({es:"Receptor",en:"Recipient",fr:"Destinataire"}[lang]||"Receptor");
+      const money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
       return lang==="en"?an+" donated "+money+" to "+bn:lang==="fr"?an+" a fait un don de "+money+" à "+bn:an+" ha donado "+money+" a "+bn;
+    }
+    function localizeHistoryReason(reason,lang){
+      const raw=String(reason||"").trim(); if(!raw)return ({es:"Sin motivo indicado",en:"No reason provided",fr:"Aucun motif indiqué"}[lang]||raw);
+      const n=normalizeSimText(raw);
+      const known={
+        "beneficio mutuo / transaccion":{es:"Beneficio mutuo / Transacción",en:"Mutual benefit / transaction",fr:"Bénéfice mutuel / transaction"},
+        "energias renovables":{es:"Energías renovables",en:"Renewable energy",fr:"Énergies renouvelables"},
+        "adaptacion climatica":{es:"Adaptación climática",en:"Climate adaptation",fr:"Adaptation climatique"},
+        "seguridad alimentaria":{es:"Seguridad alimentaria",en:"Food security",fr:"Sécurité alimentaire"},
+        "proyecto conjunto":{es:"Proyecto conjunto",en:"Joint project",fr:"Projet commun"},
+        "investigacion":{es:"Investigación",en:"Research",fr:"Recherche"},
+        "tecnologia":{es:"Tecnología",en:"Technology",fr:"Technologie"},
+        "salud":{es:"Salud",en:"Health",fr:"Santé"},
+        "educacion":{es:"Educación",en:"Education",fr:"Éducation"},
+        "agua":{es:"Agua",en:"Water",fr:"Eau"},
+        "reforestacion":{es:"Reforestación",en:"Reforestation",fr:"Reboisement"},
+        "descarbonizacion":{es:"Descarbonización",en:"Decarbonization",fr:"Décarbonation"},
+        "transicion energetica":{es:"Transición energética",en:"Energy transition",fr:"Transition énergétique"}
+      };
+      return known[n]?.[lang]||raw;
     }
     async function loadTransactions(){
       try{
@@ -2073,7 +2096,7 @@
       host.innerHTML=filtered.map((item,index)=>{
         const sender=findCountry(item.sender),actualCountryName=(sender?(sender[lang]||sender.es):item.sender||item.country||"Donante"),countryName=item.anonymous&&!adminUnlocked?"Anónimo":actualCountryName,title=item.anonymous&&!adminUnlocked?buildTransactionTitle("Anónimo",item.receiver,item.amount):item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
         const controls=adminUnlocked?'<div class="chat-admin-actions"><button type="button" onclick="editTransaction('+item.id+')">✏️ '+t.edit+'</button><button type="button" class="reverse-action" onclick="reverseTransaction('+item.id+')">'+(item.reversed?"↩ "+t.restore:"↶ "+t.reverse)+'</button><button type="button" class="delete-action" onclick="deleteTransaction('+item.id+')">🗑 '+t.delete+"</button></div>":"";
-        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+(item.anonymous&&!adminUnlocked?'<span class="anonymous-name" aria-label="Donante anónimo">Anónimo</span>':escapeHTML(countryName))+'</div></div><div class="chat-bubble"><span class="live">● '+(t.live||"LIVE")+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div>'+'<div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+(item.rose?'<span class="chat-gift" aria-label="Donación con clavel">🏵️</span>':"")+'</div>'+controls+"</div></article>";
+        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+(item.anonymous&&!adminUnlocked?'<span class="anonymous-name" aria-label="Donante anónimo">Anónimo</span>':escapeHTML(countryName))+'</div></div><div class="chat-bubble"><span class="live">● '+(t.live||"LIVE")+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(localizeHistoryReason(item.reason,lang))+'</div>'+'<div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+(item.rose?'<span class="chat-gift" aria-label="Donación con clavel">🏵️</span>':"")+'</div>'+controls+"</div></article>";
       }).join("")||'<p class="note">'+t.emptyHistory+"</p>";
       const count=document.getElementById("history-count");
       if(count)count.textContent=filtered.length+" / "+all.length;
