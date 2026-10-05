@@ -1751,7 +1751,7 @@
       {key:"crisis",requiresAmount:true,words:["crisis","crisis climatica","crisis climática","climate crisis","crise climatique"],base:{climate:-1.2,wellbeing:-1.2,development:-.8,cooperation:.5,emissions:.2},long:{climate:-2.5,wellbeing:-2.2,development:-1.6,cooperation:1,emissions:.5},self:true},
       {key:"medicine",requiresAmount:true,words:["medicina","medicinas","medicine","medical","médecine","médicaments"],base:{climate:0,wellbeing:1.8,development:1,cooperation:.5,emissions:0},long:{climate:.1,wellbeing:3,development:2,cooperation:1,emissions:0},self:true},
       {key:"renewables",requiresAmount:true,words:["renovables","renovable","renewable","renewables","energias renovables","energía renovable","energies renouvelables","énergies renouvelables"],base:{climate:2,wellbeing:.4,development:.3,cooperation:.2,emissions:-2},long:{climate:4,wellbeing:1,development:.8,cooperation:.5,emissions:-4},self:true},
-      {key:"wind",requiresAmount:true,words:["molino de viento","molinos de viento","molinos eolicos","molinos eólicos","energia eolica","energía eólica","eolica","eólica","wind turbine","wind turbines","wind farm","wind farms","wind power","éolienne","éoliennes","parc éolien"],base:{climate:2.2,wellbeing:.5,development:.9,cooperation:.4,emissions:-2.3},long:{climate:4.2,wellbeing:1.1,development:1.8,cooperation:.8,emissions:-4.6},self:false},
+      {key:"wind",requiresAmount:true,words:["molino de viento","molinos de viento","molinos eolicos","molinos eólicos","energia eolica","energía eólica","eolica","eólica","crea molinos de viento","crear molinos de viento","crea molinos eolicos","crear molinos eólicos","instala molinos de viento","instalar molinos de viento","construye molinos de viento","construir molinos de viento","wind turbine","wind turbines","wind farm","wind farms","wind power","create wind turbines","build wind turbines","install wind turbines","éolienne","éoliennes","parc éolien","créer des éoliennes","installer des éoliennes"],base:{climate:2.2,wellbeing:.5,development:.9,cooperation:.4,emissions:-2.3},long:{climate:4.2,wellbeing:1.1,development:1.8,cooperation:.8,emissions:-4.6},self:false},
       {key:"solar",requiresAmount:true,words:["solar","energia solar","energía solar","panel solar","paneles solares","placa solar","placas solares","solar panel","solar panels","photovoltaique","photovoltaïque"],base:{climate:2,wellbeing:.4,development:.8,cooperation:.3,emissions:-2.1},long:{climate:4,wellbeing:1,development:1.6,cooperation:.7,emissions:-4.2},self:false},
       {key:"hydro",requiresAmount:true,words:["hidroelectrica","hidroeléctrica","energia hidroelectrica","energía hidroeléctrica","hidraulica","hidráulica","presa","presas","central hidroelectrica","hydroelectric","hydropower","dam","dams","barrage","barrages"],base:{climate:1.2,wellbeing:.7,development:1.2,cooperation:.4,emissions:-1.2},long:{climate:2.5,wellbeing:1.4,development:2.2,cooperation:.8,emissions:-2.3},self:false},
       {key:"geothermal",requiresAmount:true,words:["geotermica","geotérmica","energia geotermica","energía geotérmica","geothermal","geothermal power","géothermie"],base:{climate:1.8,wellbeing:.3,development:.7,cooperation:.3,emissions:-1.8},long:{climate:3.6,wellbeing:.8,development:1.5,cooperation:.6,emissions:-3.5},self:false},
@@ -1815,7 +1815,11 @@
       const actionCandidates=[...SIM_ACTIONS]
         .filter(item=>item.words.some(word=>simContains(normalized,word)))
         .sort((a,b)=>{
-          const multiPriority=participants.length>1 ? Number(a.self)-Number(b.self) : 0;
+          const hasReceiver=participants.length>1;
+          const multiTransferWords=["crea","crear","creando","instala","instalar","construye","construir","construire","installer","créer","build","create","install"];
+          const contextualSelf=a.key==="sea_level"||a.key==="crisis";
+          const actionIsProject=a.self===false || multiTransferWords.some(word=>normalized.includes(word));
+          const multiPriority=hasReceiver ? (contextualSelf ? 1 : (actionIsProject ? -1 : Number(a.self)-Number(b.self))) : 0;
           if(multiPriority)return multiPriority;
           return Math.max(...b.words.map(word=>normalizeSimText(word).length))-Math.max(...a.words.map(word=>normalizeSimText(word).length));
         });
