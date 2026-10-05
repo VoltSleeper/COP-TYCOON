@@ -2063,9 +2063,9 @@
       const all=transactions.map(transactionData);
       const filtered=all.filter(item=>[item.sender,item.receiver,item.title,item.reason].join(" ").toLocaleLowerCase().includes(query));
       host.innerHTML=filtered.map((item,index)=>{
-        const sender=findCountry(item.sender),countryName=sender?(sender[lang]||sender.es):item.sender||item.country,title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
+        const sender=findCountry(item.sender),countryName=item.anonymous?"Anónimo":(sender?(sender[lang]||sender.es):item.sender||item.country||"Donante"),title=item.title||buildTransactionTitle(item.sender,item.receiver,item.amount),reversed=item.reversed?'<span class="reversed-tag">'+t.reversed+"</span>":"";
         const controls=adminUnlocked?'<div class="chat-admin-actions"><button type="button" onclick="editTransaction('+item.id+')">✏️ '+t.edit+'</button><button type="button" class="reverse-action" onclick="reverseTransaction('+item.id+')">'+(item.reversed?"↩ "+t.restore:"↶ "+t.reverse)+'</button><button type="button" class="delete-action" onclick="deleteTransaction('+item.id+')">🗑 '+t.delete+"</button></div>":"";
-        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(sender?.flag||"🌍")+'</div><div class="mascot-name">'+escapeHTML(countryName)+'</div></div><div class="chat-bubble"><span class="live">● '+t.live+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div><div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+'</div>'+controls+"</div></article>";
+        return '<article class="chat-message '+(index%2?"is-right":"")+(item.reversed?" is-reversed":"")+'"><div class="chat-mascot"><div class="mascot-art" aria-hidden="true">'+(item.rose?"🌹":(sender?.flag||"🌍"))+'</div><div class="mascot-name">'+escapeHTML(countryName)+'</div></div><div class="chat-bubble"><span class="live">● '+t.live+'</span>'+reversed+'<h3 class="chat-title">'+escapeHTML(title)+'</h3><div class="chat-reason">'+t.reasonPrefix+" "+escapeHTML(item.reason)+'</div><div class="chat-meta">→ '+escapeHTML((findCountry(item.receiver)?.[lang]||findCountry(item.receiver)?.es||findStakeholder(item.receiver)?.[lang]||findStakeholder(item.receiver)?.es||item.receiver||"—"))+" · "+(item.amount?formatSimMoney(item.amount,lang):"—")+" · "+escapeHTML(item.time||"—")+'</div>'+controls+"</div></article>";
       }).join("")||'<p class="note">'+t.emptyHistory+"</p>";
       const count=document.getElementById("history-count");
       if(count)count.textContent=filtered.length+" / "+all.length;
@@ -2107,6 +2107,8 @@
       document.getElementById("admin-receiver").value=item.receiver||"";
       document.getElementById("admin-amount").value=item.amount||"";
       document.getElementById("admin-reason").value=item.reason||"";
+      document.getElementById("admin-rose").checked=!!item.rose;
+      document.getElementById("admin-anonymous").checked=!!item.anonymous;
       document.getElementById("admin-submit").textContent=(translations[document.getElementById("language").value]||translations.es).save;
       document.getElementById("admin-cancel").hidden=false;
       document.getElementById("admin-panel").hidden=false;
@@ -2117,6 +2119,8 @@
       editingTransactionId = null;
       const form = document.getElementById("admin-transaction-form");
       if (form) form.reset();
+      document.getElementById("admin-rose").checked=false;
+      document.getElementById("admin-anonymous").checked=false;
       const submit = document.getElementById("admin-submit");
       const cancel = document.getElementById("admin-cancel");
       if (submit) submit.textContent = (translations[document.getElementById("language").value] || translations.es).add;
@@ -2199,6 +2203,8 @@
       const receiverName=document.getElementById("admin-receiver").value.trim();
       const amount=parseMoney(document.getElementById("admin-amount").value);
       const reason=document.getElementById("admin-reason").value.trim();
+      const rose=document.getElementById("admin-rose").checked;
+      const anonymous=document.getElementById("admin-anonymous").checked;
       const sender=findCountry(senderName);
       const receiverCountry=findCountry(receiverName);
       const stakeholder=findStakeholder(receiverName);
@@ -2212,11 +2218,11 @@
       const now=new Date();
       if(editingTransactionId!==null){
         const existing=transactions.find(entry=>entry.id===editingTransactionId);if(!existing)return;
-        const updated={...transactionData(existing),country:sender.es,sender:sender.es,receiver:typeof receiver==="string"?receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,typeof receiver==="string"?receiver:receiver.es,amount),reason,time:existing.time||now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:!!existing.reversed};
+        const updated={...transactionData(existing),country:sender.es,sender:sender.es,receiver:typeof receiver==="string"?receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,typeof receiver==="string"?receiver:receiver.es,amount),reason,rose,anonymous,time:existing.time||now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:!!existing.reversed};
         if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).update(historyPayload(updated)).eq("id",existing.id);if(error){console.warn(error);alert("No se pudo sincronizar el cambio con Supabase.");return;}}
         transactions=transactions.map(item=>item.id===existing.id?updated:item);
       }else{
-        const newItem={id:Date.now(),country:sender.es,sender:sender.es,receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,receiver.es,amount),reason,time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:false};
+        const newItem={id:Date.now(),country:sender.es,sender:sender.es,receiver:typeof receiver==="string"?receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,typeof receiver==="string"?receiver:receiver.es,amount),reason,rose,anonymous,time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:false};
         if(historyLoadedFromSupabase){const {error}=await supabaseClient.from(HISTORY_TABLE).insert(historyPayload(newItem));if(error){console.warn(error);alert("No se pudo sincronizar la nueva transacción con Supabase.");return;}}
         transactions.unshift(newItem);
       }
