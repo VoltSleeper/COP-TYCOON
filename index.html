@@ -434,7 +434,7 @@
     .admin-form label { display:grid; gap:7px; color:var(--slate); font-size:.8rem; font-weight:700; }
     .admin-form label:nth-child(2), .admin-form label:nth-child(3), .admin-form-actions { grid-column:1/-1; }
     .admin-form input,.admin-form select { width:100%; min-width:0; padding:12px 13px; border:1px solid var(--border); border-radius:11px; background:#EFF4BD; color:var(--ivory); font:inherit; font-size:.9rem; }
-    .admin-form-actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .admin-extra-options { grid-column:1/-1; display:flex; align-items:center; gap:18px; padding:2px 0 4px; } .admin-check { display:flex !important; grid-template-columns:none !important; align-items:center; gap:8px !important; color:var(--slate); font-size:.8rem !important; font-weight:700; cursor:pointer; } .admin-check input { width:17px !important; height:17px; margin:0; accent-color:var(--forest); } .admin-form-actions { display:flex; flex-wrap:wrap; gap:10px; }
     .admin-warning { margin:14px 0 0; color:var(--muted); font-size:.76rem; line-height:1.5; }
     .chat-admin-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:12px; position:relative; }
     .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#EFF4BDB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
@@ -2008,8 +2008,8 @@
     const ADMIN_DEMO_CODE = "COP-DEMO-2026";
     const countryFlags = Object.fromEntries(countryRoster.flatMap(country=>[[country.es,country.flag],[country.en,country.flag],[country.fr,country.flag]]));
     const demoTransactions = [
-      { id: 1, country: "Francia", title: "Francia ha donado 20M a España", reason: "Beneficio mutuo / Transacción", time: "12:45", reversed: false },
-      { id: 2, country: "Japón", title: "Japón ha donado 5M a Kenia", reason: "Energías renovables", time: "12:47", reversed: false }
+      { id: 1, country: "Francia", sender: "Francia", receiver: "España", amount: 20000000, title: "Francia ha donado 20M a España", reason: "Beneficio mutuo / Transacción", time: "12:45", reversed: false },
+      { id: 2, country: "Japón", sender: "Japón", receiver: "Kenia", amount: 5000000, title: "Japón ha donado 5M a Kenia", reason: "Energías renovables", time: "12:47", reversed: false }
     ];
     const SUPABASE_URL = "https://ygehjuudubmxuezzwtiq.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_tTR311euf8vL7MiqeoEU4w_jjif5v-R";
