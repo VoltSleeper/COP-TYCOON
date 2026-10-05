@@ -1807,7 +1807,7 @@
       const participants=[...new Map(orderedMatches.map(item=>[item.type+":"+((item.participant.en||item.participant.es)),item.participant])).values()].map(item=>item.flag||item.icon?item:{...item,flag:item.icon||"🏛️"});
       const transferMarkers=[" a "," to "," à "];
       const transferMarkerIndex=transferMarkers.map(marker=>padded.indexOf(marker)).filter(index=>index>=0).sort((a,b)=>a-b)[0]??-1;
-      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const key=item.icon?"stakeholder:":"country:";return (participantMatchIndex.get(key+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):(participants.length>1?participants.length-1:-1);
+      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const type=countryRoster.includes(item)?"country":"stakeholder";return (participantMatchIndex.get(type+":"+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):(participants.length>1?participants.length-1:-1);
       const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
       const actionCandidates=[...SIM_ACTIONS]
