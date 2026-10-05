@@ -419,11 +419,11 @@
     .chat-bubble::before { content: ""; position: absolute; top: 30px; left: -11px; width: 20px; height: 20px; background: #23561A; border-left: 1px solid #23561A66; border-bottom: 1px solid #23561A66; transform: rotate(45deg); border-bottom-left-radius: 4px; }
     .chat-message:nth-child(even) .chat-bubble::before { left: auto; right: -11px; background: #516F7A; border: 0; border-top: 1px solid #516F7A88; border-right: 1px solid #516F7A88; border-radius: 0 4px 0 0; }
     .chat-message.has-rose .chat-bubble { background: radial-gradient(circle at 12% 18%, #EFF4BD55 0 2px, transparent 3px), radial-gradient(circle at 78% 22%, #EFF4BD66 0 3px, transparent 4px), radial-gradient(circle at 34% 82%, #EFF4BD55 0 2px, transparent 3px), linear-gradient(125deg,#556F30 0%,#23561A 48%,#516F7A 100%); border-color:#EFF4BD88; box-shadow:0 14px 34px #23561A38, 0 0 0 1px #EFF4BD22 inset; overflow:hidden; }
-    .chat-message.has-rose .chat-bubble::after { content:"🏵️"; position:absolute; top:8px; right:12px; font-size:1.55rem; opacity:.9; filter:drop-shadow(0 3px 5px #23561A66); pointer-events:none; }
+    .chat-message.has-rose .chat-bubble::after { content:"🏵️"; position:absolute; top:8px; right:12px; font-size:1.55rem; opacity:.9; filter:saturate(.7) sepia(.35) hue-rotate(300deg) brightness(.88) drop-shadow(0 3px 5px #23561A66); pointer-events:none; }
     .chat-message.has-rose .chat-bubble .rose-corner { position:absolute; left:10px; bottom:7px; font-size:1.35rem; opacity:.82; pointer-events:none; transform:rotate(-10deg); }
     .chat-message.has-rose .chat-bubble .rose-petals { position:absolute; inset:0; pointer-events:none; opacity:.75; font-size:.9rem; }
-    .chat-message.has-rose .chat-bubble .rose-petals::before { content:"•  ·     •        ·  •          ·"; position:absolute; top:18px; left:22%; letter-spacing:10px; color:#EFF4BD; transform:rotate(-8deg); }
-    .chat-message.has-rose .chat-bubble .rose-petals::after { content:"·     •       ·   •      ·"; position:absolute; right:18%; bottom:12px; letter-spacing:9px; color:#A2B447; transform:rotate(7deg); }
+    .chat-message.has-rose .chat-bubble .rose-petals::before { content:"•  ·     •        ·  •          ·"; position:absolute; top:18px; left:22%; letter-spacing:10px; color:#B96A6A; transform:rotate(-8deg); }
+    .chat-message.has-rose .chat-bubble .rose-petals::after { content:"·     •       ·   •      ·"; position:absolute; right:18%; bottom:12px; letter-spacing:9px; color:#9D5C62; transform:rotate(7deg); }
     .chat-title { position: relative; margin: 0 0 12px; font-size: clamp(1.05rem, 2.3vw, 1.35rem); line-height: 1.35; color: #EFF4BD; }
     .chat-reason { position: relative; padding: 11px 13px; border-radius: 11px; background: #A2B447; color: #516F7A; font-size: .9rem; line-height: 1.5; }
     .chat-message:nth-child(even) .chat-reason { background: #EFF4BD; }
