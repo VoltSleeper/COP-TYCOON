@@ -1153,6 +1153,7 @@
           <label id="admin-reason-label">Motivo
             <input id="admin-reason" required maxlength="240" placeholder="Describe brevemente el motivo">
           </label>
+          <div class="admin-extra-options"><label class="admin-check"><input id="admin-rose" type="checkbox"> <span>🌹 Donación con rosa</span></label><label class="admin-check"><input id="admin-anonymous" type="checkbox"> <span>🕶️ Donación anónima</span></label></div>
           <div class="admin-form-actions">
             <button class="primary" id="admin-submit" type="submit">Añadir al historial</button>
             <button class="back" id="admin-cancel" type="button" onclick="cancelEdit()" hidden>Cancelar edición</button>
@@ -1536,6 +1537,10 @@
 
     function transactionData(item){
       const raw={...(item||{})};
+      const rawReason=String(raw.reason||"");
+      const metaRose=raw.rose===true||/\[rose=1\]/i.test(rawReason);
+      const metaAnonymous=raw.anonymous===true||/\[anonymous=1\]/i.test(rawReason);
+      const cleanReason=rawReason.replace(/\[rose=1\]\s*/ig,"").replace(/\[anonymous=1\]\s*/ig,"").trim();
       const title=String(raw.title||"");
       const titleNorm=normalizeSimText(title);
       const allCountries=[];
@@ -1558,7 +1563,7 @@
       const receiverStakeholder=findStakeholder(raw.receiver||"");
       const senderName=sender?.es||senderStakeholder?.es||String(raw.sender||raw.country||"").trim()||"Donante";
       const receiverName=receiver?.es||receiverStakeholder?.es||String(raw.receiver||"").trim()||"Receptor";
-      return {...raw,sender:senderName,receiver:receiverName,amount};
+      return {...raw,sender:senderName,receiver:receiverName,amount,reason:cleanReason,rose:metaRose,anonymous:metaAnonymous};
     }
 
     function getBudgetState(country){
@@ -2018,7 +2023,7 @@
     let editingTransactionId = null;
 
     function normalizeHistoryRow(row){return transactionData({id:row.id,country:row.country||row.sender||"",sender:row.sender||"",receiver:row.receiver||"",amount:Number(row.amount||0),title:row.title||"",reason:row.reason||"",time:row.time||"—",reversed:!!row.reversed});}
-    function historyPayload(item){const data=transactionData(item);return {id:data.id,country:data.sender||data.country||"🌍",sender:data.sender||data.country||"",receiver:data.receiver||"",amount:Number(data.amount||0),title:data.title||buildTransactionTitle(data.sender,data.receiver,data.amount),reason:data.reason||"",time:data.time||"—",reversed:!!data.reversed};}
+    function historyPayload(item){const data=transactionData(item);const encodedReason=(data.rose?"[rose=1] ":"")+(data.anonymous?"[anonymous=1] ":"")+(data.reason||"");return {id:data.id,country:data.sender||data.country||"🌍",sender:data.sender||data.country||"",receiver:data.receiver||"",amount:Number(data.amount||0),title:data.title||buildTransactionTitle(data.sender,data.receiver,data.amount),reason:encodedReason,time:data.time||"—",reversed:!!data.reversed};}
     function buildTransactionTitle(sender,receiver,amount){
       const a=findCountry(sender),sa=findStakeholder(sender),b=findCountry(receiver),stake=findStakeholder(receiver),lang=document.getElementById("language")?.value||"es",an=a?(a[lang]||a.es):sa?(sa[lang]||sa.es):sender||"Donante",bn=b?(b[lang]||b.es):stake?(stake[lang]||stake.es):receiver||"Receptor",money=formatSimMoney(Number(amount)||0,lang).replace(/\s?USD|\s?US\$/i,"");
       return lang==="en"?an+" donated "+money+" to "+bn:lang==="fr"?an+" a fait un don de "+money+" à "+bn:an+" ha donado "+money+" a "+bn;
