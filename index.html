@@ -1807,7 +1807,7 @@
       const participants=[...new Map(orderedMatches.map(item=>[item.type+":"+((item.participant.en||item.participant.es)),item.participant])).values()].map(item=>item.flag||item.icon?item:{...item,flag:item.icon||"🏛️"});
       const transferMarkers=[" a "," to "," à "];
       const transferMarkerIndex=transferMarkers.map(marker=>padded.indexOf(marker)).filter(index=>index>=0).sort((a,b)=>a-b)[0]??-1;
-      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>(participantMatchIndex.get("country:"+((item.en||item.es)))??Infinity)>transferMarkerIndex):(participants.length>1?participants.length-1:-1);
+      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const key=item.icon?"stakeholder:":"country:";return (participantMatchIndex.get(key+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):(participants.length>1?participants.length-1:-1);
       const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
       const actionCandidates=[...SIM_ACTIONS]
@@ -1876,8 +1876,8 @@
           en:"💬 The effect mainly depends on the goal of the collaboration and how the support is used.",
           fr:"💬 L’effet dépend surtout de l’objectif de la collaboration et de la manière dont le soutien est utilisé."
         },
-        effects:{climate:.15,wellbeing:.15,development:.5,cooperation:.8,emissions:-.05},
-        longEffects:{climate:.35,wellbeing:.3,development:1,cooperation:1.2,emissions:-.15}
+        effects:{climate:.15,wellbeing:.15,development:.5,cooperation:.8,emissions:.18},
+        longEffects:{climate:.35,wellbeing:.3,development:1,cooperation:1.2,emissions:.32}
       }
     };
     function stakeholderProfile(participant){
