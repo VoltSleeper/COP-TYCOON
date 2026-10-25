@@ -1973,12 +1973,27 @@
       document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">💸 '+formatSimMoney(amount,lang)+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+'</div></div><div class="sim-result-actions"><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
     document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
+    function recordUnrecognizedSimulation(text,reason){
+      const phrase=String(text||"").trim();
+      if(!phrase)return;
+      try{
+        const key="copTycoonUnrecognizedInputs";
+        const entries=JSON.parse(localStorage.getItem(key)||"[]");
+        const normalized=normalizeSimText(phrase).slice(0,300);
+        if(!normalized)return;
+        const existing=entries.find(item=>item.normalized===normalized);
+        if(existing){existing.count=(existing.count||1)+1;existing.lastSeen=new Date().toISOString();existing.reason=reason;}
+        else entries.push({phrase:phrase.slice(0,300),normalized,reason,count:1,firstSeen:new Date().toISOString(),lastSeen:new Date().toISOString()});
+        localStorage.setItem(key,JSON.stringify(entries.slice(-100)));
+      }catch(error){console.warn("Could not save simulator feedback locally.",error);}
+    }
+
     document.getElementById("sim-form").addEventListener("submit",event=>{
       event.preventDefault();
       const text=document.getElementById("transaction").value.trim(),lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result"),parsed=parseSimulationInput(text);
       result.hidden=false;
-      if(!parsed.participants.length){result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
-      if(!parsed.action){result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}
+      if(!parsed.participants.length){recordUnrecognizedSimulation(text,"missing_country");result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
+      if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}
       const action=parsed.action;
       if(action.self){
         if(parsed.participants.length>1){result.innerHTML='<div class="sim-error">'+s.selfActionMany+'</div>';return;}
