@@ -1225,7 +1225,7 @@
       {es:"Fiyi",en:"Fiji",iso3:"FJI",fr:"Fidji",flag:"🇫🇯",reps:["Carla"],budget2025:{total:1000000000,maxAmount:0}},
       {es:"Finlandia",en:"Finland",iso3:"FIN",fr:"Finlande",flag:"🇫🇮",reps:[],budget2025:{total:88000000000,maxAmount:80000000}},
       {es:"Filipinas",en:"Philippines",iso3:"PHL",fr:"Philippines",flag:"🇵🇭",reps:[],budget2025:{total:235000000000,maxAmount:25000000}},
-      {es:"Francia",en:"France",iso3:"FRA",fr:"France",flag:"🇫🇷",reps:["Jimena"],budget2025:{total:1810000000000,maxAmount:450000000}},
+      {es:"Francia",en:"France",iso3:"FRA",fr:"France",flag:"🇫🇷",reps:["pending"],budget2025:{total:1810000000000,maxAmount:450000000}},
       {es:"India",en:"India",iso3:"IND",fr:"Inde",flag:"🇮🇳",reps:["Gabriel","Chloé","Noám"],budget2025:{total:1110000000000,maxAmount:45000000}},
       {es:"Indonesia",en:"Indonesia",iso3:"IDN",fr:"Indonésie",flag:"🇮🇩",reps:[],budget2025:{total:108200000000,defense:3,health:4,education:10,ecology:1.5,maxAmount:25000000}},
       {es:"Irak",en:"Iraq",iso3:"IRQ",fr:"Irak",flag:"🇮🇶",reps:[],budget2025:{total:119500000000,maxAmount:25000000}},
@@ -1239,7 +1239,7 @@
       {es:"Polonia",en:"Poland",iso3:"POL",fr:"Pologne",flag:"🇵🇱",reps:["Jimena"],budget2025:{total:453700000000,maxAmount:180000000}},
       {es:"Reino Unido",en:"United Kingdom",iso3:"GBR",fr:"Royaume-Uni",flag:"🇬🇧",reps:[],budget2025:{total:1630000000000,maxAmount:245000000}},
       {es:"República Democrática del Congo",en:"Democratic Republic of the Congo",iso3:"COD",fr:"République démocratique du Congo",flag:"🇨🇩",reps:[],budget2025:{total:11100000000,maxAmount:25000000}},
-      {es:"Rusia",en:"Russia",iso3:"RUS",fr:"Russie",flag:"🇷🇺",reps:["Houssam"],budget2025:{total:800100000000,maxAmount:0}},
+      {es:"Rusia",en:"Russia",iso3:"RUS",fr:"Russie",flag:"🇷🇺",reps:["Guillermo","Houssam"],budget2025:{total:800100000000,maxAmount:0}},
       {es:"Samoa",en:"Samoa",iso3:"WSM",fr:"Samoa",flag:"🇼🇸",reps:[],budget2025:{total:455000000,maxAmount:180000000}},
       {es:"Singapur",en:"Singapore",iso3:"SGP",fr:"Singapour",flag:"🇸🇬",reps:["Marco"],budget2025:{total:82500000000,maxAmount:550000000}},
       {es:"Suecia",en:"Sweden",iso3:"SWE",fr:"Suède",flag:"🇸🇪",reps:["Mariam"],budget2025:{total:298200000000,maxAmount:180000000}},
@@ -1469,9 +1469,9 @@
     }
 
     const roomRoster = [
-      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu"},{room:1,country:"Samoa"},
-      {room:2,country:"Italy"},{room:2,country:"France"},{room:2,country:"Poland"},{room:2,country:"Russia"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
-      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu"}
+      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia",representative:"Guillermo"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu",representative:"Alberto"},{room:1,country:"Samoa"},
+      {room:2,country:"Italy"},{room:2,country:"France",representative:"pending",tentative:true},{room:2,country:"Poland"},{room:2,country:"Russia",representative:"Houssam"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
+      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu",representative:"pending"}
     ];
 
     // Current-year Lobby is the single source of truth for the active country roster.
@@ -1490,8 +1490,11 @@
     const stakeholderRoster = [
       {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",aliases:["DTB","WWF","Transactions and Donations Booth (WWF)"],people:{es:"Nuria",en:"Nuria",fr:"Nuria"},icon:"🤝"},
       {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",aliases:["Activistas","Activistas climáticos","Climate activists"],people:{es:"Isabella y Paula",en:"Isabella and Paula",fr:"Isabella et Paula"},icon:"🌱"},
-      {room:2,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"Adam",en:"Adam",fr:"Adam"},icon:"🌴"},
-      {room:2,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
+      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
+      {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",aliases:["ChatGPT","Lobby ChatGPT"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🤖"},
+      {room:2,es:"Activista climático (por asignar)",en:"Climate activist (to be assigned)",fr:"Militant pour le climat (à attribuer)",aliases:["Activista climático","Climate activist"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌱"},
+      {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California sala 3","California room 3"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
+      {room:3,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
       {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",aliases:["Nestlé","Nestle","Lobby Nestlé"],people:{es:"Julia D. + 1 persona por asignar",en:"Julia D. + 1 participant to be assigned",fr:"Julia D. + 1 personne à attribuer"},icon:"🏢"},
       {room:2,es:"Activista climático (Sacha)",en:"Climate activist (Sacha)",fr:"Militant pour le climat (Sacha)",aliases:["Sacha","Activista Sacha","Climate activist Sacha"],people:{es:"Sacha",en:"Sacha",fr:"Sacha"},icon:"🌱"},
       {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",aliases:["Exxon Mobil","Exxon","Lobby Exxon Mobil"],people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"}
