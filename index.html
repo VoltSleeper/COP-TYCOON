@@ -1993,7 +1993,7 @@
       }).join("");
       const economy=profile
         ? '<div class="sim-impact-card sim-economy"><div class="sim-impact-icon">🏛️</div><span class="sim-impact-label">'+(lang==="fr"?"Type de participant":lang==="en"?"Participant type":"Tipo de participante")+'</span><strong>'+(lang==="fr"?"Lobby / acteur non étatique":lang==="en"?"Lobby / non-state actor":"Lobby / actor no estatal")+'</strong></div>'
-        : '<div class="sim-impact-card sim-economy"><div class="sim-impact-icon">🏦</div><span class="sim-impact-label">'+s.economy+'</span><strong>'+escapeHTML(economyScale(country,lang))+'</strong><div class="sim-economy-change">'+(values.development>=.65?"↑ "+(lang==="fr"?"en hausse":lang==="en"?"increased":"ha aumentado"):values.development<=-.65?"↓ "+(lang==="fr"?"en baisse":lang==="en"?"decreased":"ha disminuido"):"→ "+(lang==="fr"?"stable":lang==="en"?"stable":"se mantiene"))+'</div></div>';
+        : '<div class="sim-impact-card sim-economy sim-impact-'+(values.development>=.65?"up":values.development<=-.65?"down":"flat")+'"><div class="sim-impact-icon">🏦</div><span class="sim-impact-label">'+s.economy+'</span><div class="sim-impact-arrow" aria-label="'+(values.development>=.65?"up":values.development<=-.65?"down":"flat")+'">'+simArrow(values.development)+'</div><div class="sim-impact-phrase">'+escapeHTML(economyScale(country,lang))+'</div></div>';
       return '<div class="sim-country-result"><div class="sim-country-head"><span class="sim-impact-icon">'+participantIcon(country)+'</span><strong>'+escapeHTML(participantName(country,lang))+'</strong></div><div class="sim-impact-grid">'+cards+economy+'</div></div>';
     }
     function renderSimulationResult(){
