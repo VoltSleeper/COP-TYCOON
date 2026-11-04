@@ -2372,7 +2372,8 @@ function renderHistory(){
           transactions=transactions.map(item=>item.id===existing.id?updated:item);
         }else{
           const newItem={id:Date.now(),country:sender.es,sender:sender.es,receiver:typeof receiver==="string"?receiver:receiver.es,amount,title:buildTransactionTitle(sender.es,typeof receiver==="string"?receiver:receiver.es,amount),reason,rose,anonymous,time:now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"}),reversed:false};
-          await callAdminFunction("insert",{record:historyPayload(newItem)});
+          const saved=await callAdminFunction("insert",{record:historyPayload(newItem)});
+          newItem.id=saved.id;
           transactions.unshift(newItem);
         }
         cancelEdit();renderHistory();renderCountryRoster();
