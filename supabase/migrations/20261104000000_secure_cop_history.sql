@@ -22,6 +22,18 @@ revoke all on table public.cop_history from public, anon, authenticated;
 grant select on table public.cop_history to anon, authenticated;
 grant all on table public.cop_history to service_role;
 
+-- Keep the bigint primary key safe under concurrent admin writes.
+create sequence if not exists public.cop_history_id_seq;
+select setval(
+  'public.cop_history_id_seq',
+  coalesce((select max(id) from public.cop_history), 0) + 1,
+  false
+);
+alter table public.cop_history
+  alter column id set default nextval('public.cop_history_id_seq');
+alter sequence public.cop_history_id_seq owned by public.cop_history.id;
+grant usage, select on sequence public.cop_history_id_seq to service_role;
+
 -- Hashed, short-lived bearer sessions. Raw session tokens never enter the DB.
 create table if not exists public.cop_admin_sessions (
   token_hash text primary key,
