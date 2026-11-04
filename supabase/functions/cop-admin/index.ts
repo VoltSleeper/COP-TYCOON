@@ -178,12 +178,10 @@ Deno.serve(async (req: Request) => {
       if (!record || typeof record !== "object" || Array.isArray(record)) {
         return respond({ ok: false, error: "Invalid record" }, 400);
       }
-      const id = validId(record.id);
-      if (id === null) return respond({ ok: false, error: "Invalid id" }, 400);
       const values = validateHistoryFields(record, true);
-      const { error } = await db.from("cop_history").insert({ id, ...values });
-      if (error) return respond({ ok: false, error: "Could not insert history record" }, 400);
-      return respond({ ok: true, id });
+      const { data, error } = await db.from("cop_history").insert(values).select("id").single();
+      if (error || !data) return respond({ ok: false, error: "Could not insert history record" }, 400);
+      return respond({ ok: true, id: data.id });
     }
 
     if (action === "update") {
