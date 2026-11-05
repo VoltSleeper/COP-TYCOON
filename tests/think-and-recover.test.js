@@ -106,7 +106,7 @@ const parse = context.parseSimulationInput;
   assert.equal(result.receiverStartIndex, -1, "A second participant must not become an inferred recipient");
 }
 
-const actionKeys = [...between("    const SIM_ACTIONS = [", "\\n    ];").matchAll(/\\{key:"([^"]+)"/g)].map(match => match[1]);
+const actionKeys = [...between("    const SIM_ACTIONS = [", "\n    ];").matchAll(/\{key:"([^"]+)"/g)].map(match => match[1]);
 assert.equal(new Set(actionKeys).size, actionKeys.length, "Every simulator action must have a unique key");
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
 assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
