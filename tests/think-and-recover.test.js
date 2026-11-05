@@ -99,6 +99,9 @@ const parse = context.parseSimulationInput;
 }
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /function exportSimulatorDiagnostics\(/, "Local diagnostics must be exportable");
+assert.match(html, /storage:"local-browser-only"/, "Diagnostic export must be explicitly local");
+assert.match(html, /sim-export-errors.*addEventListener/, "Diagnostic export control must be wired");
 assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions requiring a budget must request an explicit amount");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
