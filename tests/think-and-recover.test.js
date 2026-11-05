@@ -104,7 +104,7 @@ assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be 
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
 assert.match(html, /pendingThinkRecover\.lastQuestionKind=kind/, "Clarification state must remember which role was requested");
 assert.match(html, /questionKind==="actor"\|\|questionKind==="self"/, "Actor clarifications must prioritize the answer when resolving roles");
-assert.match(html, /scenarioReply\.participants\.length&&scenarioReply\.action/, "Scenario replies must distinguish concrete decisions from general questions");
+assert.match(html, /const isConcreteDecision=/, "Scenario replies must distinguish concrete decisions from general questions");
 assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Switching from a scenario question must preserve its context");
 assert.match(html, /const isWhatIf=/, "What-if prompts need explicit scenario classification");
 assert.match(html, /parsed\.action&&parsed\.explicitTransfer/, "Direct question-form transfers must remain actionable");
