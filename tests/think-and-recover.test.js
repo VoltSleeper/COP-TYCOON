@@ -32,7 +32,7 @@ const parserSource = [
   between("    const SIM_ACTIONS = [", "\n    ];"),
   "\n    ];",
   between("    function parseSimulationInput(text){", "    function simArrow("),
-  "\nthis.parseSimulationInput = parseSimulationInput;"
+  "\nthis.parseSimulationInput = parseSimulationInput; this.SIM_ACTIONS = SIM_ACTIONS; this.normalizeSimText = normalizeSimText;"
 ].join("\n");
 
 const roster = [
@@ -94,6 +94,22 @@ const parse = context.parseSimulationInput;
   assert.equal(result.amount, null, "Missing amounts must remain missing at parser level");
 }
 {
+  const result = parse("España invierte 20M en healthcare");
+  assert.equal(result.action?.key, "health", "Healthcare should resolve to health, not medicine");
+}
+{
+  const result = parse("España invierte 20M en drought resilience");
+  assert.equal(result.action?.key, "drought_response");
+}
+{
+  const result = parse("España invierte 20M para evitar deforestación");
+  assert.equal(result.action?.key, "reforestation");
+}
+{
+  const result = parse("España invierte 20M en deforestation");
+  assert.equal(result.action?.key, "deforestation");
+}
+{
   const result = parse("España combate la subida del mar");
   assert.equal(result.action?.key, "sea_level");
   assert.equal(result.participants.length, 1);
@@ -106,8 +122,18 @@ const parse = context.parseSimulationInput;
   assert.equal(result.receiverStartIndex, -1, "A second participant must not become an inferred recipient");
 }
 
-const actionKeys = [...between("    const SIM_ACTIONS = [", "\n    ];").matchAll(/\{key:"([^"]+)"/g)].map(match => match[1]);
+const actionKeys = context.SIM_ACTIONS.map(action => action.key);
 assert.equal(new Set(actionKeys).size, actionKeys.length, "Every simulator action must have a unique key");
+const phraseOwners = new Map();
+for (const action of context.SIM_ACTIONS) {
+  for (const word of action.words) {
+    const normalized = context.normalizeSimText(word);
+    if (!phraseOwners.has(normalized)) phraseOwners.set(normalized, new Set());
+    phraseOwners.get(normalized).add(action.key);
+  }
+}
+const overlappingPhrases = [...phraseOwners].filter(([, owners]) => owners.size > 1);
+assert.equal(overlappingPhrases.length, 0, "Action vocabulary must not assign the same exact phrase to different actions");
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
 assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
 assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
