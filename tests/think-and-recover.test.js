@@ -49,7 +49,7 @@ const context = { countryRoster: roster, stakeholderRoster: stakeholders, consol
 vm.createContext(context);
 vm.runInContext(parserSource, context);
 const parse = context.parseSimulationInput;
-const simulatorText = new Function("return " + between("    const simulatorText = {", "\\n    };\\n\\n    const countryRoster"))();
+const simulatorText = new Function("return " + between("    const simulatorText = {", "\n    };\n\n    const countryRoster"))();\\n\\n    const countryRoster"))();
 
 {
   const result = parse("España dona a Tuvalu y Nestlé contra la subida del mar");
