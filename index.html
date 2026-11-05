@@ -1903,6 +1903,7 @@
       const moneyMentions=parseMoneyMentions(normalized);
       const amount=parseMoneyFromText(normalized);
       const amountAmbiguous=moneyMentions.length>1;
+      const negativeAmount=/(?:^|\\s)[-−]\\s*(?:[$€£¥]\\s*)?\\d[\\d.,]*(?:\\s*(?:%|por ciento|percent|pour cent|trillion|trillions|tn|billion|billions|bn|milliard|milliards|million|millions|millon|millones|m|mil|thousand|thousands|k|usd|euros?|dollars?))?/i.test(normalized);
       const explicitTransfer=transferMarkerIndex>=0;
       const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
@@ -1925,7 +1926,7 @@
         action={...action,base:{climate:1.1,wellbeing:.55,development:.25,cooperation:.45,emissions:-1.8},long:{climate:2.4,wellbeing:1.1,development:.6,cooperation:.9,emissions:-3.8}};
       }
       const percentage=parsePercentageFromText(normalized);
-      return {normalized,participants,countries,amount,amountAmbiguous,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
+      return {normalized,participants,countries,amount,amountAmbiguous,negativeAmount,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
     }
 
     function simArrow(value){
@@ -2202,6 +2203,7 @@
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
       if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");askThinkRecover(text,lang,"action");return;}
       const action=parsed.action;
+      if(parsed.negativeAmount){recordUnrecognizedSimulation(text,"negative_amount");askThinkRecover(text,lang,"amount");return;}
       if(parsed.amountAmbiguous){recordUnrecognizedSimulation(text,"multiple_amounts");askThinkRecover(text,lang,"amount");return;}
       if(action.requiresAmount&&parsed.amount===null&&!Number.isFinite(parsed.percentage)){recordUnrecognizedSimulation(text,"missing_amount");askThinkRecover(text,lang,"amount");return;}
       if(action.requiresAmount&&(parsed.amount===0||parsed.percentage===0)){recordUnrecognizedSimulation(text,"non_positive_amount");askThinkRecover(text,lang,"amount");return;}
