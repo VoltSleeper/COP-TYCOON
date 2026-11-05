@@ -30,6 +30,7 @@ const parserSource = [
   between("    function parsePercentageFromText(value){", "    function parseMoneyFromText("),
   between("    function parseMoneyFromText(value){", "    const SIM_ACTIONS = ["),
   between("    const SIM_ACTIONS = [", "\n    ];"),
+  "\n    ];",
   between("    function parseSimulationInput(text){", "    function simArrow("),
   "\nthis.parseSimulationInput = parseSimulationInput;"
 ].join("\n");
@@ -77,6 +78,9 @@ const parse = context.parseSimulationInput;
 }
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Switching from a scenario question must preserve its context");
+assert.match(html, /const isWhatIf=/, "What-if prompts need explicit scenario classification");
+assert.match(html, /parsed\.action&&parsed\.explicitTransfer/, "Direct question-form transfers must remain actionable");
 assert.match(html, /generalAnswer/, "A general-scenario clarification must not be parsed as a transaction");
 assert.match(html, /pendingThinkRecover\.original/, "The original phrase must be retained during clarification");
 assert.match(html, /return \{text:String\(input\|\|""\),replacements:\[\]\};/, "Autocorrection must not silently rewrite user intent");
