@@ -2043,7 +2043,8 @@
         return acc;
       },{});
       const cards=actors.map(actor=>renderSimCountry(actor,"actor",actorAmount,action,lang,simHorizon)).join("")+receivers.map(target=>renderSimCountry(target,"receiver",receiverAmount,action,lang,simHorizon)).join("");
-      document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">💸 '+formatSimMoney(amount,lang)+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
+      const amountLabel=action.noBudget?(lang==="en"?"No monetary transfer":lang==="fr"?"Aucun transfert monétaire":"Sin transferencia monetaria"):formatSimMoney(amount,lang);
+      document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">'+(action.noBudget?"🌍 ":"💸 ")+amountLabel+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
     document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const cancel=event.target.closest("[data-sim-cancel]");if(cancel){clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("wolf").textContent="🐺";document.getElementById("speech").textContent=(translations[document.getElementById("language").value]||translations.es).greeting;return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
     function recordUnrecognizedSimulation(text,reason){
@@ -2172,11 +2173,19 @@
           text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
         }
       }
-      const correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
+      const correction=autoCorrectSimulatorText(text);
+      let parsed=parseSimulationInput(correction.text);
+      const clarificationKind=pendingThinkRecover?.lastQuestionKind;
+      const clarificationActors=clarificationKind==="self"?parseSimulationInput(submitted).participants:[];
+      if(clarificationKind==="self"&&clarificationActors.length===1&&parsed.action?.self){
+        parsed={...parsed,participants:clarificationActors,countries:clarificationActors.filter(item=>countryRoster.includes(item)),receiverStartIndex:-1};
+      }
       result.hidden=false;
       const isWhatIf=/\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text);
       const isScenarioQuestion=!pendingThinkRecover&&(isWhatIf||((/\?|¿/.test(text))&&!(parsed.action&&parsed.explicitTransfer)));
-      if(isScenarioQuestion){askThinkRecover(text,lang,"scenario");return;}
+      const isMultiPartyScenario=!parsed.explicitTransfer&&parsed.participants.length>1&&
+        ["attack","war","surrender","ceasefire","peace","agreement","joint"].includes(parsed.action?.key);
+      if(isScenarioQuestion||isMultiPartyScenario){askThinkRecover(text,lang,"scenario");return;}
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
       if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");askThinkRecover(text,lang,"action");return;}
       const action=parsed.action;
@@ -2195,7 +2204,7 @@
         ? actors.reduce((sum,actor)=>{const available=actor?.budget2025?getBudgetState(actor)?.available:null;const base=Number.isFinite(available)?available:Number(actor?.budget2025?.total||0);return sum+base*parsed.percentage;},0)/Math.max(actors.length,1)
         : null;
       const defaultAmount=actors.reduce((sum,actor)=>{const available=actor?.budget2025?getBudgetState(actor)?.available:null;const base=Number.isFinite(available)?available:Number(actor?.budget2025?.total||0);return sum+(base>0?base*.1:20000000);},0)/Math.max(actors.length,1);
-      const simulationAmount=Number.isFinite(percentageAmount)?percentageAmount:(Number.isFinite(parsed.amount)?parsed.amount:(action.requiresAmount?NaN:defaultAmount));
+      const simulationAmount=action.noBudget?0:(Number.isFinite(percentageAmount)?percentageAmount:(Number.isFinite(parsed.amount)?parsed.amount:(action.requiresAmount?NaN:defaultAmount)));
       if(!Number.isFinite(simulationAmount)||simulationAmount<=0){recordUnrecognizedSimulation(text,"unresolved_amount");askThinkRecover(text,lang,"amount");return;}
       const invalidActor=actors.find(actor=>{
         const state=actor.budget2025?getBudgetState(actor):null;
