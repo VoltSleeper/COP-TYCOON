@@ -2032,7 +2032,7 @@
       const cards=actors.map(actor=>renderSimCountry(actor,"actor",actorAmount,action,lang,simHorizon)).join("")+receivers.map(target=>renderSimCountry(target,"receiver",receiverAmount,action,lang,simHorizon)).join("");
       document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">💸 '+formatSimMoney(amount,lang)+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
-    document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
+    document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const cancel=event.target.closest("[data-sim-cancel]");if(cancel){clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("wolf").textContent="🐺";document.getElementById("speech").textContent=(translations[document.getElementById("language").value]||translations.es).greeting;return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
     function recordUnrecognizedSimulation(text,reason){
       const phrase=String(text||"").trim();
       if(!phrase)return;
@@ -2062,7 +2062,7 @@
       pendingThinkRecover.attempts++;
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
       result.hidden=false;
-      result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small></div>';
+      result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small><button type="button" class="back" data-sim-cancel>'+(lang==="en"?"Cancel":lang==="fr"?"Annuler":"Cancelar")+'</button></div>';
       document.getElementById("wolf").textContent="🐺❔";
       document.getElementById("speech").textContent=question;
       const input=document.getElementById("transaction");
@@ -2073,7 +2073,7 @@
     }
     function clearThinkRecover(){
       pendingThinkRecover=null;
-      const lang=document.getElementById("language").value,t=simulatorText[lang]||simulatorText.es;
+      const lang=document.getElementById("language").value,t=translations[lang]||translations.es;
       document.getElementById("transaction").placeholder=t.placeholder;
       document.getElementById("simulate-button").textContent=t.simulate;
     }
