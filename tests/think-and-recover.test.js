@@ -14,8 +14,8 @@ function between(start, end) {
 }
 
 // Parse every inline JavaScript block to catch syntax errors before deployment.
-const inlineScripts = [...html.matchAll(/<script\\b([^>]*)>([\\s\\S]*?)<\\/script>/gi)]
-  .filter(match => !/\\bsrc\\s*=/.test(match[1]) && !/application\\/(?:ld\\+json|json)/i.test(match[1]))
+const inlineScripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)]
+  .filter(match => !/\bsrc\s*=/.test(match[1]) && !/application\/(?:ld\+json|json)/i.test(match[1]))
   .map(match => match[2].trim())
   .filter(Boolean);
 assert.ok(inlineScripts.length > 0, "Expected inline JavaScript in index.html");
@@ -29,10 +29,10 @@ const parserSource = [
   between("    function parseMoney(value){", "    function parsePercentageFromText("),
   between("    function parsePercentageFromText(value){", "    function parseMoneyFromText("),
   between("    function parseMoneyFromText(value){", "    const SIM_ACTIONS = ["),
-  between("    const SIM_ACTIONS = [", "\\n    ];"),
+  between("    const SIM_ACTIONS = [", "\n    ];"),
   between("    function parseSimulationInput(text){", "    function simArrow("),
-  "\\nthis.parseSimulationInput = parseSimulationInput;"
-].join("\\n");
+  "\nthis.parseSimulationInput = parseSimulationInput;"
+].join("\n");
 
 const roster = [
   { es: "España", en: "Spain", fr: "Espagne", flag: "🇪🇸" },
@@ -44,11 +44,7 @@ const roster = [
 const stakeholders = [
   { es: "Lobby Nestlé", en: "Lobby Nestlé", fr: "Lobby Nestlé", aliases: ["Nestlé", "Nestle"], icon: "🏢" }
 ];
-const context = {
-  countryRoster: roster,
-  stakeholderRoster: stakeholders,
-  console
-};
+const context = { countryRoster: roster, stakeholderRoster: stakeholders, console };
 vm.createContext(context);
 vm.runInContext(parserSource, context);
 const parse = context.parseSimulationInput;
@@ -80,9 +76,9 @@ const parse = context.parseSimulationInput;
   assert.equal(result.receiverStartIndex, -1, "A second participant must not become an inferred recipient");
 }
 
-assert.match(html, /function acknowledgeGeneralScenario\\(/, "General questions need a non-transaction outcome");
+assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
 assert.match(html, /generalAnswer/, "A general-scenario clarification must not be parsed as a transaction");
-assert.match(html, /pendingThinkRecover\\.original/, "The original phrase must be retained during clarification");
-assert.match(html, /return \\{text:String\\(input\\|\\|""\\),replacements:\\[\\]\\};/, "Autocorrection must not silently rewrite user intent");
-assert.doesNotMatch(html, /participants\\.length>1\\?participants\\.length-1:-1/, "No last-participant recipient fallback");
+assert.match(html, /pendingThinkRecover\.original/, "The original phrase must be retained during clarification");
+assert.match(html, /return \{text:String\(input\|\|""\),replacements:\[\]\};/, "Autocorrection must not silently rewrite user intent");
+assert.doesNotMatch(html, /participants\.length>1\?participants\.length-1:-1/, "No last-participant recipient fallback");
 console.log("Think & Recover regression checks passed.");
