@@ -148,16 +148,16 @@ create or replace function public.cop_history_mask_anonymous()
 returns trigger
 language plpgsql
 set search_path = ''
-as $
+as $trigger$
 begin
-  if coalesce(new.reason, '') ~* '\\[anonymous=1\\]' then
+  if position('[anonymous=1]' in lower(coalesce(new.reason, ''))) > 0 then
     new.sender := 'Anónimo';
     new.country := 'Anónimo';
     new.title := 'Donación anónima';
   end if;
   return new;
 end;
-$;
+$trigger$;
 
 drop trigger if exists cop_history_mask_anonymous on public.cop_history;
 create trigger cop_history_mask_anonymous
@@ -171,7 +171,6 @@ update public.cop_history
 set sender = 'Anónimo',
     country = 'Anónimo',
     title = 'Donación anónima'
-where coalesce(reason, '') ~* '\\[anonymous=1\\]';
-
+where position('[anonymous=1]' in lower(coalesce(reason, ''))) > 0;
 
 commit;
