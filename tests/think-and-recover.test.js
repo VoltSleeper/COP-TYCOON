@@ -136,6 +136,10 @@ const overlappingPhrases = [...phraseOwners].filter(([, owners]) => owners.size 
 assert.equal(overlappingPhrases.length, 0, "Action vocabulary must not assign the same exact phrase to different actions");
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /const requiresRecipient=\["donation","trade","debt","aidcut","border"\]/, "Transfer-like actions must not silently become self-actions");
+assert.match(html, /questionKind==="receiver"/, "Recipient answers must be handled as recipient clarification");
+assert.match(html, /const receiverMarker=lang==="fr"/, "Recipient clarification must establish an explicit localized relation");
+assert.match(html, /key:"food_block",requiresAmount:false,noBudget:true/, "Non-monetary food policy actions must not invent a budget transfer");
 assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
 assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
 assert.match(html, /const amountLabel=action\.noBudget\?/, "Non-monetary actions must not display an invented transfer amount");
