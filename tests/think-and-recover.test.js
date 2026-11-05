@@ -49,6 +49,7 @@ const context = { countryRoster: roster, stakeholderRoster: stakeholders, consol
 vm.createContext(context);
 vm.runInContext(parserSource, context);
 const parse = context.parseSimulationInput;
+const simulatorText = new Function("return " + between("    const simulatorText = {", "\\n    };\\n\\n    const countryRoster"))();
 
 {
   const result = parse("España dona a Tuvalu y Nestlé contra la subida del mar");
@@ -134,6 +135,11 @@ for (const action of context.SIM_ACTIONS) {
 }
 const overlappingPhrases = [...phraseOwners].filter(([, owners]) => owners.size > 1);
 assert.equal(overlappingPhrases.length, 0, "Action vocabulary must not assign the same exact phrase to different actions");
+for (const lang of ["es", "en", "fr"]) {
+  for (const action of context.SIM_ACTIONS) {
+    assert.ok(simulatorText[lang].motive[action.key], "Missing " + lang + " label for action " + action.key);
+  }
+}
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
 assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
 assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
