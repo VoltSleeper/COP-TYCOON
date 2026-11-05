@@ -65,6 +65,27 @@ const parse = context.parseSimulationInput;
   assert.equal(result.amount, 100000000);
 }
 {
+  const result = parse("España dona 20M a Tuvalu para energía solar");
+  assert.equal(result.action?.key, "donation", "An explicit donation verb should outrank its stated purpose");
+  assert.equal(result.amount, 20000000);
+  assert.equal(result.receiverStartIndex, 1);
+}
+{
+  const result = parse("España dona 20M a Tuvalu para alimentos");
+  assert.equal(result.action?.key, "donation", "Donation intent should outrank the food-related purpose");
+  assert.equal(result.amount, 20000000);
+}
+{
+  const result = parse("Francia invierte 1,5B en renovables para España");
+  assert.equal(result.action?.key, "renewables");
+  assert.equal(result.amount, 1500000000);
+}
+{
+  const result = parse("España dona a Tuvalu");
+  assert.equal(result.action?.key, "donation");
+  assert.equal(result.amount, null, "Missing amounts must remain missing at parser level");
+}
+{
   const result = parse("España combate la subida del mar");
   assert.equal(result.action?.key, "sea_level");
   assert.equal(result.participants.length, 1);
@@ -78,6 +99,12 @@ const parse = context.parseSimulationInput;
 }
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions requiring a budget must request an explicit amount");
+assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
+assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
+assert.match(html, /pendingThinkRecover\.lastQuestionKind=kind/, "Clarification state must remember which role was requested");
+assert.match(html, /questionKind==="actor"\|\|questionKind==="self"/, "Actor clarifications must prioritize the answer when resolving roles");
+assert.match(html, /scenarioReply\.participants\.length&&scenarioReply\.action/, "Scenario replies must distinguish concrete decisions from general questions");
 assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Switching from a scenario question must preserve its context");
 assert.match(html, /const isWhatIf=/, "What-if prompts need explicit scenario classification");
 assert.match(html, /parsed\.action&&parsed\.explicitTransfer/, "Direct question-form transfers must remain actionable");
