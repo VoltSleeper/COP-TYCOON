@@ -2183,7 +2183,7 @@
       result.hidden=false;
       const isWhatIf=/\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text);
       const isScenarioQuestion=!pendingThinkRecover&&(isWhatIf||((/\?|¿/.test(text))&&!(parsed.action&&parsed.explicitTransfer)));
-      const isMultiPartyScenario=!parsed.explicitTransfer&&parsed.participants.length>1&&
+      const isMultiPartyScenario=!parsed.explicitTransfer&&
         ["attack","war","surrender","ceasefire","peace","agreement","joint"].includes(parsed.action?.key);
       if(isScenarioQuestion||isMultiPartyScenario){askThinkRecover(text,lang,"scenario");return;}
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
