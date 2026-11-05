@@ -1056,6 +1056,11 @@
       #lobby-grid .country-detail span{font-size:.65rem!important}
       #lobby-grid .budget-value{font-size:.78rem!important}
     }
+    .sim-clarification{padding:18px!important}
+    .sim-clarification p{margin:10px 0!important;line-height:1.55}
+    .sim-clarification small{display:block;opacity:.8;margin-top:12px;overflow-wrap:anywhere}
+    .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 1.2s ease-in-out infinite alternate}
+    @keyframes simThink{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1839,30 +1844,10 @@
       }
       return row[b.length];
     }
+    // Never rewrite names, actions or intent from spelling similarity alone.
+    // A future correction may be applied only after contextual validation.
     function autoCorrectSimulatorText(input){
-      const original=String(input||"");
-      const words=[...new Set([
-        ...countryRoster.flatMap(item=>[item.es,item.en,item.fr]),
-        ...stakeholderRoster.flatMap(item=>[item.es,item.en,item.fr,...(item.aliases||[])]),
-        ...SIM_ACTIONS.flatMap(item=>item.words)
-      ].flatMap(phrase=>normalizeSimText(phrase).split(/[^a-z0-9]+/).filter(word=>word.length>=5)))];
-      const replacements=[];
-      const corrected=original.replace(/[A-Za-zÀ-ÿ]+/g,token=>{
-        const norm=normalizeSimText(token);
-        if(norm.length<5||words.includes(norm))return token;
-        const maxDistance=norm.length>=8?2:1;
-        let bestDistance=maxDistance+1,best=[];
-        for(const candidate of words){
-          if(Math.abs(candidate.length-norm.length)>maxDistance)continue;
-          const distance=editDistance(norm,candidate);
-          if(distance<bestDistance){bestDistance=distance;best=[candidate];}
-          else if(distance===bestDistance)best.push(candidate);
-        }
-        if(bestDistance>maxDistance||best.length!==1)return token;
-        replacements.push({from:token,to:best[0]});
-        return best[0];
-      });
-      return {text:corrected,replacements};
+      return {text:String(input||""),replacements:[]};
     }
     function recordSimulatorLearning(input,kind,details){
       try{
@@ -1896,18 +1881,16 @@
       const participants=[...new Map(orderedMatches.map(item=>[item.type+":"+((item.participant.en||item.participant.es)),item.participant])).values()].map(item=>item.flag||item.icon?item:{...item,flag:item.icon||"🏛️"});
       const transferMarkers=[" a "," to "," à "];
       const transferMarkerIndex=transferMarkers.map(marker=>padded.indexOf(marker)).filter(index=>index>=0).sort((a,b)=>a-b)[0]??-1;
-      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const type=countryRoster.includes(item)?"country":"stakeholder";return (participantMatchIndex.get(type+":"+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):(participants.length>1?participants.length-1:-1);
+      const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const type=countryRoster.includes(item)?"country":"stakeholder";return (participantMatchIndex.get(type+":"+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):-1;
       const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
+      const explicitTransfer=transferMarkerIndex>=0;
       const actionCandidates=[...SIM_ACTIONS]
         .filter(item=>item.words.some(word=>simContains(normalized,word)))
         .sort((a,b)=>{
-          const hasReceiver=participants.length>1;
-          const multiTransferWords=["crea","crear","creando","instala","instalar","construye","construir","construire","installer","créer","build","create","install"];
-          const contextualSelf=a.key==="sea_level"||a.key==="crisis";
-          const actionIsProject=a.self===false || multiTransferWords.some(word=>normalized.includes(word));
-          const multiPriority=hasReceiver ? (contextualSelf ? 1 : (actionIsProject ? -1 : Number(a.self)-Number(b.self))) : 0;
-          if(multiPriority)return multiPriority;
+          const aTransferScore=explicitTransfer&&!a.self?1:0;
+          const bTransferScore=explicitTransfer&&!b.self?1:0;
+          if(aTransferScore!==bTransferScore)return bTransferScore-aTransferScore;
           return Math.max(...b.words.map(word=>normalizeSimText(word).length))-Math.max(...a.words.map(word=>normalizeSimText(word).length));
         });
       let action=actionCandidates[0]||null;
@@ -1919,7 +1902,7 @@
         action={...action,base:{climate:1.1,wellbeing:.55,development:.25,cooperation:.45,emissions:-1.8},long:{climate:2.4,wellbeing:1.1,development:.6,cooperation:.9,emissions:-3.8}};
       }
       const percentage=parsePercentageFromText(normalized);
-      return {normalized,participants,countries,amount,percentage,action,receiverStartIndex,mitigation};
+      return {normalized,participants,countries,amount,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
     }
 
     function simArrow(value){
@@ -2049,7 +2032,7 @@
       const cards=actors.map(actor=>renderSimCountry(actor,"actor",actorAmount,action,lang,simHorizon)).join("")+receivers.map(target=>renderSimCountry(target,"receiver",receiverAmount,action,lang,simHorizon)).join("");
       document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">💸 '+formatSimMoney(amount,lang)+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
-    document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
+    document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
     function recordUnrecognizedSimulation(text,reason){
       const phrase=String(text||"").trim();
       if(!phrase)return;
@@ -2065,20 +2048,58 @@
       }catch(error){console.warn("Could not save simulator feedback locally.",error);}
     }
 
+    let pendingThinkRecover=null;
+    function thinkRecoverQuestion(lang,kind){
+      const copy={
+        es:{scenario:"¿Quieres explorar las consecuencias generales de ese escenario o simular una decisión concreta? No voy a convertirlo por mi cuenta en una donación ni en otra acción.",actor:"¿Qué país o participante está realizando la acción? Dime quién actúa; no voy a elegirlo por el orden de los nombres.",action:"¿Qué acción quieres evaluar exactamente? Cuéntamela con tus palabras; no asumiré que se trata de una donación.",roles:"He identificado varios participantes, pero no una relación clara. ¿Quién realiza la acción y quién o quiénes son destinatarios?",self:"He encontrado una acción que parece realizarse sobre el propio participante, pero aparecen varios nombres. ¿Quién lleva a cabo esa acción?",receiver:"Veo una posible transferencia, pero no puedo separar con seguridad al emisor de los destinatarios. ¿Quién envía y quién recibe?",ambiguous:"La frase admite más de una acción posible. ¿Qué acción querías expresar exactamente?"},
+        en:{scenario:"Do you want to explore the scenario's general consequences or simulate a specific decision? I won't turn it into a donation or another action on my own.",actor:"Which country or participant is taking the action? Tell me who acts; I won't decide based on name order.",action:"What action do you want to evaluate exactly? Describe it in your own words; I won't assume it's a donation.",roles:"I found several participants but no clear relationship. Who takes the action, and who are the recipient(s)?",self:"This action appears to be carried out by the participant itself, but several names appear. Who is taking the action?",receiver:"I may have found a transfer, but can't confidently separate sender and recipient(s). Who sends, and who receives?",ambiguous:"The sentence could describe more than one action. What action did you mean?"},
+        fr:{scenario:"Voulez-vous explorer les conséquences générales de ce scénario ou simuler une décision précise ? Je ne le transformerai pas moi-même en don ou en une autre action.",actor:"Quel pays ou participant réalise l’action ? Précisez qui agit ; je ne déciderai pas selon l’ordre des noms.",action:"Quelle action voulez-vous évaluer exactement ? Décrivez-la avec vos mots ; je ne supposerai pas qu’il s’agit d’un don.",roles:"J’ai repéré plusieurs participants, mais leur relation n’est pas claire. Qui agit et qui reçoit ?",self:"Cette action semble concerner le participant lui-même, mais plusieurs noms apparaissent. Qui réalise l’action ?",receiver:"Je vois peut-être un transfert, mais je ne peux pas distinguer sûrement l’émetteur du ou des destinataires. Qui envoie et qui reçoit ?",ambiguous:"La phrase peut décrire plusieurs actions. Quelle action vouliez-vous exprimer exactement ?"}
+      };
+      return (copy[lang]||copy.es)[kind]||(copy[lang]||copy.es).action;
+    }
+    function askThinkRecover(original,lang,kind){
+      if(!pendingThinkRecover)pendingThinkRecover={original,clarifications:[],attempts:0};
+      pendingThinkRecover.attempts++;
+      const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
+      result.hidden=false;
+      result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small></div>';
+      document.getElementById("wolf").textContent="🐺❔";
+      document.getElementById("speech").textContent=question;
+      const input=document.getElementById("transaction");
+      input.value="";
+      input.placeholder=lang==="en"?"Add a clarification…":lang==="fr"?"Ajoutez une précision…":"Añade una aclaración…";
+      document.getElementById("simulate-button").textContent=lang==="en"?"Clarify":lang==="fr"?"Préciser":"Aclarar";
+      input.focus();
+    }
+    function clearThinkRecover(){
+      pendingThinkRecover=null;
+      const lang=document.getElementById("language").value,t=simulatorText[lang]||simulatorText.es;
+      document.getElementById("transaction").placeholder=t.placeholder;
+      document.getElementById("simulate-button").textContent=t.simulate;
+    }
     document.getElementById("sim-form").addEventListener("submit",event=>{
       event.preventDefault();
-      const text=document.getElementById("transaction").value.trim(),lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result"),correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
+      const submitted=document.getElementById("transaction").value.trim();
+      if(!submitted)return;
+      const lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result");
+      let text=submitted;
+      if(pendingThinkRecover){pendingThinkRecover.clarifications.push(submitted);text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");}
+      const correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
       result.hidden=false;
-      if(!parsed.participants.length){recordUnrecognizedSimulation(text,"missing_country");recordSimulatorLearning(text,"unresolved",null);result.innerHTML='<div class="sim-error">'+s.missingCountry+'</div>';return;}
-      if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");recordSimulatorLearning(text,"unresolved",null);result.innerHTML='<div class="sim-error">'+s.unknownAction+'</div>';return;}
+      const isScenarioQuestion=!pendingThinkRecover&&(/\?|¿|\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text));
+      if(isScenarioQuestion){askThinkRecover(text,lang,"scenario");return;}
+      if(!parsed.participants.length){askThinkRecover(text,lang,"actor");return;}
+      if(!parsed.action){askThinkRecover(text,lang,"action");return;}
       const action=parsed.action;
-      if(action.self){
-        if(parsed.participants.length>1){result.innerHTML='<div class="sim-error">'+s.selfActionMany+'</div>';return;}
-      }
+      if(parsed.actionCandidates.length>1&&parsed.actionCandidates[0].key!==parsed.actionCandidates[1].key&&!parsed.explicitTransfer){askThinkRecover(text,lang,"ambiguous");return;}
+      if(action.self&&parsed.participants.length>1){askThinkRecover(text,lang,"self");return;}
+      if(!action.self&&parsed.participants.length>1&&!parsed.explicitTransfer){askThinkRecover(text,lang,"roles");return;}
+      if(!action.self&&parsed.explicitTransfer&&parsed.receiverStartIndex<=0){askThinkRecover(text,lang,"receiver");return;}
       const implicitSelf=!action.self&&parsed.participants.length===1;
-      const receiverStart=action.self||implicitSelf?-1:(parsed.receiverStartIndex>=1?parsed.receiverStartIndex:parsed.participants.length-1);
+      const receiverStart=action.self||implicitSelf?-1:parsed.receiverStartIndex;
       const actors=action.self||implicitSelf?[parsed.participants[0]]:parsed.participants.slice(0,receiverStart);
       const receivers=action.self||implicitSelf?[]:parsed.participants.slice(receiverStart);
+      if(!actors.length||(!action.self&&!implicitSelf&&!receivers.length)){askThinkRecover(text,lang,"receiver");return;}
       const percentageAmount=Number.isFinite(parsed.percentage)
         ? actors.reduce((sum,actor)=>{const available=actor?.budget2025?getBudgetState(actor)?.available:null;const base=Number.isFinite(available)?available:Number(actor?.budget2025?.total||0);return sum+base*parsed.percentage;},0)/Math.max(actors.length,1)
         : null;
@@ -2089,10 +2110,11 @@
         const share=actors.length?simulationAmount/actors.length:simulationAmount;
         return share>0&&!action.noBudget&&state&&Number.isFinite(state.available)&&share>state.available;
       });
-      if(invalidActor){result.innerHTML='<div class="sim-error">'+s.invalidAmount+' '+escapeHTML(participantName(invalidActor,lang))+'</div>';return;}
-      lastSimulation={parsed,lang,participants:parsed.participants,actors,receivers,actor:actors[0]||parsed.participants[0],receiver:receivers[0]||null,action,amount:simulationAmount,implicitSelf,correction:correction.replacements};if(correction.replacements.length){recordSimulatorLearning(text,"auto_corrected",correction.replacements);}simHorizon=5;renderSimulationResult();if(correction.replacements.length){const note=lang==="fr"?"Correction automatique : ":lang==="en"?"Auto-corrected: ":"Corrección automática: ";result.insertAdjacentHTML("afterbegin","<div class=\"sim-correction-note\">✍️ "+note+escapeHTML(correction.replacements.map(item=>item.from+" → "+item.to).join(", "))+"</div>");}document.getElementById("wolf").textContent="🐺💭";
+      if(invalidActor){clearThinkRecover();result.innerHTML='<div class="sim-error">'+s.invalidAmount+' '+escapeHTML(participantName(invalidActor,lang))+'</div>';return;}
+      clearThinkRecover();
+      lastSimulation={parsed,lang,participants:parsed.participants,actors,receivers,actor:actors[0]||parsed.participants[0],receiver:receivers[0]||null,action,amount:simulationAmount,implicitSelf,correction:correction.replacements};
+      simHorizon=5;renderSimulationResult();document.getElementById("wolf").textContent="🐺💭";
     });
-
     function escapeHTML(value) {
       return String(value).replace(/[&<>"']/g, char => ({
         "&": "&amp;",
