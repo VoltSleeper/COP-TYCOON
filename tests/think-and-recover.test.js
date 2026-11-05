@@ -141,6 +141,9 @@ const overlappingPhrases = [...phraseOwners].filter(([, owners]) => owners.size 
 assert.equal(overlappingPhrases.length, 0, "Action vocabulary must not assign the same exact phrase to different actions");
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /Todas las cantidades se interpretan en dólares estadounidenses \(USD\)/, "Spanish UI must explain the budget currency");
+assert.match(html, /All amounts are interpreted in US dollars \(USD\)/, "English UI must explain the budget currency");
+assert.match(html, /Tous les montants sont interprétés en dollars américains \(USD\)/, "French UI must explain the budget currency");
 assert.match(html, /const requiresRecipient=\["donation","trade","debt","aidcut","border"\]/, "Transfer-like actions must not silently become self-actions");
 assert.match(html, /questionKind==="receiver"/, "Recipient answers must be handled as recipient clarification");
 assert.match(html, /const receiverMarker=lang==="fr"/, "Recipient clarification must establish an explicit localized relation");
