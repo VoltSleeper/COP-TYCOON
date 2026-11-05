@@ -81,6 +81,14 @@ const parse = context.parseSimulationInput;
   assert.equal(result.amount, 1500000000);
 }
 {
+  const result = parse("España invierte 20M en industria limpia");
+  assert.equal(result.action?.key, "clean_industry", "Clean industry should not be mislabeled as heavy industry");
+}
+{
+  const result = parse("España invierte 20M en industria pesada");
+  assert.equal(result.action?.key, "heavy_industry");
+}
+{
   const result = parse("España dona a Tuvalu");
   assert.equal(result.action?.key, "donation");
   assert.equal(result.amount, null, "Missing amounts must remain missing at parser level");
@@ -98,6 +106,8 @@ const parse = context.parseSimulationInput;
   assert.equal(result.receiverStartIndex, -1, "A second participant must not become an inferred recipient");
 }
 
+const actionKeys = [...between("    const SIM_ACTIONS = [", "\\n    ];").matchAll(/\\{key:"([^"]+)"/g)].map(match => match[1]);
+assert.equal(new Set(actionKeys).size, actionKeys.length, "Every simulator action must have a unique key");
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
 assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
 assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
