@@ -1,0 +1,16 @@
+name: Think and Recover regression
+on:
+  push:
+    branches: [main, feature/think-and-recover]
+  pull_request:
+    branches: [main]
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Run simulator regression checks
+        run: node tests/think-and-recover.test.js
