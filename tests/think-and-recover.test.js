@@ -99,6 +99,10 @@ const parse = context.parseSimulationInput;
 }
 
 assert.match(html, /function acknowledgeGeneralScenario\(/, "General questions need a non-transaction outcome");
+assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conflict and treaty-like actions without a transfer must be handled as scenarios");
+assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
+assert.match(html, /const amountLabel=action\.noBudget\?/, "Non-monetary actions must not display an invented transfer amount");
+assert.match(html, /action\.noBudget\?0:/, "No-budget actions must not consume a default budget amount");
 assert.match(html, /function exportSimulatorDiagnostics\(/, "Local diagnostics must be exportable");
 assert.match(html, /storage:"local-browser-only"/, "Diagnostic export must be explicitly local");
 assert.match(html, /sim-export-errors.*addEventListener/, "Diagnostic export control must be wired");
