@@ -2100,7 +2100,10 @@
       if(pendingThinkRecover?.mode==="scenario"){
         const generalAnswer=/(?:consecuencias? generales|efectos generales|impacto general|en general|solo quiero entender|quiero entender|general consequences|overall effects|general impact|just understand|comprendre les conséquences|conséquences générales|effets généraux)/i.test(submitted);
         if(generalAnswer){acknowledgeGeneralScenario(pendingThinkRecover.original,lang);return;}
-        pendingThinkRecover.clarifications.push(submitted);
+        pendingThinkRecover.scenarioOriginal=pendingThinkRecover.original;
+        pendingThinkRecover.original=submitted;
+        pendingThinkRecover.clarifications=[];
+        pendingThinkRecover.mode="transaction";
         text=submitted;
       }else if(pendingThinkRecover){
         pendingThinkRecover.clarifications.push(submitted);
@@ -2108,7 +2111,8 @@
       }
       const correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
       result.hidden=false;
-      const isScenarioQuestion=!pendingThinkRecover&&(/\?|¿|\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text));
+      const isWhatIf=/\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text);
+      const isScenarioQuestion=!pendingThinkRecover&&(isWhatIf||((/\?|¿/.test(text))&&!(parsed.action&&parsed.explicitTransfer)));
       if(isScenarioQuestion){askThinkRecover(text,lang,"scenario");return;}
       if(!parsed.participants.length){askThinkRecover(text,lang,"actor");return;}
       if(!parsed.action){askThinkRecover(text,lang,"action");return;}
