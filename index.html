@@ -1903,7 +1903,7 @@
       const moneyMentions=parseMoneyMentions(normalized);
       const amount=parseMoneyFromText(normalized);
       const amountAmbiguous=moneyMentions.length>1;
-      const negativeAmount=/(?:^|\\s)[-−]\\s*(?:[$€£¥]\\s*)?\\d[\\d.,]*(?:\\s*(?:%|por ciento|percent|pour cent|trillion|trillions|tn|billion|billions|bn|milliard|milliards|million|millions|millon|millones|m|mil|thousand|thousands|k|usd|euros?|dollars?))?/i.test(normalized);
+      const negativeAmount=/(?:^|\s)[-−]\s*(?:[$€£¥]\s*)?\d[\d.,]*(?:\s*(?:%|por ciento|percent|pour cent|trillion|trillions|tn|billion|billions|bn|milliard|milliards|million|millions|millon|millones|m|mil|thousand|thousands|k|usd|euros?|dollars?))?/i.test(normalized);
       const explicitTransfer=transferMarkerIndex>=0;
       const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
