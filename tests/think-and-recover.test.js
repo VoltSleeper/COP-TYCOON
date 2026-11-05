@@ -89,6 +89,11 @@ const parse = context.parseSimulationInput;
   assert.equal(result.action?.key, "heavy_industry");
 }
 {
+  const result = parse("España dona 20M a Tuvalu y 5M a Nestlé");
+  assert.equal(result.action?.key, "donation");
+  assert.equal(result.amountAmbiguous, true, "Multiple explicit amounts must trigger clarification instead of silently taking the first");
+}
+{
   const result = parse("España dona a Tuvalu");
   assert.equal(result.action?.key, "donation");
   assert.equal(result.amount, null, "Missing amounts must remain missing at parser level");
@@ -147,6 +152,7 @@ assert.match(html, /action\.noBudget\?0:/, "No-budget actions must not consume a
 assert.match(html, /function exportSimulatorDiagnostics\(/, "Local diagnostics must be exportable");
 assert.match(html, /storage:"local-browser-only"/, "Diagnostic export must be explicitly local");
 assert.match(html, /sim-export-errors.*addEventListener/, "Diagnostic export control must be wired");
+assert.match(html, /if\(parsed\.amountAmbiguous\)/, "Multiple monetary amounts must be clarified");
 assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions requiring a budget must request an explicit amount");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
