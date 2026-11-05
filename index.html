@@ -1060,6 +1060,10 @@
     .sim-clarification p{margin:10px 0!important;line-height:1.55}
     .sim-clarification small{display:block;opacity:.8;margin-top:12px;overflow-wrap:anywhere}
     .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 1.2s ease-in-out infinite alternate}
+    .sim-diagnostics{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+    .sim-diagnostics .note,.sim-diagnostics small{font-size:.75rem;color:var(--muted);line-height:1.45}
+    .sim-diagnostics small{flex-basis:100%}
+    .sim-diagnostics button:disabled{opacity:.45;cursor:not-allowed}
     @keyframes simThink{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
 </style>
 
@@ -1139,6 +1143,11 @@
         Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
         Los indicadores son ejemplos y no representan predicciones científicas.
       </p>
+      <div class="sim-diagnostics">
+        <button class="back" id="sim-export-errors" type="button" disabled>Exportar diagnóstico local</button>
+        <span class="note" id="sim-diagnostics-status" aria-live="polite">Los ejemplos de error se guardan solo en este navegador.</span>
+        <small>El archivo puede incluir las frases que no se entendieron. Revísalo antes de compartirlo; no se envía automáticamente.</small>
+      </div>
     </section>
 
     <section class="section" id="history">
@@ -2049,8 +2058,43 @@
         if(existing){existing.count=(existing.count||1)+1;existing.lastSeen=new Date().toISOString();existing.reason=reason;}
         else entries.push({phrase:phrase.slice(0,300),normalized,reason,count:1,firstSeen:new Date().toISOString(),lastSeen:new Date().toISOString()});
         localStorage.setItem(key,JSON.stringify(entries.slice(-100)));
+        updateSimulatorDiagnosticsStatus();
       }catch(error){console.warn("Could not save simulator feedback locally.",error);}
     }
+    function readSimulatorLog(key){
+      try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[];}
+      catch(error){return [];}
+    }
+    function updateSimulatorDiagnosticsStatus(){
+      const errors=readSimulatorLog("copTycoonUnrecognizedInputs"),learning=readSimulatorLog("copTycoonLearningLog");
+      const button=document.getElementById("sim-export-errors"),status=document.getElementById("sim-diagnostics-status");
+      if(button)button.disabled=errors.length+learning.length===0;
+      if(status)status.textContent=errors.length+learning.length
+        ?errors.length+" errores y "+learning.length+" notas de diagnóstico guardados en este navegador."
+        :"Los ejemplos de error se guardan solo en este navegador.";
+    }
+    function exportSimulatorDiagnostics(){
+      const payload={
+        schemaVersion:1,
+        exportedAt:new Date().toISOString(),
+        storage:"local-browser-only",
+        privacyNote:"Contains local simulator error examples. Review before sharing.",
+        unrecognizedInputs:readSimulatorLog("copTycoonUnrecognizedInputs"),
+        learningLog:readSimulatorLog("copTycoonLearningLog")
+      };
+      const status=document.getElementById("sim-diagnostics-status");
+      if(!payload.unrecognizedInputs.length&&!payload.learningLog.length){
+        if(status)status.textContent="Todavía no hay errores guardados para exportar.";
+        return;
+      }
+      const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+      const url=URL.createObjectURL(blob),link=document.createElement("a");
+      link.href=url;link.download="cop-tycoon-diagnostics-"+new Date().toISOString().slice(0,10)+".json";
+      document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
+      if(status)status.textContent="Diagnóstico preparado. Revisa el archivo antes de compartirlo.";
+    }
+    document.getElementById("sim-export-errors").addEventListener("click",exportSimulatorDiagnostics);
+    updateSimulatorDiagnosticsStatus();
 
     let pendingThinkRecover=null;
     function thinkRecoverQuestion(lang,kind){
