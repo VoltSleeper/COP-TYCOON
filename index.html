@@ -1879,7 +1879,7 @@
       const participantMatchIndex=new Map();
       orderedMatches.forEach(item=>{const key=item.type+":"+((item.participant.en||item.participant.es));if(!participantMatchIndex.has(key))participantMatchIndex.set(key,item.index);});
       const participants=[...new Map(orderedMatches.map(item=>[item.type+":"+((item.participant.en||item.participant.es)),item.participant])).values()].map(item=>item.flag||item.icon?item:{...item,flag:item.icon||"🏛️"});
-      const transferMarkers=[" a "," to "," à "];
+      const transferMarkers=[" a "," para "," to "," for "," à "," pour "];
       const transferMarkerIndex=transferMarkers.map(marker=>padded.indexOf(marker)).filter(index=>index>=0).sort((a,b)=>a-b)[0]??-1;
       const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const type=countryRoster.includes(item)?"country":"stakeholder";return (participantMatchIndex.get(type+":"+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):-1;
       const countries=participants.filter(item=>countryRoster.includes(item));
@@ -2058,7 +2058,7 @@
       return (copy[lang]||copy.es)[kind]||(copy[lang]||copy.es).action;
     }
     function askThinkRecover(original,lang,kind){
-      if(!pendingThinkRecover)pendingThinkRecover={original,clarifications:[],attempts:0};
+      if(!pendingThinkRecover)pendingThinkRecover={original,clarifications:[],attempts:0,mode:kind==="scenario"?"scenario":"transaction"};
       pendingThinkRecover.attempts++;
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
       result.hidden=false;
@@ -2077,13 +2077,35 @@
       document.getElementById("transaction").placeholder=t.placeholder;
       document.getElementById("simulate-button").textContent=t.simulate;
     }
+    function acknowledgeGeneralScenario(original,lang){
+      const messages={
+        es:"Entendido: estás planteando una pregunta general, no una decisión concreta. Este simulador solo calcula acciones definidas; no ha ejecutado ninguna transacción ni ha cambiado presupuestos. Si quieres simular una decisión, descríbela directamente.",
+        en:"Got it: this is a general scenario question, not a specific decision. This simulator only calculates defined actions; no transaction was run and no budgets were changed. To simulate a decision, describe that decision directly.",
+        fr:"Compris : vous posez une question générale, pas une décision précise. Ce simulateur calcule uniquement des actions définies ; aucune transaction n’a été exécutée et aucun budget n’a changé. Pour simuler une décision, décrivez-la directement."
+      };
+      const message=messages[lang]||messages.es;
+      clearThinkRecover();
+      const result=document.getElementById("simulation-result");
+      result.hidden=false;
+      result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺💭</div><strong>'+(lang==="en"?"Understood":lang==="fr"?"Compris":"Entendido")+'</strong><p>'+escapeHTML(message)+'</p><small>'+(lang==="en"?"Original question: ":lang==="fr"?"Question originale : ":"Pregunta original: ")+escapeHTML(original)+'</small><button type="button" class="back" data-sim-clear>'+(lang==="en"?"Close":lang==="fr"?"Fermer":"Cerrar")+'</button></div>';
+      document.getElementById("wolf").textContent="🐺💭";
+      document.getElementById("speech").textContent=message;
+    }
     document.getElementById("sim-form").addEventListener("submit",event=>{
       event.preventDefault();
       const submitted=document.getElementById("transaction").value.trim();
       if(!submitted)return;
       const lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result");
       let text=submitted;
-      if(pendingThinkRecover){pendingThinkRecover.clarifications.push(submitted);text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");}
+      if(pendingThinkRecover?.mode==="scenario"){
+        const generalAnswer=/(?:consecuencias? generales|efectos generales|impacto general|en general|solo quiero entender|quiero entender|general consequences|overall effects|general impact|just understand|comprendre les conséquences|conséquences générales|effets généraux)/i.test(submitted);
+        if(generalAnswer){acknowledgeGeneralScenario(pendingThinkRecover.original,lang);return;}
+        pendingThinkRecover.clarifications.push(submitted);
+        text=submitted;
+      }else if(pendingThinkRecover){
+        pendingThinkRecover.clarifications.push(submitted);
+        text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
+      }
       const correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
       result.hidden=false;
       const isScenarioQuestion=!pendingThinkRecover&&(/\?|¿|\b(?:y si|what if|que pasaria si|qué pasaría si|que ocurriria si|qué ocurriría si|et si|que se passerait il si)\b/i.test(text));
