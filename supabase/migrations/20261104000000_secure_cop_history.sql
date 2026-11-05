@@ -141,4 +141,37 @@ revoke all on function public.cop_admin_login_failure(text) from public, anon, a
 grant execute on function public.cop_admin_login_allowed(text) to service_role;
 grant execute on function public.cop_admin_login_failure(text) to service_role;
 
+
+-- Anonymous transactions must be anonymized in the stored row itself.
+-- This protects both public PostgREST reads and Realtime change payloads.
+create or replace function public.cop_history_mask_anonymous()
+returns trigger
+language plpgsql
+set search_path = ''
+as $
+begin
+  if coalesce(new.reason, '') ~* '\\[anonymous=1\\]' then
+    new.sender := 'Anónimo';
+    new.country := 'Anónimo';
+    new.title := 'Donación anónima';
+  end if;
+  return new;
+end;
+$;
+
+drop trigger if exists cop_history_mask_anonymous on public.cop_history;
+create trigger cop_history_mask_anonymous
+before insert or update of sender, country, title, reason
+on public.cop_history
+for each row
+execute function public.cop_history_mask_anonymous();
+
+-- Remove identifying sender data from any previously stored anonymous rows.
+update public.cop_history
+set sender = 'Anónimo',
+    country = 'Anónimo',
+    title = 'Donación anónima'
+where coalesce(reason, '') ~* '\\[anonymous=1\\]';
+
+
 commit;
