@@ -1885,9 +1885,13 @@
       const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
       const explicitTransfer=transferMarkerIndex>=0;
+      const explicitDonationVerb=/(?:\\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
         .filter(item=>item.words.some(word=>simContains(normalized,word)))
         .sort((a,b)=>{
+          const aDonationScore=explicitTransfer&&explicitDonationVerb&&a.key==="donation"?1:0;
+          const bDonationScore=explicitTransfer&&explicitDonationVerb&&b.key==="donation"?1:0;
+          if(aDonationScore!==bDonationScore)return bDonationScore-aDonationScore;
           const aTransferScore=explicitTransfer&&!a.self?1:0;
           const bTransferScore=explicitTransfer&&!b.self?1:0;
           if(aTransferScore!==bTransferScore)return bTransferScore-aTransferScore;
@@ -2098,8 +2102,12 @@
       const lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result");
       let text=submitted;
       if(pendingThinkRecover?.mode==="scenario"){
-        const generalAnswer=/(?:consecuencias? generales|efectos generales|impacto general|en general|solo quiero entender|quiero entender|general consequences|overall effects|general impact|just understand|comprendre les conséquences|conséquences générales|effets généraux)/i.test(submitted);
-        if(generalAnswer){acknowledgeGeneralScenario(pendingThinkRecover.original,lang);return;}
+        const generalAnswer=/(?:consequences?|effects?|impact|consecuencias?|efectos?|impacto|conséquences?|effets?|impact|humanitari[oa]s?|econ[oó]mic[oa]s?|humanitarian|economic|clim[aá]tic[oa]s?|climate|generales?|general|en general|solo quiero entender|quiero entender|just understand|comprendre)/i.test(submitted);
+        const scenarioReply=parseSimulationInput(submitted);
+        const isConcreteDecision=scenarioReply.participants.length>0&&scenarioReply.action&&
+          (scenarioReply.action.self&&scenarioReply.participants.length===1||
+           (!scenarioReply.action.self&&scenarioReply.explicitTransfer&&scenarioReply.receiverStartIndex>0));
+        if(generalAnswer||!isConcreteDecision){acknowledgeGeneralScenario(pendingThinkRecover.original,lang);return;}
         pendingThinkRecover.scenarioOriginal=pendingThinkRecover.original;
         pendingThinkRecover.original=submitted;
         pendingThinkRecover.clarifications=[];
@@ -2133,7 +2141,7 @@
         : null;
       const defaultAmount=actors.reduce((sum,actor)=>{const available=actor?.budget2025?getBudgetState(actor)?.available:null;const base=Number.isFinite(available)?available:Number(actor?.budget2025?.total||0);return sum+(base>0?base*.1:20000000);},0)/Math.max(actors.length,1);
       const simulationAmount=Number.isFinite(percentageAmount)?percentageAmount:(Number.isFinite(parsed.amount)?parsed.amount:(action.requiresAmount?NaN:defaultAmount));
-      if(!Number.isFinite(simulationAmount)){recordUnrecognizedSimulation(text,"unresolved_amount");askThinkRecover(text,lang,"amount");return;}
+      if(!Number.isFinite(simulationAmount)||simulationAmount<=0){recordUnrecognizedSimulation(text,"unresolved_amount");askThinkRecover(text,lang,"amount");return;}
       const invalidActor=actors.find(actor=>{
         const state=actor.budget2025?getBudgetState(actor):null;
         const share=actors.length?simulationAmount/actors.length:simulationAmount;
