@@ -2158,7 +2158,7 @@
         const share=actors.length?simulationAmount/actors.length:simulationAmount;
         return share>0&&!action.noBudget&&state&&Number.isFinite(state.available)&&share>state.available;
       });
-      if(invalidActor){clearThinkRecover();result.innerHTML='<div class="sim-error">'+s.invalidAmount+' '+escapeHTML(participantName(invalidActor,lang))+'</div>';return;}
+      if(invalidActor){recordUnrecognizedSimulation(text,"budget_exceeded");clearThinkRecover();result.innerHTML='<div class="sim-error">'+s.invalidAmount+' '+escapeHTML(participantName(invalidActor,lang))+'</div>';return;}
       clearThinkRecover();
       lastSimulation={parsed,lang,participants:parsed.participants,actors,receivers,actor:actors[0]||parsed.participants[0],receiver:receivers[0]||null,action,amount:simulationAmount,implicitSelf,correction:correction.replacements};
       simHorizon=5;renderSimulationResult();document.getElementById("wolf").textContent="🐺💭";
