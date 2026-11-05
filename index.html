@@ -1769,6 +1769,14 @@
       return Number.isFinite(n)?n/100:null;
     }
 
+    function parseMoneyMentions(value){
+      const text=normalizeSimText(value);
+      const units="trillion|trillions|tn|t|billion|billions|bn|b|milliard|milliards|md|million|millions|millón|millones|m|mil|thousand|thousands|k";
+      const currencies="usd|us dollars?|dollars?|eur|euros?|gbp|pounds?|jpy|yen";
+      const pattern=new RegExp("(?:[$€£¥]\\s*\\d[\\d.,]*(?:\\s*(?:"+units+"))?(?:\\s*[$€£¥])?|\\d[\\d.,]*\\s*(?:"+units+"|"+currencies+")(?:\\s*[$€£¥])?)","gi");
+      return [...text.matchAll(pattern)].map(match=>parseMoney(match[0])).filter(Number.isFinite);
+    }
+
     function parseMoneyFromText(value){
       const text=normalizeSimText(value);
       const moneyUnit="trillion|trillions|tn|t|billion|billions|bn|b|milliard|milliards|md|million|millions|millón|millones|m|mil|thousand|thousands|k";
@@ -1892,7 +1900,9 @@
       const transferMarkerIndex=transferMarkers.map(marker=>padded.indexOf(marker)).filter(index=>index>=0).sort((a,b)=>a-b)[0]??-1;
       const receiverStartIndex=transferMarkerIndex>=0?participants.findIndex(item=>{const type=countryRoster.includes(item)?"country":"stakeholder";return (participantMatchIndex.get(type+":"+((item.en||item.es)))??Infinity)>transferMarkerIndex;}):-1;
       const countries=participants.filter(item=>countryRoster.includes(item));
+      const moneyMentions=parseMoneyMentions(normalized);
       const amount=parseMoneyFromText(normalized);
+      const amountAmbiguous=moneyMentions.length>1;
       const explicitTransfer=transferMarkerIndex>=0;
       const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
@@ -1915,7 +1925,7 @@
         action={...action,base:{climate:1.1,wellbeing:.55,development:.25,cooperation:.45,emissions:-1.8},long:{climate:2.4,wellbeing:1.1,development:.6,cooperation:.9,emissions:-3.8}};
       }
       const percentage=parsePercentageFromText(normalized);
-      return {normalized,participants,countries,amount,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
+      return {normalized,participants,countries,amount,amountAmbiguous,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
     }
 
     function simArrow(value){
@@ -2192,6 +2202,7 @@
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
       if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");askThinkRecover(text,lang,"action");return;}
       const action=parsed.action;
+      if(parsed.amountAmbiguous){recordUnrecognizedSimulation(text,"multiple_amounts");askThinkRecover(text,lang,"amount");return;}
       if(action.requiresAmount&&parsed.amount===null&&!Number.isFinite(parsed.percentage)){recordUnrecognizedSimulation(text,"missing_amount");askThinkRecover(text,lang,"amount");return;}
       if(action.requiresAmount&&(parsed.amount===0||parsed.percentage===0)){recordUnrecognizedSimulation(text,"non_positive_amount");askThinkRecover(text,lang,"amount");return;}
       if(parsed.actionCandidates.length>1&&parsed.actionCandidates[0].key!==parsed.actionCandidates[1].key&&!parsed.explicitTransfer){recordUnrecognizedSimulation(text,"ambiguous_action");askThinkRecover(text,lang,"ambiguous");return;}
