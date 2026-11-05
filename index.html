@@ -1885,7 +1885,7 @@
       const countries=participants.filter(item=>countryRoster.includes(item));
       const amount=parseMoneyFromText(normalized);
       const explicitTransfer=transferMarkerIndex>=0;
-      const explicitDonationVerb=/(?:\\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\\b)/.test(normalized);
+      const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
         .filter(item=>item.words.some(word=>simContains(normalized,word)))
         .sort((a,b)=>{
