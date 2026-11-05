@@ -2064,6 +2064,7 @@
     function askThinkRecover(original,lang,kind){
       if(!pendingThinkRecover)pendingThinkRecover={original,clarifications:[],attempts:0,mode:kind==="scenario"?"scenario":"transaction"};
       pendingThinkRecover.attempts++;
+      pendingThinkRecover.lastQuestionKind=kind;
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
       result.hidden=false;
       result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small><button type="button" class="back" data-sim-cancel>'+(lang==="en"?"Cancel":lang==="fr"?"Annuler":"Cancelar")+'</button></div>';
@@ -2115,7 +2116,17 @@
         text=submitted;
       }else if(pendingThinkRecover){
         pendingThinkRecover.clarifications.push(submitted);
-        text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
+        const questionKind=pendingThinkRecover.lastQuestionKind;
+        if(questionKind==="actor"||questionKind==="self"){
+          text=[submitted,pendingThinkRecover.original,...pendingThinkRecover.clarifications.slice(0,-1)].join(" ");
+        }else if(questionKind==="roles"){
+          const clarified=parseSimulationInput(submitted);
+          text=clarified.participants.length&&clarified.action&&clarified.explicitTransfer
+            ?submitted
+            :[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
+        }else{
+          text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
+        }
       }
       const correction=autoCorrectSimulatorText(text),parsed=parseSimulationInput(correction.text);
       result.hidden=false;
