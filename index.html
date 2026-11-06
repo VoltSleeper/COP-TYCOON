@@ -1826,7 +1826,7 @@
       {key:"technology",requiresAmount:true,words:["tecnologia","tecnología","technology","technologie","clean technology","tecnologias limpias"],base:{climate:1.4,wellbeing:.3,development:.8,cooperation:.7,emissions:-1.2},long:{climate:3,wellbeing:.8,development:1.6,cooperation:1.2,emissions:-3},self:false},
       {key:"agreement",requiresAmount:true,words:["acuerdo climatico","acuerdo climático","climate agreement","accord climatique"],base:{climate:.5,wellbeing:.1,development:.2,cooperation:1.5,emissions:-.5},long:{climate:1.5,wellbeing:.3,development:.5,cooperation:3,emissions:-1.5},self:false},
       {key:"joint",requiresAmount:true,words:["proyecto conjunto","joint project","projet commun"],base:{climate:1,wellbeing:.4,development:.5,cooperation:1,emissions:-.8},long:{climate:2.2,wellbeing:1,development:1,cooperation:2,emissions:-2},self:false},
-      {key:"donation",requiresAmount:true,words:["donacion","donación","dona","donan","donas","donamos","donaron","donar","donate","donates","don","donation","regala","regalar","regalo","dar","da","dan","dado","dar a","ofrece","ofrecer","ofrece a","give","gives","given","give to","offer","offers","offered","offer to","donner","donne","donner à","offrir","offre","offre à"],base:{climate:.4,wellbeing:.7,development:.2,cooperation:1,emissions:0},long:{climate:.8,wellbeing:1.4,development:.5,cooperation:1.8,emissions:-.2},self:false},
+      {key:"donation",requiresAmount:false,words:["donacion","donación","dona","donan","donas","donamos","donaron","donar","donate","donates","don","donation","regala","regalar","regalo","dar","da","dan","dado","dar a","ofrece","ofrecer","ofrece a","give","gives","given","give to","offer","offers","offered","offer to","donner","donne","donner à","offrir","offre","offre à"],base:{climate:.4,wellbeing:.7,development:.2,cooperation:1,emissions:0},long:{climate:.8,wellbeing:1.4,development:.5,cooperation:1.8,emissions:-.2},self:false},
       {key:"gas",requiresAmount:false,words:["gas","gas natural","precio del gas","precios del gas","sube el precio del gas","subir el precio del gas","aumenta el precio del gas","aumentar el precio del gas","encarece el gas","exportaciones de gas","exportar gas","produccion de gas","producción de gas","natural gas","gas prices","raise gas prices","raises gas prices","increase gas prices","increases gas prices","gas price hike","gas exports","gas production","gaz naturel","prix du gaz","hausse du prix du gaz","augmenter le prix du gaz","exportations de gaz","production de gaz"],base:{climate:-1,wellbeing:-.9,development:.9,cooperation:-.7,emissions:1.5},long:{climate:-2.4,wellbeing:-1.8,development:1.1,cooperation:-1.5,emissions:3},self:true,noBudget:true},
       {key:"oil",requiresAmount:true,words:["petroleo","petróleo","oil","petroleum"],base:{climate:-1.2,wellbeing:.4,development:1.2,cooperation:.1,emissions:1.8},long:{climate:-3,wellbeing:.1,development:1.8,cooperation:.1,emissions:3.8},self:true},
       {key:"mining",requiresAmount:true,words:["mineria","minería","mining","mines"],base:{climate:-.8,wellbeing:.2,development:1.2,cooperation:.1,emissions:1.1},long:{climate:-2.2,wellbeing:-.1,development:1.8,cooperation:.1,emissions:2.2},self:true},
@@ -2117,6 +2117,13 @@
       return (copy[lang]||copy.es)[kind]||(copy[lang]||copy.es).action;
     }
     function askThinkRecover(original,lang,kind){
+      if(pendingThinkRecover&&pendingThinkRecover.lastQuestionKind===kind){
+        const result=document.getElementById("simulation-result");
+        clearThinkRecover();
+        result.hidden=false;
+        result.innerHTML='<div class="sim-error sim-clarification"><strong>'+(lang==="en"?"I still can’t resolve this decision":lang==="fr"?"Je n’arrive toujours pas à interpréter cette décision":"No consigo interpretar esta decisión")+'</strong><p>'+(lang==="en"?"The clarification did not resolve the same ambiguity, so I’ve stopped repeating the question. Rewrite the full decision in one sentence and try again.":lang==="fr"?"La précision n’a pas résolu la même ambiguïté. Je cesse donc de répéter la question. Reformulez toute la décision en une phrase et réessayez.":"La aclaración no resolvió la misma ambigüedad, así que dejo de repetir la pregunta. Reescribe la decisión completa en una sola frase e inténtalo de nuevo.")+'</p><button type="button" class="back" data-sim-clear>'+(lang==="en"?"Close":lang==="fr"?"Fermer":"Cerrar")+'</button></div>';
+        return;
+      }
       if(!pendingThinkRecover)pendingThinkRecover={original,workingText:original,clarifications:[],attempts:0,mode:kind==="scenario"?"scenario":"transaction"};
       pendingThinkRecover.attempts++;
       pendingThinkRecover.lastQuestionKind=kind;
@@ -2169,7 +2176,17 @@
       if(!submitted)return;
       const lang=document.getElementById("language").value,s=simulatorText[lang]||simulatorText.es,result=document.getElementById("simulation-result");
       let text=submitted;
-      if(pendingThinkRecover?.mode==="scenario"){
+      const standaloneReply=parseSimulationInput(submitted);
+      const standaloneIsComplete=standaloneReply.negatedAction||
+        (standaloneReply.participants.length>0&&standaloneReply.action&&
+          (standaloneReply.action.self||
+           (!standaloneReply.action.self&&standaloneReply.explicitTransfer&&standaloneReply.receiverStartIndex>0)));
+      // A complete sentence always takes priority over an older clarification state.
+      // This lets users answer in one message instead of getting trapped in a question loop.
+      if(pendingThinkRecover&&standaloneIsComplete){
+        clearThinkRecover();
+        text=submitted;
+      }else if(pendingThinkRecover?.mode==="scenario"){
         const generalAnswer=/(?:consequences?|effects?|impact|consecuencias?|efectos?|impacto|conséquences?|effets?|impact|humanitari[oa]s?|econ[oó]mic[oa]s?|humanitarian|economic|clim[aá]tic[oa]s?|climate|generales?|general|en general|solo quiero entender|quiero entender|just understand|comprendre)/i.test(submitted);
         const scenarioReply=parseSimulationInput(submitted);
         const isConcreteDecision=scenarioReply.participants.length>0&&scenarioReply.action&&
