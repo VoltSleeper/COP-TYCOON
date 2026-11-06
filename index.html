@@ -1059,12 +1059,14 @@
     .sim-clarification{padding:18px!important}
     .sim-clarification p{margin:10px 0!important;line-height:1.55}
     .sim-clarification small{display:block;opacity:.8;margin-top:12px;overflow-wrap:anywhere}
-    .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 1.2s ease-in-out infinite alternate}
+    .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 3.8s ease-in-out infinite alternate}
     .sim-diagnostics{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+    /* Keep developer-only local diagnostics out of the normal player interface. */
+    .sim-diagnostics{display:none!important}
     .sim-diagnostics .note,.sim-diagnostics small{font-size:.75rem;color:var(--muted);line-height:1.45}
     .sim-diagnostics small{flex-basis:100%}
     .sim-diagnostics button:disabled{opacity:.45;cursor:not-allowed}
-    @keyframes simThink{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
+    @keyframes simThink{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-1px) rotate(1deg)}}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1143,11 +1145,6 @@
         Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
         Los indicadores son ejemplos y no representan predicciones científicas.
       </p>
-      <div class="sim-diagnostics">
-        <button class="back" id="sim-export-errors" type="button" disabled>Exportar diagnóstico local</button>
-        <span class="note" id="sim-diagnostics-status" aria-live="polite">Los ejemplos de error se guardan solo en este navegador.</span>
-        <small>El archivo puede incluir las frases que no se entendieron. Revísalo antes de compartirlo; no se envía automáticamente.</small>
-      </div>
     </section>
 
     <section class="section" id="history">
@@ -2095,44 +2092,10 @@
         if(existing){existing.count=(existing.count||1)+1;existing.lastSeen=new Date().toISOString();existing.reason=reason;}
         else entries.push({phrase:phrase.slice(0,300),normalized,reason,count:1,firstSeen:new Date().toISOString(),lastSeen:new Date().toISOString()});
         localStorage.setItem(key,JSON.stringify(entries.slice(-100)));
-        updateSimulatorDiagnosticsStatus();
       }catch(error){console.warn("Could not save simulator feedback locally.",error);}
     }
-    function readSimulatorLog(key){
-      try{const value=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(value)?value:[];}
-      catch(error){return [];}
-    }
-    function updateSimulatorDiagnosticsStatus(){
-      const errors=readSimulatorLog("copTycoonUnrecognizedInputs"),learning=readSimulatorLog("copTycoonLearningLog");
-      const button=document.getElementById("sim-export-errors"),status=document.getElementById("sim-diagnostics-status");
-      if(button)button.disabled=errors.length+learning.length===0;
-      if(status)status.textContent=errors.length+learning.length
-        ?errors.length+" errores y "+learning.length+" notas de diagnóstico guardados en este navegador."
-        :"Los ejemplos de error se guardan solo en este navegador.";
-    }
-    function exportSimulatorDiagnostics(){
-      const payload={
-        schemaVersion:1,
-        exportedAt:new Date().toISOString(),
-        storage:"local-browser-only",
-        privacyNote:"Contains local simulator error examples. Review before sharing.",
-        unrecognizedInputs:readSimulatorLog("copTycoonUnrecognizedInputs"),
-        learningLog:readSimulatorLog("copTycoonLearningLog")
-      };
-      const status=document.getElementById("sim-diagnostics-status");
-      if(!payload.unrecognizedInputs.length&&!payload.learningLog.length){
-        if(status)status.textContent="Todavía no hay errores guardados para exportar.";
-        return;
-      }
-      const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
-      const url=URL.createObjectURL(blob),link=document.createElement("a");
-      link.href=url;link.download="cop-tycoon-diagnostics-"+new Date().toISOString().slice(0,10)+".json";
-      document.body.appendChild(link);link.click();link.remove();URL.revokeObjectURL(url);
-      if(status)status.textContent="Diagnóstico preparado. Revisa el archivo antes de compartirlo.";
-    }
-    document.getElementById("sim-export-errors").addEventListener("click",exportSimulatorDiagnostics);
-    updateSimulatorDiagnosticsStatus();
-
+    // Local feedback samples are retained only in this browser for development.
+    // There is deliberately no player-facing export control.
     let pendingThinkRecover=null;
     function thinkRecoverQuestion(lang,kind){
       const copy={
@@ -2149,8 +2112,10 @@
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
       result.hidden=false;
       result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small><button type="button" class="back" data-sim-cancel>'+(lang==="en"?"Cancel":lang==="fr"?"Annuler":"Cancelar")+'</button></div>';
-      document.getElementById("wolf").textContent="🐺❔";
-      document.getElementById("speech").textContent=question;
+      // The clarification card already contains the wolf and its question.
+      // Hide the permanent mascot/speech pair to avoid showing the same message twice.
+      document.getElementById("wolf").hidden=true;
+      document.getElementById("speech").hidden=true;
       const input=document.getElementById("transaction");
       input.value="";
       input.placeholder=lang==="en"?"Add a clarification…":lang==="fr"?"Ajoutez une précision…":"Añade una aclaración…";
@@ -2162,6 +2127,8 @@
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es;
       document.getElementById("transaction").placeholder=t.placeholder;
       document.getElementById("simulate-button").textContent=t.simulate;
+      document.getElementById("wolf").hidden=false;
+      document.getElementById("speech").hidden=false;
     }
     function acknowledgeGeneralScenario(original,lang){
       const messages={
@@ -2216,9 +2183,17 @@
             :[baseText,...pendingThinkRecover.clarifications].join(" ");
           pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
-        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"||questionKind==="action"||questionKind==="ambiguous"){
+        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"){
+          // These questions explicitly ask the user to restate the intended decision.
+          // Keep the rewritten sentence as the new source of truth.
           text=submitted;
           pendingThinkRecover.workingText=submitted;
+          pendingThinkRecover.clarifications=[];
+        }else if(questionKind==="action"||questionKind==="ambiguous"||questionKind==="amount"){
+          // A short answer (e.g. "donación" or "20M") fills the missing slot;
+          // retain the actor/recipient/context already collected.
+          text=[baseText,...pendingThinkRecover.clarifications].join(" ")+" "+submitted;
+          pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
         }else{
           text=[baseText,...pendingThinkRecover.clarifications].join(" ");

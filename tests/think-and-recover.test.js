@@ -237,9 +237,8 @@ assert.match(html, /const isMultiPartyScenario=!parsed\.explicitTransfer/, "Conf
 assert.match(html, /clarificationKind==="self"&&clarificationActors\.length===1/, "A clarified self-action must use the explicitly selected actor");
 assert.match(html, /const amountLabel=action\.noBudget\?/, "Non-monetary actions must not display an invented transfer amount");
 assert.match(html, /action\.noBudget\?0:/, "No-budget actions must not consume a default budget amount");
-assert.match(html, /function exportSimulatorDiagnostics\(/, "Local diagnostics must be exportable");
-assert.match(html, /storage:"local-browser-only"/, "Diagnostic export must be explicitly local");
-assert.match(html, /sim-export-errors.*addEventListener/, "Diagnostic export control must be wired");
+assert.doesNotMatch(html, /Exportar diagnóstico local|id="sim-export-errors"/, "Player-facing diagnostics export must not appear in the simulator");
+assert.doesNotMatch(html, /function exportSimulatorDiagnostics\(/, "Player-facing diagnostic export function must be removed");
 assert.match(html, /if\(parsed\.amountAmbiguous\)/, "Multiple monetary amounts must be clarified");
 assert.match(html, /if\(parsed\.negativeAmount\)/, "Negative amounts and percentages must be rejected");
 assert.match(html, /if\(parsed\.negatedAction\)/, "Negated actions must never execute as positive decisions");
