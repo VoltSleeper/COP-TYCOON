@@ -256,6 +256,6 @@ assert.match(html, /const baseText=pendingThinkRecover\.workingText\|\|pendingTh
 assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Scenario context must remain available when switching to a concrete decision");
 assert.match(html, /pendingThinkRecover\.workingText=submitted/, "A rewritten single decision must become the working phrase for later clarifications");
 assert.match(html, /const safeCorrections=/, "Autocorrection must use an explicit conservative vocabulary");
-assert.match(html, /const corrected=original\\.replace\\(/, "Autocorrection must tokenize words without touching punctuation or amounts");
+assert.ok(html.includes("const corrected=original.replace("), "Autocorrection must tokenize words without touching punctuation or amounts");
 assert.doesNotMatch(html, /participants\.length>1\?participants\.length-1:-1/, "No last-participant recipient fallback");
 console.log("Think & Recover regression checks passed.");
