@@ -1864,7 +1864,26 @@
     // Never rewrite names, actions or intent from spelling similarity alone.
     // A future correction may be applied only after contextual validation.
     function autoCorrectSimulatorText(input){
-      return {text:String(input||""),replacements:[]};
+      const original=String(input||"");
+      const safeCorrections={
+        renobables:"renovables",renobable:"renovable",
+        enerjia:"energia",eolcia:"eolica",eolicoa:"eolica",
+        fotoboltaica:"fotovoltaica",fotoboltaico:"fotovoltaico",
+        reforestazion:"reforestacion",deforestazion:"deforestacion",
+        adaptazion:"adaptacion",climaticaa:"climatica",
+        investigazion:"investigacion",contaminazion:"contaminacion",
+        descarbonisacion:"descarbonizacion",sostenivle:"sostenible",
+        biodiversidat:"biodiversidad",reciclajeo:"reciclaje"
+      };
+      const replacements=[];
+      const corrected=original.replace(/[\\p{L}]+/gu,token=>{
+        const key=normalizeSimText(token);
+        const value=safeCorrections[key];
+        if(!value||value===key)return token;
+        replacements.push({from:token,to:value});
+        return value;
+      });
+      return {text:corrected,replacements};
     }
     function recordSimulatorLearning(input,kind,details){
       try{
