@@ -151,6 +151,12 @@ assert.equal(parse("La France prévoit investir 20M en énergies renouvelables")
   const result = parse("España dona 20M a Tuvalu para ayudar con la adaptación climática");
   assert.equal(result.multipleActionSignals, 0, "A purpose verb must not be mistaken for a second coordinated decision");
 }
+for (const phrase of [
+  "Spain donates to Tuvalu and builds solar panels",
+  "La France donne à Tuvalu et construit des panneaux solaires"
+]) {
+  assert.ok(parse(phrase).multipleActionSignals >= 2, "Coordinated actions must be detected: " + phrase);
+}
 {
   const result = parse("España dona 20M a Tuvalu y construye paneles solares");
   assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
