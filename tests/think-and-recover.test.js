@@ -255,6 +255,7 @@ assert.match(html, /workingText:original/, "Clarification must keep a separate w
 assert.match(html, /const baseText=pendingThinkRecover\.workingText\|\|pendingThinkRecover\.original/, "Follow-up answers must build on the latest clarified phrase");
 assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Scenario context must remain available when switching to a concrete decision");
 assert.match(html, /pendingThinkRecover\.workingText=submitted/, "A rewritten single decision must become the working phrase for later clarifications");
-assert.match(html, /return \{text:String\(input\|\|""\),replacements:\[\]\};/, "Autocorrection must not silently rewrite user intent");
+assert.match(html, /const safeCorrections=/, "Autocorrection must use an explicit conservative vocabulary");
+assert.match(html, /original\.replace\(\/[A-Za-zÀ-ÖØ-öø-ÿ]+\//, "Autocorrection must tokenize words without touching punctuation or amounts");
 assert.doesNotMatch(html, /participants\.length>1\?participants\.length-1:-1/, "No last-participant recipient fallback");
 console.log("Think & Recover regression checks passed.");
