@@ -239,6 +239,9 @@ assert.match(html, /const amountLabel=action\.noBudget\?/, "Non-monetary actions
 assert.match(html, /action\.noBudget\?0:/, "No-budget actions must not consume a default budget amount");
 assert.doesNotMatch(html, /Exportar diagnóstico local|id="sim-export-errors"/, "Player-facing diagnostics export must not appear in the simulator");
 assert.doesNotMatch(html, /function exportSimulatorDiagnostics\(/, "Player-facing diagnostic export function must be removed");
+assert.match(html, /id="sim-hint-info"/, "Simulator guidance must be behind a compact info control");
+assert.match(html, /Ask once in the existing speech bubble/, "Think & Recover must not render a duplicate wolf card");
+assert.match(html, /if\(parsed\.negatedAction\)\{\s*clearThinkRecover\(\)/, "Negated actions must be acknowledged without asking a clarification question");
 assert.match(html, /if\(parsed\.amountAmbiguous\)/, "Multiple monetary amounts must be clarified");
 assert.match(html, /if\(parsed\.negativeAmount\)/, "Negative amounts and percentages must be rejected");
 assert.match(html, /if\(parsed\.negatedAction\)/, "Negated actions must never execute as positive decisions");

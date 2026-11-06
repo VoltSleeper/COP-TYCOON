@@ -1056,6 +1056,9 @@
       #lobby-grid .country-detail span{font-size:.65rem!important}
       #lobby-grid .budget-value{font-size:.78rem!important}
     }
+    .sim-hint-row{display:flex;justify-content:flex-end;align-items:center;gap:10px;margin:2px 0 10px}
+    .sim-hint-row .sim-hint{margin:0;max-width:100%;font-size:.82rem;line-height:1.45}
+    .sim-hint-row .lobby-info-trigger{margin:0}
     .sim-clarification{padding:18px!important}
     .sim-clarification p{margin:10px 0!important;line-height:1.55}
     .sim-clarification small{display:block;opacity:.8;margin-top:12px;overflow-wrap:anywhere}
@@ -1139,7 +1142,10 @@
         <input id="transaction" required placeholder="Ej. Francia invierte 100M en renovables para España" aria-label="Decisión para simular">
         <button class="primary" type="submit" id="simulate-button">Simular decisión</button>
       </form>
-      <p class="note sim-hint">Puedes escribir varios países o lobbies, acciones y cantidades. También entiende vocabulario como regalar, dar, ofrecer, porcentajes (por ejemplo 1%), molinos de viento, energía solar, presas y otros tipos de energía.</p>
+      <div class="sim-hint-row">
+        <button class="budget-info-trigger lobby-info-trigger" id="sim-hint-info" type="button" aria-label="Información sobre cómo usar el simulador" aria-expanded="false">i</button>
+        <p class="note sim-hint" id="sim-hint-copy" hidden>Puedes escribir varios países o lobbies, acciones y cantidades. También entiende vocabulario como regalar, dar, ofrecer, porcentajes (por ejemplo 1%), molinos de viento, energía solar, presas y otros tipos de energía.</p>
+      </div>
       <div class="result" id="simulation-result" hidden></div>
       <p class="note" id="sim-note">
         Simulación ilustrativa: no modifica presupuestos oficiales ni registra una transacción real.
@@ -2110,12 +2116,14 @@
       pendingThinkRecover.attempts++;
       pendingThinkRecover.lastQuestionKind=kind;
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
-      result.hidden=false;
-      result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small><button type="button" class="back" data-sim-cancel>'+(lang==="en"?"Cancel":lang==="fr"?"Annuler":"Cancelar")+'</button></div>';
-      // The clarification card already contains the wolf and its question.
-      // Hide the permanent mascot/speech pair to avoid showing the same message twice.
-      document.getElementById("wolf").hidden=true;
-      document.getElementById("speech").hidden=true;
+      // Ask once in the existing speech bubble; do not create a second wolf/card.
+      result.hidden=true;
+      result.innerHTML="";
+      const wolf=document.getElementById("wolf");
+      wolf.style.display="none";
+      const speech=document.getElementById("speech");
+      speech.hidden=false;
+      speech.textContent=question;
       const input=document.getElementById("transaction");
       input.value="";
       input.placeholder=lang==="en"?"Add a clarification…":lang==="fr"?"Ajoutez une précision…":"Añade una aclaración…";
@@ -2127,6 +2135,7 @@
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es;
       document.getElementById("transaction").placeholder=t.placeholder;
       document.getElementById("simulate-button").textContent=t.simulate;
+      document.getElementById("wolf").style.display="";
       document.getElementById("wolf").hidden=false;
       document.getElementById("speech").hidden=false;
     }
@@ -2144,6 +2153,11 @@
       document.getElementById("wolf").textContent="🐺💭";
       document.getElementById("speech").textContent=message;
     }
+    document.getElementById("sim-hint-info").addEventListener("click",event=>{
+      const copy=document.getElementById("sim-hint-copy");
+      copy.hidden=!copy.hidden;
+      event.currentTarget.setAttribute("aria-expanded",String(!copy.hidden));
+    });
     document.getElementById("sim-form").addEventListener("submit",event=>{
       event.preventDefault();
       const submitted=document.getElementById("transaction").value.trim();
@@ -2214,7 +2228,16 @@
       const isMultiPartyScenario=!parsed.explicitTransfer&&
         ["attack","war","surrender","ceasefire","peace","agreement","joint"].includes(parsed.action?.key);
       if(isScenarioQuestion||isMultiPartyScenario){askThinkRecover(text,lang,"scenario");return;}
-      if(parsed.negatedAction){recordUnrecognizedSimulation(text,"negated_action");askThinkRecover(text,lang,"negation");return;}
+      if(parsed.negatedAction){
+        clearThinkRecover();
+        const messages={es:"Entendido: esa acción no se realiza. No hay cambios en presupuestos ni indicadores.",en:"Understood: that action is not carried out. Budgets and indicators remain unchanged.",fr:"Compris : cette action n’est pas effectuée. Les budgets et les indicateurs restent inchangés."};
+        const result=document.getElementById("simulation-result");
+        result.hidden=true;
+        result.innerHTML="";
+        document.getElementById("speech").textContent=messages[lang]||messages.es;
+        document.getElementById("wolf").style.display="";
+        return;
+      }
       if(parsed.intentOnly){recordUnrecognizedSimulation(text,"intent_not_decision");askThinkRecover(text,lang,"intent");return;}
       if(parsed.multipleActionSignals>1){recordUnrecognizedSimulation(text,"multiple_action_candidates");askThinkRecover(text,lang,"multiple");return;}
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
