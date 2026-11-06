@@ -2117,14 +2117,14 @@
     let pendingThinkRecover=null;
     function thinkRecoverQuestion(lang,kind){
       const copy={
-        es:{scenario:"¿Quieres explorar las consecuencias generales de ese escenario o simular una decisión concreta? No voy a convertirlo por mi cuenta en una donación ni en otra acción.",actor:"¿Qué país o participante está realizando la acción? Dime quién actúa; no voy a elegirlo por el orden de los nombres.",action:"¿Qué acción quieres evaluar exactamente? Cuéntamela con tus palabras; no asumiré que se trata de una donación.",roles:"He identificado varios participantes, pero no una relación clara. ¿Quién realiza la acción y quién o quiénes son destinatarios?",self:"He encontrado una acción que parece realizarse sobre el propio participante, pero aparecen varios nombres. ¿Quién lleva a cabo esa acción?",receiver:"¿Quién o quiénes reciben esta acción? Puedes mencionar varios destinatarios; no voy a inventarlos.",ambiguous:"La frase admite más de una acción posible. ¿Qué acción querías expresar exactamente?",negation:"He detectado una negación. ¿Quieres indicar que esa acción no debe realizarse, o estás proponiendo otra decisión para evaluar?",intent:"¿Quieres que evaluemos una decisión concreta que todavía es una propuesta, o solo estás expresando una intención? Si quieres simularla, descríbela como una acción concreta.",multiple:"Has mencionado varias acciones. ¿Cuál quieres evaluar primero? Podemos analizar las demás por separado.",amount:"¿Qué cantidad quieres asignar a esta acción? Puedes indicar una cifra, 20M o un porcentaje del presupuesto."},
-        en:{scenario:"Do you want to explore the scenario's general consequences or simulate a specific decision? I won't turn it into a donation or another action on my own.",actor:"Which country or participant is taking the action? Tell me who acts; I won't decide based on name order.",action:"What action do you want to evaluate exactly? Describe it in your own words; I won't assume it's a donation.",roles:"I found several participants but no clear relationship. Who takes the action, and who are the recipient(s)?",self:"This action appears to be carried out by the participant itself, but several names appear. Who is taking the action?",receiver:"Who receives this action? You can name multiple recipients; I won't invent them.",ambiguous:"The sentence could describe more than one action. What action did you mean?",negation:"I detected a negation. Do you mean that this action should not happen, or are you proposing a different decision to evaluate?",intent:"Do you want to evaluate a specific decision that is still a proposal, or are you only expressing an intention? If you want to simulate it, describe the concrete action.",multiple:"You mentioned several actions. Which one should I evaluate first? We can assess the others separately.",amount:"What amount should be assigned to this action? You can enter a number, 20M, or a percentage of the budget."},
-        fr:{scenario:"Voulez-vous explorer les conséquences générales de ce scénario ou simuler une décision précise ? Je ne le transformerai pas moi-même en don ou en une autre action.",actor:"Quel pays ou participant réalise l’action ? Précisez qui agit ; je ne déciderai pas selon l’ordre des noms.",action:"Quelle action voulez-vous évaluer exactement ? Décrivez-la avec vos mots ; je ne supposerai pas qu’il s’agit d’un don.",roles:"J’ai repéré plusieurs participants, mais leur relation n’est pas claire. Qui agit et qui reçoit ?",self:"Cette action semble concerner le participant lui-même, mais plusieurs noms apparaissent. Qui réalise l’action ?",receiver:"Qui reçoit cette action ? Vous pouvez indiquer plusieurs destinataires ; je ne vais pas les inventer.",ambiguous:"La phrase peut décrire plusieurs actions. Quelle action vouliez-vous exprimer exactement ?",negation:"J’ai détecté une négation. Voulez-vous dire que cette action ne doit pas avoir lieu, ou proposez-vous une autre décision à évaluer ?",intent:"Voulez-vous évaluer une décision précise qui est encore à l’état de proposition, ou exprimez-vous simplement une intention ? Pour la simuler, décrivez l’action concrète.",multiple:"Vous avez mentionné plusieurs actions. Laquelle souhaitez-vous évaluer en premier ? Nous pourrons examiner les autres séparément.",amount:"Quel montant souhaitez-vous affecter à cette action ? Vous pouvez saisir un chiffre, 20M ou un pourcentage du budget."}
+        es:{scenario:"¿Quieres explorar las consecuencias generales de ese escenario o simular una decisión concreta? No voy a convertirlo por mi cuenta en una donación ni en otra acción.",actor:"¿Qué país o participante está realizando la acción? Dime quién actúa; no voy a elegirlo por el orden de los nombres.",action:"¿Qué acción quieres evaluar exactamente? Cuéntamela con tus palabras; no asumiré que se trata de una donación.",roles:"He identificado varios participantes, pero no una relación clara. ¿Quién realiza la acción y quién o quiénes son destinatarios?",self:"He encontrado una acción que parece realizarse sobre el propio participante, pero aparecen varios nombres. ¿Quién lleva a cabo esa acción?",receiver:"¿Quién o quiénes reciben esta acción? Puedes mencionar varios destinatarios; no voy a inventarlos.",ambiguous:"La frase admite más de una acción posible. ¿Qué acción querías expresar exactamente?",negation:"He detectado una negación. ¿Quieres indicar que esa acción no debe realizarse, o estás proponiendo otra decisión para evaluar?",intent:"¿Quieres que evaluemos una decisión concreta que todavía es una propuesta, o solo estás expresando una intención? Si quieres simularla, descríbela como una acción concreta.",multiple:"Has mencionado varias acciones. Para evitar mezclarlas, reescribe una sola decisión completa (quién actúa, qué hace, a quién afecta y la cantidad si corresponde). Después podremos evaluar las demás por separado.",amount:"¿Qué cantidad quieres asignar a esta acción? Puedes indicar una cifra, 20M o un porcentaje del presupuesto."},
+        en:{scenario:"Do you want to explore the scenario's general consequences or simulate a specific decision? I won't turn it into a donation or another action on my own.",actor:"Which country or participant is taking the action? Tell me who acts; I won't decide based on name order.",action:"What action do you want to evaluate exactly? Describe it in your own words; I won't assume it's a donation.",roles:"I found several participants but no clear relationship. Who takes the action, and who are the recipient(s)?",self:"This action appears to be carried out by the participant itself, but several names appear. Who is taking the action?",receiver:"Who receives this action? You can name multiple recipients; I won't invent them.",ambiguous:"The sentence could describe more than one action. What action did you mean?",negation:"I detected a negation. Do you mean that this action should not happen, or are you proposing a different decision to evaluate?",intent:"Do you want to evaluate a specific decision that is still a proposal, or are you only expressing an intention? If you want to simulate it, describe the concrete action.",multiple:"You mentioned several actions. To avoid mixing them, rewrite one complete decision (who acts, what they do, who is affected, and the amount if relevant). We can assess the others separately afterward.",amount:"What amount should be assigned to this action? You can enter a number, 20M, or a percentage of the budget."},
+        fr:{scenario:"Voulez-vous explorer les conséquences générales de ce scénario ou simuler une décision précise ? Je ne le transformerai pas moi-même en don ou en une autre action.",actor:"Quel pays ou participant réalise l’action ? Précisez qui agit ; je ne déciderai pas selon l’ordre des noms.",action:"Quelle action voulez-vous évaluer exactement ? Décrivez-la avec vos mots ; je ne supposerai pas qu’il s’agit d’un don.",roles:"J’ai repéré plusieurs participants, mais leur relation n’est pas claire. Qui agit et qui reçoit ?",self:"Cette action semble concerner le participant lui-même, mais plusieurs noms apparaissent. Qui réalise l’action ?",receiver:"Qui reçoit cette action ? Vous pouvez indiquer plusieurs destinataires ; je ne vais pas les inventer.",ambiguous:"La phrase peut décrire plusieurs actions. Quelle action vouliez-vous exprimer exactement ?",negation:"J’ai détecté une négation. Voulez-vous dire que cette action ne doit pas avoir lieu, ou proposez-vous une autre décision à évaluer ?",intent:"Voulez-vous évaluer une décision précise qui est encore à l’état de proposition, ou exprimez-vous simplement une intention ? Pour la simuler, décrivez l’action concrète.",multiple:"Vous avez mentionné plusieurs actions. Pour éviter de les mélanger, reformulez une seule décision complète (qui agit, quelle action, qui est concerné et le montant si nécessaire). Nous pourrons examiner les autres ensuite.",amount:"Quel montant souhaitez-vous affecter à cette action ? Vous pouvez saisir un chiffre, 20M ou un pourcentage du budget."}
       };
       return (copy[lang]||copy.es)[kind]||(copy[lang]||copy.es).action;
     }
     function askThinkRecover(original,lang,kind){
-      if(!pendingThinkRecover)pendingThinkRecover={original,clarifications:[],attempts:0,mode:kind==="scenario"?"scenario":"transaction"};
+      if(!pendingThinkRecover)pendingThinkRecover={original,workingText:original,clarifications:[],attempts:0,mode:kind==="scenario"?"scenario":"transaction"};
       pendingThinkRecover.attempts++;
       pendingThinkRecover.lastQuestionKind=kind;
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
@@ -2179,24 +2179,33 @@
       }else if(pendingThinkRecover){
         pendingThinkRecover.clarifications.push(submitted);
         const questionKind=pendingThinkRecover.lastQuestionKind;
+        const previousClarifications=pendingThinkRecover.clarifications.slice(0,-1);
+        const baseText=pendingThinkRecover.workingText||pendingThinkRecover.original;
         if(questionKind==="actor"||questionKind==="self"){
-          text=[submitted,pendingThinkRecover.original,...pendingThinkRecover.clarifications.slice(0,-1)].join(" ");
-        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"){
-          text=submitted;
-          pendingThinkRecover.original=submitted;
+          text=[submitted,baseText,...previousClarifications].join(" ");
+          pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
         }else if(questionKind==="receiver"){
           const receiverMarker=lang==="fr"?" à ":lang==="en"?" to ":" a ";
-          text=[pendingThinkRecover.original+receiverMarker,submitted,...pendingThinkRecover.clarifications.slice(0,-1)].join(" ");
+          text=[baseText+receiverMarker,submitted,...previousClarifications].join(" ");
+          pendingThinkRecover.workingText=text;
+          pendingThinkRecover.clarifications=[];
         }else if(questionKind==="roles"){
           const clarified=parseSimulationInput(submitted);
           text=clarified.participants.length&&clarified.action&&clarified.explicitTransfer
             ?submitted
-            :[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
+            :[baseText,...pendingThinkRecover.clarifications].join(" ");
+          pendingThinkRecover.workingText=text;
+          pendingThinkRecover.clarifications=[];
+        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"||questionKind==="action"||questionKind==="ambiguous"){
+          text=submitted;
+          pendingThinkRecover.workingText=submitted;
+          pendingThinkRecover.clarifications=[];
         }else{
-          text=[pendingThinkRecover.original,...pendingThinkRecover.clarifications].join(" ");
-        }
-      }
+          text=[baseText,...pendingThinkRecover.clarifications].join(" ");
+          pendingThinkRecover.workingText=text;
+          pendingThinkRecover.clarifications=[];
+        }      }
       const correction=autoCorrectSimulatorText(text);
       let parsed=parseSimulationInput(correction.text);
       const clarificationKind=pendingThinkRecover?.lastQuestionKind;
