@@ -148,8 +148,15 @@ for (const phrase of [
 assert.equal(parse("La France souhaite aider Tuvalu").intentOnly, true, "French proposals must be clarified as intentions");
 assert.equal(parse("La France prévoit investir 20M en énergies renouvelables").intentOnly, true, "Accent-normalized French/Spanish intent vocabulary must be recognized");
 {
+  const result = parse("España dona 20M a Tuvalu para ayudar con la adaptación climática");
+  assert.equal(result.multipleActionSignals, 0, "A purpose verb must not be mistaken for a second coordinated decision");
+}
+{
   const result = parse("España dona 20M a Tuvalu y construye paneles solares");
   assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
+}
+for (const phrase of ["Spain does not make a donation to Tuvalu", "España no es una donación a Tuvalu", "La France ne fait pas de don à Tuvalu"]) {
+  assert.equal(parse(phrase).negatedAction, true, "Negated donation nouns must not become positive transfers: " + phrase);
 }
 {
   const result = parse("España y Francia ayudan conjuntamente a Tuvalu");
