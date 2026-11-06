@@ -2218,9 +2218,17 @@
             :[baseText,...pendingThinkRecover.clarifications].join(" ");
           pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
-        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"||questionKind==="action"||questionKind==="ambiguous"){
+        }else if(questionKind==="intent"||questionKind==="negation"||questionKind==="multiple"){
+          // These questions explicitly ask the user to restate the intended decision.
+          // Keep the rewritten sentence as the new source of truth.
           text=submitted;
           pendingThinkRecover.workingText=submitted;
+          pendingThinkRecover.clarifications=[];
+        }else if(questionKind==="action"||questionKind==="ambiguous"||questionKind==="amount"){
+          // A short answer (e.g. "donación" or "20M") fills the missing slot;
+          // retain the actor/recipient/context already collected.
+          text=[baseText,...pendingThinkRecover.clarifications].join(" ")+" "+submitted;
+          pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
         }else{
           text=[baseText,...pendingThinkRecover.clarifications].join(" ");
