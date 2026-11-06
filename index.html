@@ -2172,7 +2172,7 @@
            (!scenarioReply.action.self&&scenarioReply.explicitTransfer&&scenarioReply.receiverStartIndex>0));
         if(generalAnswer||!isConcreteDecision){acknowledgeGeneralScenario(pendingThinkRecover.original,lang);return;}
         pendingThinkRecover.scenarioOriginal=pendingThinkRecover.original;
-        pendingThinkRecover.original=submitted;
+        pendingThinkRecover.workingText=submitted;
         pendingThinkRecover.clarifications=[];
         pendingThinkRecover.mode="transaction";
         text=submitted;
@@ -2205,7 +2205,8 @@
           text=[baseText,...pendingThinkRecover.clarifications].join(" ");
           pendingThinkRecover.workingText=text;
           pendingThinkRecover.clarifications=[];
-        }      }
+        }
+      }
       const correction=autoCorrectSimulatorText(text);
       let parsed=parseSimulationInput(correction.text);
       const clarificationKind=pendingThinkRecover?.lastQuestionKind;
