@@ -1876,7 +1876,7 @@
         biodiversidat:"biodiversidad",reciclajeo:"reciclaje"
       };
       const replacements=[];
-      const corrected=original.replace(/[\\p{L}]+/gu,token=>{
+      const corrected=original.replace(/[A-Za-zÀ-ÖØ-öø-ÿ]+/g,token=>{
         const key=normalizeSimText(token);
         const value=safeCorrections[key];
         if(!value||value===key)return token;
