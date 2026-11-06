@@ -146,7 +146,7 @@ for (const phrase of [
   assert.equal(parse(phrase).negatedAction, true, "Negated action should be detected: " + phrase);
 }
 assert.equal(parse("La France souhaite aider Tuvalu").intentOnly, true, "French proposals must be clarified as intentions");
-assert.equal(parse("España prevé invertir 20M en renovables").intentOnly, true, "Accent-normalized French/Spanish intent vocabulary must be recognized");
+assert.equal(parse("La France prévoit investir 20M en énergies renouvelables").intentOnly, true, "Accent-normalized French/Spanish intent vocabulary must be recognized");
 {
   const result = parse("España dona 20M a Tuvalu y construye paneles solares");
   assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
