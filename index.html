@@ -2151,8 +2151,10 @@
       const question=thinkRecoverQuestion(lang,kind),result=document.getElementById("simulation-result");
       result.hidden=false;
       result.innerHTML='<div class="sim-error sim-clarification"><div class="sim-confused-wolf" aria-hidden="true">🐺❔</div><strong>'+(lang==="en"?"Let me make sure I understand":lang==="fr"?"Je veux être sûr de comprendre":"Quiero asegurarme de entenderte")+'</strong><p>'+escapeHTML(question)+'</p><small>'+(lang==="en"?"Original message: ":lang==="fr"?"Message original : ":"Frase original: ")+escapeHTML(pendingThinkRecover.original)+'</small><button type="button" class="back" data-sim-cancel>'+(lang==="en"?"Cancel":lang==="fr"?"Annuler":"Cancelar")+'</button></div>';
-      document.getElementById("wolf").textContent="🐺❔";
-      document.getElementById("speech").textContent=question;
+      // The clarification card already contains the wolf and its question.
+      // Hide the permanent mascot/speech pair to avoid showing the same message twice.
+      document.getElementById("wolf").hidden=true;
+      document.getElementById("speech").hidden=true;
       const input=document.getElementById("transaction");
       input.value="";
       input.placeholder=lang==="en"?"Add a clarification…":lang==="fr"?"Ajoutez une précision…":"Añade una aclaración…";
@@ -2164,6 +2166,8 @@
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es;
       document.getElementById("transaction").placeholder=t.placeholder;
       document.getElementById("simulate-button").textContent=t.simulate;
+      document.getElementById("wolf").hidden=false;
+      document.getElementById("speech").hidden=false;
     }
     function acknowledgeGeneralScenario(original,lang){
       const messages={
