@@ -1059,12 +1059,14 @@
     .sim-clarification{padding:18px!important}
     .sim-clarification p{margin:10px 0!important;line-height:1.55}
     .sim-clarification small{display:block;opacity:.8;margin-top:12px;overflow-wrap:anywhere}
-    .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 1.2s ease-in-out infinite alternate}
+    .sim-confused-wolf{font-size:2.2rem;margin-bottom:8px;animation:simThink 3.8s ease-in-out infinite alternate}
     .sim-diagnostics{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+    /* Keep developer-only local diagnostics out of the normal player interface. */
+    .sim-diagnostics{display:none!important}
     .sim-diagnostics .note,.sim-diagnostics small{font-size:.75rem;color:var(--muted);line-height:1.45}
     .sim-diagnostics small{flex-basis:100%}
     .sim-diagnostics button:disabled{opacity:.45;cursor:not-allowed}
-    @keyframes simThink{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
+    @keyframes simThink{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-1px) rotate(1deg)}}
 </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
