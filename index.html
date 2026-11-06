@@ -2232,8 +2232,8 @@
         clearThinkRecover();
         const messages={es:"Entendido: esa acción no se realiza. No hay cambios en presupuestos ni indicadores.",en:"Understood: that action is not carried out. Budgets and indicators remain unchanged.",fr:"Compris : cette action n’est pas effectuée. Les budgets et les indicateurs restent inchangés."};
         const result=document.getElementById("simulation-result");
-        result.hidden=false;
-        result.innerHTML='<div class="sim-error sim-clarification"><p>'+escapeHTML(messages[lang]||messages.es)+'</p></div>';
+        result.hidden=true;
+        result.innerHTML="";
         document.getElementById("speech").textContent=messages[lang]||messages.es;
         document.getElementById("wolf").style.display="";
         return;
