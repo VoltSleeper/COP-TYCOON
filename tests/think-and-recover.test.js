@@ -130,6 +130,22 @@ const parse = context.parseSimulationInput;
   assert.equal(result.mitigation, true);
 }
 {
+  const result = parse("España no dona 20M a Tuvalu");
+  assert.equal(result.negatedAction, true, "Negated donations must never execute as positive transfers");
+}
+{
+  const result = parse("España quiere donar 20M a Tuvalu");
+  assert.equal(result.intentOnly, true, "A stated intention must be clarified before simulation");
+}
+{
+  const result = parse("España dona 20M a Tuvalu y construye paneles solares");
+  assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
+}
+{
+  const result = parse("España y Francia ayudan conjuntamente a Tuvalu");
+  assert.equal(result.jointAction, true, "Joint actor wording must be recognized");
+}
+{
   const result = parse("China bombardea Ucrania");
   assert.equal(result.explicitTransfer, false);
   assert.equal(result.receiverStartIndex, -1, "A second participant must not become an inferred recipient");
@@ -165,6 +181,10 @@ assert.match(html, /storage:"local-browser-only"/, "Diagnostic export must be ex
 assert.match(html, /sim-export-errors.*addEventListener/, "Diagnostic export control must be wired");
 assert.match(html, /if\(parsed\.amountAmbiguous\)/, "Multiple monetary amounts must be clarified");
 assert.match(html, /if\(parsed\.negativeAmount\)/, "Negative amounts and percentages must be rejected");
+assert.match(html, /if\(parsed\.negatedAction\)/, "Negated actions must never execute as positive decisions");
+assert.match(html, /if\(parsed\.intentOnly\)/, "Proposals and intentions must be clarified before simulation");
+assert.match(html, /if\(parsed\.multipleActionSignals>1\)/, "Multiple action verbs must trigger a clarification");
+assert.match(html, /askThinkRecover\(text,lang,"multiple"\)/, "Multi-action clarification must receive the active language");
 assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions requiring a budget must request an explicit amount");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
