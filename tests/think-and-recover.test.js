@@ -242,6 +242,8 @@ assert.doesNotMatch(html, /function exportSimulatorDiagnostics\(/, "Player-facin
 assert.match(html, /id="sim-hint-info"/, "Simulator guidance must be behind a compact info control");
 assert.match(html, /Ask once in the existing speech bubble/, "Think & Recover must not render a duplicate wolf card");
 assert.match(html, /if\(parsed\.negatedAction\)\{\s*clearThinkRecover\(\)/, "Negated actions must be acknowledged without asking a clarification question");
+assert.match(html, /lastSimulation=\{lang,participants,actors,receivers,[\s\S]*?noChange:true/, "Negated actions must render the normal result cards as unchanged");
+assert.match(html, /if\(action\?\.noChange\)/, "Negated actions must have zero impact across participant profiles");
 assert.match(html, /if\(parsed\.amountAmbiguous\)/, "Multiple monetary amounts must be clarified");
 assert.match(html, /if\(parsed\.negativeAmount\)/, "Negative amounts and percentages must be rejected");
 assert.match(html, /if\(parsed\.negatedAction\)/, "Negated actions must never execute as positive decisions");

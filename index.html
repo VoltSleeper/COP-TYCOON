@@ -2024,6 +2024,10 @@
     function stakeholderEffects(action,amount,participant){
       const profile=stakeholderProfile(participant);
       if(!profile)return null;
+      if(action?.noChange){
+        const zero={climate:0,wellbeing:0,development:0,cooperation:0,emissions:0};
+        return {five:{...zero},fifteen:{...zero}};
+      }
       const ratio=Math.min(1,Math.max(.15,amount>0?amount/200000000:.5));
       const scale=.65+.35*ratio;
       return {
@@ -2083,7 +2087,8 @@
       },{});
       const cards=actors.map(actor=>renderSimCountry(actor,"actor",actorAmount,action,lang,simHorizon)).join("")+receivers.map(target=>renderSimCountry(target,"receiver",receiverAmount,action,lang,simHorizon)).join("");
       const amountLabel=action.noBudget?(lang==="en"?"No monetary transfer":lang==="fr"?"Aucun transfert monétaire":"Sin transferencia monetaria"):formatSimMoney(amount,lang);
-      document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">'+(action.noBudget?"🌍 ":"💸 ")+amountLabel+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—")+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
+      const actionSummary=lastSimulation.noChange?(lang==="en"?"Action not carried out · no changes":lang==="fr"?"Action non effectuée · aucun changement":"Acción no realizada · sin cambios"):(action.noBudget?"🌍 ":"💸 ")+amountLabel+' · 🌍 '+escapeHTML(s.motive[action.key]||action.key||"—");
+      document.getElementById("simulation-result").innerHTML='<div class="sim-result-head"><div><div class="sim-route">'+route+'</div><div class="sim-action">'+actionSummary+(lastSimulation.implicitSelf?'</div><div class="sim-assumption-note">'+escapeHTML(s.implicitSelf):'')+'</div><div class="sim-precision-note">'+(lang==="fr"?"Plus votre proposition est précise, plus les résultats seront pertinents.":lang==="en"?"The more precise your proposal, the more meaningful the results.":"¡Cuanto más precisa sea tu propuesta, más útiles serán los resultados!")+'</div></div><div class="sim-result-actions"><button type="button" class="sim-clear-btn" data-sim-clear>✕ '+s.clearResult+'</button><div class="sim-time-selector" role="group" aria-label="Horizon"><button type="button" class="sim-time-btn '+(simHorizon===5?"active":"")+'" data-sim-horizon="5" aria-pressed="'+(simHorizon===5)+'">⏳ 5 '+s.years+'</button><button type="button" class="sim-time-btn '+(simHorizon===15?"active":"")+'" data-sim-horizon="15" aria-pressed="'+(simHorizon===15)+'">🔭 15 '+s.years+'</button></div></div></div><div class="simulation-result-grid">'+cards+'</div><div class="sim-wolf-line">'+escapeHTML(wolfLine(values,lang))+'</div>';
     }
     document.getElementById("simulation-result").addEventListener("click",event=>{const clear=event.target.closest("[data-sim-clear]");if(clear){lastSimulation=null;clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("transaction").focus();return;}const cancel=event.target.closest("[data-sim-cancel]");if(cancel){clearThinkRecover();document.getElementById("simulation-result").hidden=true;document.getElementById("simulation-result").innerHTML="";document.getElementById("wolf").textContent="🐺";document.getElementById("speech").textContent=(translations[document.getElementById("language").value]||translations.es).greeting;return;}const button=event.target.closest("[data-sim-horizon]");if(!button||!lastSimulation)return;simHorizon=Number(button.dataset.simHorizon)===15?15:5;renderSimulationResult();});
     function recordUnrecognizedSimulation(text,reason){
@@ -2230,12 +2235,21 @@
       if(isScenarioQuestion||isMultiPartyScenario){askThinkRecover(text,lang,"scenario");return;}
       if(parsed.negatedAction){
         clearThinkRecover();
-        const messages={es:"Entendido: esa acción no se realiza. No hay cambios en presupuestos ni indicadores.",en:"Understood: that action is not carried out. Budgets and indicators remain unchanged.",fr:"Compris : cette action n’est pas effectuée. Les budgets et les indicateurs restent inchangés."};
-        const result=document.getElementById("simulation-result");
-        result.hidden=true;
-        result.innerHTML="";
+        const action=parsed.action||{key:"no_change",self:false};
+        const participants=parsed.participants||[];
+        const receiverStart=Number.isInteger(parsed.receiverStartIndex)&&parsed.receiverStartIndex>=0
+          ?parsed.receiverStartIndex:Math.max(1,participants.length-1);
+        const actors=action.self||participants.length===1?[participants[0]]:participants.slice(0,receiverStart);
+        const receivers=action.self||participants.length===1?[]:participants.slice(receiverStart);
+        const zero={climate:0,wellbeing:0,development:0,cooperation:0,emissions:0};
+        const noChangeAction={...action,noBudget:true,self:!!action.self,noChange:true,base:{...zero},long:{...zero}};
+        lastSimulation={lang,participants,actors,receivers,actor:actors[0]||participants[0],receiver:receivers[0]||null,action:noChangeAction,amount:0,implicitSelf:false,noChange:true,correction:correction.replacements};
+        simHorizon=5;
+        const messages={es:"Acción no realizada. Los presupuestos y los indicadores permanecen sin cambios.",en:"Action not carried out. Budgets and indicators remain unchanged.",fr:"Action non effectuée. Les budgets et les indicateurs restent inchangés."};
         document.getElementById("speech").textContent=messages[lang]||messages.es;
         document.getElementById("wolf").style.display="";
+        result.hidden=false;
+        renderSimulationResult();
         return;
       }
       if(parsed.intentOnly){recordUnrecognizedSimulation(text,"intent_not_decision");askThinkRecover(text,lang,"intent");return;}
