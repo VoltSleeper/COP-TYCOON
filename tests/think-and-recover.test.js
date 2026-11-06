@@ -137,6 +137,16 @@ const parse = context.parseSimulationInput;
   const result = parse("España quiere donar 20M a Tuvalu");
   assert.equal(result.intentOnly, true, "A stated intention must be clarified before simulation");
 }
+for (const phrase of [
+  "España no quiere donar a Tuvalu",
+  "España no dona a Tuvalu",
+  "Spain does not donate to Tuvalu",
+  "La France ne donne pas à Tuvalu"
+]) {
+  assert.equal(parse(phrase).negatedAction, true, "Negated action should be detected: " + phrase);
+}
+assert.equal(parse("La France souhaite aider Tuvalu").intentOnly, true, "French proposals must be clarified as intentions");
+assert.equal(parse("España prevé invertir 20M en renovables").intentOnly, true, "Accent-normalized French/Spanish intent vocabulary must be recognized");
 {
   const result = parse("España dona 20M a Tuvalu y construye paneles solares");
   assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
