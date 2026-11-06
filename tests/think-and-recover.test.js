@@ -251,6 +251,10 @@ assert.match(html, /if\(parsed\.intentOnly\)/, "Proposals and intentions must be
 assert.match(html, /if\(parsed\.multipleActionSignals>1\)/, "Multiple action verbs must trigger a clarification");
 assert.match(html, /askThinkRecover\(text,lang,"multiple"\)/, "Multi-action clarification must receive the active language");
 assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions requiring a budget must request an explicit amount");
+assert.match(html, /key:"donation",requiresAmount:false/, "Donations without an explicit amount must use the simulator's default amount");
+assert.match(html, /A complete sentence always takes priority over an older clarification state/, "A complete new decision must escape stale clarification state");
+assert.match(html, /if\(pendingThinkRecover&&pendingThinkRecover\.lastQuestionKind===kind\)/, "Repeated clarification of the same kind must stop instead of looping");
+assert.match(html, /if\(parsed\.negatedAction\)/, "Negation handling must remain an early decision branch");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
 assert.match(html, /pendingThinkRecover\.lastQuestionKind=kind/, "Clarification state must remember which role was requested");
