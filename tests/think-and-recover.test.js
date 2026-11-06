@@ -21,6 +21,38 @@ const inlineScripts = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/g
 assert.ok(inlineScripts.length > 0, "Expected inline JavaScript in index.html");
 inlineScripts.forEach((script, index) => new vm.Script(script, { filename: "index.html:inline-" + index }));
 
+// Exercise the actual production autocorrect function, not a duplicate test implementation.
+const autocorrectSource = [
+  between("    function normalizeSimText(value){", "    function simContains("),
+  between("    function autoCorrectSimulatorText(input){", "    function recordSimulatorLearning("),
+  "this.autoCorrectSimulatorText = autoCorrectSimulatorText;"
+].join("\\n");
+const autocorrectContext = { console };
+vm.createContext(autocorrectContext);
+vm.runInContext(autocorrectSource, autocorrectContext);
+const autocorrect = autocorrectContext.autoCorrectSimulatorText;
+{
+  const result = autocorrect("España invierte 20M en renobables");
+  assert.equal(result.text, "España invierte 20M en renovables");
+  assert.deepEqual(Array.from(result.replacements, item => [item.from, item.to]), [["renobables", "renovables"]]);
+}
+{
+  const result = autocorrect("energia solar y fotoboltaica");
+  assert.equal(result.text, "energia solar y fotovoltaica");
+}
+for (const phrase of [
+  "España no dona 20M a Tuvalu",
+  "España dona 20M a Tuvalu",
+  "España quiere donar 20M a Tuvalu",
+  "China bombardea Ucrania",
+  "Nestlé invierte 20M en renovables",
+  "España invierte 1,5B en renovables"
+]) {
+  assert.equal(autocorrect(phrase).text, phrase, "High-risk meaning, names and amounts must remain untouched: " + phrase);
+}
+assert.equal(autocorrect("renobables").replacements.length, 1);
+assert.equal(autocorrect("renovables").replacements.length, 0, "Correct words must not be rewritten");
+
 // Run the actual production parser with a small deterministic fixture roster.
 const parserSource = [
   between("    function normalizeSimText(value){", "    function simContains("),
