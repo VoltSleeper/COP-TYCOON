@@ -219,6 +219,10 @@ assert.match(html, /const isWhatIf=/, "What-if prompts need explicit scenario cl
 assert.match(html, /parsed\.action&&parsed\.explicitTransfer/, "Direct question-form transfers must remain actionable");
 assert.match(html, /generalAnswer/, "A general-scenario clarification must not be parsed as a transaction");
 assert.match(html, /pendingThinkRecover\.original/, "The original phrase must be retained during clarification");
+assert.match(html, /workingText:original/, "Clarification must keep a separate working phrase while preserving the original");
+assert.match(html, /const baseText=pendingThinkRecover\.workingText\|\|pendingThinkRecover\.original/, "Follow-up answers must build on the latest clarified phrase");
+assert.match(html, /pendingThinkRecover\.scenarioOriginal=pendingThinkRecover\.original/, "Scenario context must remain available when switching to a concrete decision");
+assert.match(html, /pendingThinkRecover\.workingText=submitted/, "A rewritten single decision must become the working phrase for later clarifications");
 assert.match(html, /return \{text:String\(input\|\|""\),replacements:\[\]\};/, "Autocorrection must not silently rewrite user intent");
 assert.doesNotMatch(html, /participants\.length>1\?participants\.length-1:-1/, "No last-participant recipient fallback");
 console.log("Think & Recover regression checks passed.");
