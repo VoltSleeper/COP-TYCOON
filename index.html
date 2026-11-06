@@ -1907,7 +1907,7 @@
       const explicitTransfer=transferMarkerIndex>=0;
       const negatedAction=/(?:\bno\s+(?:quiero\s+)?(?:donar|dona|invertir|invierte|financiar|financia|ayudar|ayuda|construir|construye|prohibir|prohibe)|\bnot\s+(?:donate|donates|invest|invests|fund|funds|help|helps|build|builds|ban|bans)|\bne\s+(?:pas\s+)?(?:donner|donne|investir|finance|aider|construire))/.test(normalized);
       const intentOnly=/(?:\b(?:quiere|quiero|quisiera|planea|planean|pretende|pretenden|propone|proponen|would like to|wants? to|plans? to|intends? to|propose(?:s)? to|souhaite|souhaitent|prévoit|prévoient|envisage|envisagent)\b)/.test(normalized);
-      const jointAction=/(?:\b(?:junto con|juntamente con|en conjunto con|jointly with|together with|alongside|conjointement avec|ensemble avec)\b)/.test(normalized);
+      const jointAction=/(?:\b(?:junto con|juntamente con|conjuntamente|en conjunto con|jointly with|jointly|together with|together|alongside|conjointement avec|ensemble avec)\b)/.test(normalized);
       const actionVerbPattern=/\b(?:dona(?:r|n|mos)?|regala(?:r|n)?|invierte|invertir|financia(?:r|n)?|ayuda(?:r|n)?|construye|construir|reduce|reducir|protege|proteger|proh[ií]be|prohibir|abandona|abandonar|donate(?:s|d)?|give(?:s|n)?|invest(?:s|ed|ing)?|fund(?:s|ed|ing)?|help(?:s|ed|ing)?|build(?:s|ing)?|reduce(?:s|d)?|protect(?:s|ed|ing)?|ban(?:s|ned)?|donner|donne|investir|finance|financer|aider|aide|construire|construit|réduire|reduit|protéger|proteger|interdire)\b/gi;
       const multipleActionSignals=(normalized.match(actionVerbPattern)||[]).length;
       const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
