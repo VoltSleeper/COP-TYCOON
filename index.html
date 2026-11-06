@@ -1908,6 +1908,8 @@
       const negatedAction=/(?:\bno\s+(?:quiero\s+)?(?:donar|dona|invertir|invierte|financiar|financia|ayudar|ayuda|construir|construye|prohibir|prohibe)|\bnot\s+(?:donate|donates|invest|invests|fund|funds|help|helps|build|builds|ban|bans)|\bne\s+(?:pas\s+)?(?:donner|donne|investir|finance|aider|construire))/.test(normalized);
       const intentOnly=/(?:\b(?:quiere|quiero|quisiera|planea|planean|pretende|pretenden|propone|proponen|would like to|wants? to|plans? to|intends? to|propose(?:s)? to|souhaite|souhaitent|prévoit|prévoient|envisage|envisagent)\b)/.test(normalized);
       const jointAction=/(?:\b(?:junto con|juntamente con|en conjunto con|jointly with|together with|alongside|conjointement avec|ensemble avec)\b)/.test(normalized);
+      const actionVerbPattern=/\b(?:dona(?:r|n|mos)?|regala(?:r|n)?|invierte|invertir|financia(?:r|n)?|ayuda(?:r|n)?|construye|construir|reduce|reducir|protege|proteger|proh[ií]be|prohibir|abandona|abandonar|donate(?:s|d)?|give(?:s|n)?|invest(?:s|ed|ing)?|fund(?:s|ed|ing)?|help(?:s|ed|ing)?|build(?:s|ing)?|reduce(?:s|d)?|protect(?:s|ed|ing)?|ban(?:s|ned)?|donner|donne|investir|finance|financer|aider|aide|construire|construit|réduire|reduit|protéger|proteger|interdire)\b/gi;
+      const multipleActionSignals=(normalized.match(actionVerbPattern)||[]).length;
       const explicitDonationVerb=/(?:\b(?:dona(?:cion|ción|r|s|n|mos|ron)?|regala(?:r|n)?|ofrece(?:r)?|dar|da|dan|dado|donate(?:s|d)?|give(?:s|n)?|offer(?:s|ed)?|donner|donne|offrir|offre)\b)/.test(normalized);
       const actionCandidates=[...SIM_ACTIONS]
         .filter(item=>item.words.some(word=>simContains(normalized,word)))
@@ -1929,7 +1931,7 @@
         action={...action,base:{climate:1.1,wellbeing:.55,development:.25,cooperation:.45,emissions:-1.8},long:{climate:2.4,wellbeing:1.1,development:.6,cooperation:.9,emissions:-3.8}};
       }
       const percentage=parsePercentageFromText(normalized);
-      return {normalized,participants,countries,amount,amountAmbiguous,negativeAmount,negatedAction,intentOnly,jointAction,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
+      return {normalized,participants,countries,amount,amountAmbiguous,negativeAmount,negatedAction,intentOnly,jointAction,multipleActionSignals,percentage,action,actionCandidates,receiverStartIndex,explicitTransfer,mitigation};
     }
 
     function simArrow(value){
@@ -2209,7 +2211,7 @@
       if(isScenarioQuestion||isMultiPartyScenario){askThinkRecover(text,lang,"scenario");return;}
       if(parsed.negatedAction){recordUnrecognizedSimulation(text,"negated_action");askThinkRecover(text,lang,"negation");return;}
       if(parsed.intentOnly){recordUnrecognizedSimulation(text,"intent_not_decision");askThinkRecover(text,lang,"intent");return;}
-      if(parsed.actionCandidates.length>1&&!parsed.explicitTransfer){recordUnrecognizedSimulation(text,"multiple_action_candidates");askThinkRecover(text,"multiple");return;}
+      if(parsed.multipleActionSignals>1){recordUnrecognizedSimulation(text,"multiple_action_candidates");askThinkRecover(text,lang,"multiple");return;}
       if(!parsed.participants.length){recordUnrecognizedSimulation(text,"unknown_participant");askThinkRecover(text,lang,"actor");return;}
       if(!parsed.action){recordUnrecognizedSimulation(text,"unknown_action");askThinkRecover(text,lang,"action");return;}
       const action=parsed.action;
