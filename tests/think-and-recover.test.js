@@ -155,7 +155,7 @@ assert.equal(parse("La France prévoit investir 20M en énergies renouvelables")
   const result = parse("España dona 20M a Tuvalu y construye paneles solares");
   assert.equal(result.multipleActionSignals, 2, "Two action verbs in one sentence must be split into separate decisions");
 }
-for (const phrase of ["Spain does not make a donation to Tuvalu", "España no es una donación a Tuvalu", "La France ne fait pas de don à Tuvalu"]) {
+for (const phrase of ["Spain's action is not a donation", "España no es una donación a Tuvalu", "La France ne fait pas de don à Tuvalu"]) {
   assert.equal(parse(phrase).negatedAction, true, "Negated donation nouns must not become positive transfers: " + phrase);
 }
 {
