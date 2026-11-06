@@ -26,7 +26,7 @@ const autocorrectSource = [
   between("    function normalizeSimText(value){", "    function simContains("),
   between("    function autoCorrectSimulatorText(input){", "    function recordSimulatorLearning("),
   "this.autoCorrectSimulatorText = autoCorrectSimulatorText;"
-].join("\\n");
+].join("\n");
 const autocorrectContext = { console };
 vm.createContext(autocorrectContext);
 vm.runInContext(autocorrectSource, autocorrectContext);
