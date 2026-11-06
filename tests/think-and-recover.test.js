@@ -81,6 +81,12 @@ const context = { countryRoster: roster, stakeholderRoster: stakeholders, consol
 vm.createContext(context);
 vm.runInContext(parserSource, context);
 const parse = context.parseSimulationInput;
+{
+  const corrected = autocorrect("España invierte 20M en renobables");
+  const result = parse(corrected.text);
+  assert.equal(result.action?.key, "renewables", "A corrected climate term must reach the intended production action");
+  assert.equal(result.amount, 20000000, "Autocorrection must preserve the original numeric amount");
+}
 
 {
   const result = parse("España dona a Tuvalu y Nestlé contra la subida del mar");
