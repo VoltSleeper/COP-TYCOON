@@ -449,6 +449,15 @@
     .admin-form label:nth-child(2), .admin-form label:nth-child(3), .admin-form-actions { grid-column:1/-1; }
     .admin-form input,.admin-form select { width:100%; min-width:0; padding:12px 13px; border:1px solid var(--border); border-radius:11px; background:#EFF4BD; color:var(--ivory); font:inherit; font-size:.9rem; }
     .admin-extra-options { grid-column:1/-1; display:flex; align-items:center; gap:18px; padding:2px 0 4px; } .admin-check { display:flex !important; grid-template-columns:none !important; align-items:center; gap:8px !important; color:var(--slate); font-size:.8rem !important; font-weight:700; cursor:pointer; } .admin-check input { width:17px !important; height:17px; margin:0; accent-color:var(--forest); } .admin-form-actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .admin-failed-decisions{margin:0 0 18px;padding:12px 14px;border:1px solid #C88735;border-radius:12px;background:#FFF5D8;color:#493719}
+    .admin-failed-decisions[hidden]{display:none}
+    .admin-failed-head strong{display:block;color:#754A0B;font-size:.9rem}
+    .admin-failed-head p{margin:5px 0 0;color:#654F2C;font-size:.78rem;line-height:1.45}
+    .admin-failed-list{display:grid;gap:10px;margin:12px 0 0;padding:0;list-style:none}
+    .admin-failed-item{display:grid;gap:6px;padding:10px;border:1px solid #D9BD82;border-radius:9px;background:#FFFBEE}
+    .admin-failed-phrase{font-weight:700;overflow-wrap:anywhere;color:#342A1B}
+    .admin-failed-item small{font-size:.7rem;line-height:1.4;color:#705F43}
+    .admin-failed-item button{justify-self:start;padding:6px 10px;font-size:.75rem}
     .admin-warning { margin:14px 0 0; color:var(--muted); font-size:.76rem; line-height:1.5; }
     .chat-admin-actions { display:flex; justify-content:flex-end; flex-wrap:wrap; gap:8px; margin-top:12px; position:relative; }
     .chat-admin-actions button { border:1px solid var(--border); border-radius:9px; padding:7px 10px; background:#EFF4BDB8; color:var(--slate); font:inherit; font-size:.75rem; cursor:pointer; }
@@ -1176,6 +1185,7 @@
           <div><h3 id="admin-panel-title">Panel de administración</h3><p id="admin-panel-desc">Gestiona el historial de esta demostración.</p></div>
           <button class="back" type="button" onclick="logoutAdmin()" id="admin-close">Cerrar</button>
         </div>
+        <section class="admin-failed-decisions" id="admin-failed-decisions" aria-live="polite" hidden></section>
         <form id="admin-transaction-form" class="admin-form">
           <label id="admin-sender-label">País que realiza la transacción
             <input id="admin-country" list="admin-country-options" required maxlength="80" autocomplete="off" placeholder="Escribe o busca el país emisor…" aria-autocomplete="list" aria-controls="admin-country-suggestions"><div id="admin-country-suggestions" class="country-suggestions" role="listbox" hidden></div>
@@ -2105,6 +2115,52 @@
         localStorage.setItem(key,JSON.stringify(entries.slice(-100)));
       }catch(error){console.warn("Could not save simulator feedback locally.",error);}
     }
+    function recordFailedDecision(text,reason){
+      const phrase=String(text||"").trim().slice(0,500);
+      if(!phrase)return;
+      try{
+        const key="copTycoonFailedDecisions",items=JSON.parse(localStorage.getItem(key)||"[]");
+        const normalized=normalizeSimText(phrase).slice(0,500);
+        if(!normalized)return;
+        const existing=items.find(item=>item.normalized===normalized&&!item.reviewed);
+        const now=new Date().toISOString();
+        if(existing){existing.count=(existing.count||1)+1;existing.lastSeen=now;existing.reason=reason||existing.reason;}
+        else items.push({id:now+"-"+Math.random().toString(36).slice(2,8),phrase,normalized,reason:reason||"unresolved",count:1,firstSeen:now,lastSeen:now,reviewed:false});
+        localStorage.setItem(key,JSON.stringify(items.slice(-100)));
+      }catch(error){console.warn("Could not save failed simulator decision locally.",error);}
+    }
+    function getFailedDecisions(){
+      try{return JSON.parse(localStorage.getItem("copTycoonFailedDecisions")||"[]").filter(item=>!item.reviewed);}
+      catch(error){console.warn("Could not read local simulator diagnostics.",error);return [];}
+    }
+    function renderFailedDecisions(){
+      const box=document.getElementById("admin-failed-decisions");
+      if(!box)return;
+      const items=getFailedDecisions();
+      const count=items.length;
+      box.hidden=count===0;
+      if(!count){box.innerHTML="";return;}
+      const lang=document.getElementById("language").value;
+      const copy={
+        es:{title:"⚠ Errores pendientes de revisar",intro:"El simulador no pudo interpretar estas frases. Puedes copiarlas y traerlas aquí para corregir el parser.",seen:"Veces",first:"Primera vez",last:"Última vez",review:"Marcar como revisado"},
+        en:{title:"⚠ Failed decisions to review",intro:"The simulator could not interpret these phrases. You can copy them and bring them here to improve the parser.",seen:"Times",first:"First seen",last:"Last seen",review:"Mark as reviewed"},
+        fr:{title:"⚠ Décisions échouées à examiner",intro:"Le simulateur n’a pas pu interpréter ces phrases. Vous pouvez les copier et nous les transmettre pour améliorer l’analyse.",seen:"Occurrences",first:"Première fois",last:"Dernière fois",review:"Marquer comme examiné"}
+      }[lang]||{
+        title:"⚠ Errores pendientes de revisar",intro:"El simulador no pudo interpretar estas frases. Puedes copiarlas y traerlas aquí para corregir el parser.",seen:"Veces",first:"Primera vez",last:"Última vez",review:"Marcar como revisado"
+      };
+      const formatDate=value=>{const date=new Date(value);return Number.isNaN(date.getTime())?"—":date.toLocaleString(lang==="en"?"en-GB":lang==="fr"?"fr-FR":"es-ES");};
+      box.innerHTML='<div class="admin-failed-head"><strong>'+copy.title+' ('+count+')</strong><p>'+copy.intro+'</p></div><ul class="admin-failed-list">'+items.map(item=>'<li class="admin-failed-item"><div class="admin-failed-phrase">'+escapeHTML(item.phrase)+'</div><small>'+copy.seen+': '+Number(item.count||1)+' · '+copy.first+': '+escapeHTML(formatDate(item.firstSeen))+' · '+copy.last+': '+escapeHTML(formatDate(item.lastSeen))+' · '+escapeHTML(item.reason||"unresolved")+'</small><button type="button" class="back" data-failed-reviewed="'+escapeHTML(item.id)+'">'+copy.review+'</button></li>').join("")+'</ul>';
+    }
+    document.getElementById("admin-failed-decisions")?.addEventListener("click",event=>{
+      const button=event.target.closest("[data-failed-reviewed]");
+      if(!button)return;
+      try{
+        const key="copTycoonFailedDecisions",items=JSON.parse(localStorage.getItem(key)||"[]");
+        const item=items.find(entry=>entry.id===button.dataset.failedReviewed);
+        if(item){item.reviewed=true;item.reviewedAt=new Date().toISOString();localStorage.setItem(key,JSON.stringify(items));}
+      }catch(error){console.warn("Could not update local simulator diagnostics.",error);}
+      renderFailedDecisions();
+    });
     // Local feedback samples are retained only in this browser for development.
     // There is deliberately no player-facing export control.
     let pendingThinkRecover=null;
@@ -2118,6 +2174,8 @@
     }
     function askThinkRecover(original,lang,kind){
       if(pendingThinkRecover&&pendingThinkRecover.lastQuestionKind===kind){
+        const failedPhrase=pendingThinkRecover.original||original;
+        recordFailedDecision(failedPhrase,kind);
         const result=document.getElementById("simulation-result");
         clearThinkRecover();
         result.hidden=false;
@@ -2465,6 +2523,7 @@ function renderHistory(){
         form.hidden=true;
         document.getElementById("admin-panel").hidden=false;
         document.getElementById("admin-toggle").textContent="🔓 "+(translations[document.getElementById("language").value]||translations.es).admin;
+        renderFailedDecisions();
         renderHistory();
       }catch(error){
         passwordInput.value="";
