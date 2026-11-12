@@ -281,4 +281,10 @@ assert.match(html, /pendingThinkRecover\.workingText=submitted/, "A rewritten si
 assert.match(html, /const safeCorrections=/, "Autocorrection must use an explicit conservative vocabulary");
 assert.ok(html.includes("const corrected=original.replace("), "Autocorrection must tokenize words without touching punctuation or amounts");
 assert.doesNotMatch(html, /participants\.length>1\?participants\.length-1:-1/, "No last-participant recipient fallback");
+assert.match(html, /function economyTrend\\(value,lang\\)/, "Economy must have a localized growth/decline/stable status");
+assert.match(html, /up:"en crecimiento",down:"en declive",flat:"estable"/, "Spanish economy status labels must be localized");
+assert.match(html, /up:"growing",down:"declining",flat:"stable"/, "English economy status labels must be localized");
+assert.match(html, /up:"en croissance",down:"en déclin",flat:"stable"/, "French economy status labels must be localized");
+assert.match(html, /sim-economy-status/, "Economy card must use a simple text-only status instead of a directional arrow");
+assert.doesNotMatch(html.slice(html.indexOf("const economy=profile"), html.indexOf("return '<div class=\\"sim-country-result\\"")), /simArrow\\(values\\.development\\)/, "Economy card must not show a potentially confusing up/down arrow");
 console.log("Think & Recover regression checks passed.");
