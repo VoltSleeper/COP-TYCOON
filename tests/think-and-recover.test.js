@@ -260,6 +260,10 @@ assert.match(html, /id="admin-failed-decisions"/, "The admin panel must contain 
 assert.match(html, /renderFailedDecisions\(\)/, "Failed-decision alerts must render after admin login");
 assert.match(html, /data-failed-reviewed/, "Admins must be able to mark failed phrases as reviewed");
 assert.match(html, /if\(parsed\.negatedAction\)/, "Negation handling must remain an early decision branch");
+assert.match(html, /key:"bombardment",requiresAmount:false/, "Bombardment vocabulary must be recognized without asking for a budget");
+assert.match(html, /key:"price_hike",requiresAmount:false/, "Price increases must be recognized as a negative action");
+assert.match(html, /key:"exploitation",requiresAmount:false/, "Exploitation vocabulary must be recognized");
+assert.match(html, /key:"invasion",requiresAmount:false/, "Invasion vocabulary must be recognized");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
 assert.match(html, /pendingThinkRecover\.lastQuestionKind=kind/, "Clarification state must remember which role was requested");
