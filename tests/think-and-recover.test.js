@@ -254,6 +254,11 @@ assert.match(html, /action\.requiresAmount&&parsed\.amount===null/, "Actions req
 assert.match(html, /key:"donation",requiresAmount:false/, "Donations without an explicit amount must use the simulator's default amount");
 assert.match(html, /A complete sentence always takes priority over an older clarification state/, "A complete new decision must escape stale clarification state");
 assert.match(html, /if\(pendingThinkRecover&&pendingThinkRecover\.lastQuestionKind===kind\)/, "Repeated clarification of the same kind must stop instead of looping");
+assert.match(html, /recordFailedDecision\(failedPhrase,kind\)/, "A repeated unresolved decision must be recorded for admin review");
+assert.match(html, /copTycoonFailedDecisions/, "Failed decision reports must be stored in a separate local-only record");
+assert.match(html, /id="admin-failed-decisions"/, "The admin panel must contain the failed-decision alert area");
+assert.match(html, /renderFailedDecisions\(\)/, "Failed-decision alerts must render after admin login");
+assert.match(html, /data-failed-reviewed/, "Admins must be able to mark failed phrases as reviewed");
 assert.match(html, /if\(parsed\.negatedAction\)/, "Negation handling must remain an early decision branch");
 assert.match(html, /simulationAmount<=0/, "Zero or negative amounts must not be simulated");
 assert.match(html, /explicitDonationVerb/, "Explicit donation verbs must take priority over incidental purpose words");
