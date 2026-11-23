@@ -298,10 +298,11 @@
     .country-detail strong { color: #23561A; overflow-wrap: anywhere; }
     .budget-value { color: #516F7A !important; font-size: 1rem; background: #A2B447; border-radius: 7px; padding: 3px 7px; display: inline-block; }
 
-    .live-changes-ticker{position:fixed;left:0;right:0;bottom:0;z-index:1000;overflow:hidden;background:#d71920;color:#fff;border-top:3px solid #fff3;padding:9px 0;box-shadow:0 -4px 16px #0003;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:900;letter-spacing:.09em;font-size:.92rem;white-space:nowrap}
-    .live-changes-track{display:flex;width:max-content;gap:4rem;animation:liveChangesScroll 18s linear infinite}
-    .live-changes-track span{flex:none}
-    @keyframes liveChangesScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
+    .live-changes-ticker{position:fixed;left:0;right:0;bottom:0;z-index:1000;overflow:hidden;background:#A2B447;color:#23561A;border-top:3px solid #23561A55;padding:9px 0;box-shadow:0 -4px 16px #0002;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:900;letter-spacing:.09em;font-size:.92rem;white-space:nowrap}
+    .live-changes-track{display:flex;width:max-content;animation:liveChangesScroll 22s linear infinite;will-change:transform}
+    .live-changes-group{display:flex;flex:none;align-items:center}
+    .live-changes-track span{flex:none;padding:0 1.25rem}
+    @keyframes liveChangesScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
     body{padding-bottom:48px}
     @media(prefers-reduced-motion:reduce){.live-changes-track{animation:none;justify-content:center;width:100%}.live-changes-track span:not(:first-child){display:none}}
     .stats {
@@ -1230,7 +1231,7 @@
   </div>
   <footer id="page-footer"> COP TYCOON LFS 2026 · Proyecto educativo de simulación </footer>
 
-<div class="live-changes-ticker" role="status" aria-label="Live updates"><div class="live-changes-track"><span id="live-changes-message">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span><span aria-hidden="true">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span><span aria-hidden="true">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span></div></div>
+<div class="live-changes-ticker" role="status" aria-label="Live updates"><div class="live-changes-track"><div class="live-changes-group"><span id="live-changes-message">¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span></div><div class="live-changes-group" aria-hidden="true"><span>¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span><span>¡CAMBIOS EN DIRECTO!</span></div></div></div>
   <script>
     const sections = ["lobby", "simulator", "history"];
 
@@ -1555,7 +1556,7 @@
       {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",aliases:["ChatGPT","Lobby ChatGPT"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🤖"},
       {room:2,es:"Activista climático (por asignar)",en:"Climate activist (to be assigned)",fr:"Militant pour le climat (à attribuer)",aliases:["Activista climático","Climate activist"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌱"},
       {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California sala 3","California room 3"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
-      {room:3,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma y Nuria",en:"Emma and Nuria",fr:"Emma et Nuria"},icon:"🏢"},
+      {room:3,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
       {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",aliases:["Nestlé","Nestle","Lobby Nestlé"],people:{es:"Julia D.",en:"Julia D.",fr:"Julia D."},icon:"🏢"},
       {room:2,es:"Activista de Greenpeace",en:"Greenpeace activist",fr:"Activiste de Greenpeace",aliases:["Sacha","Activista Sacha","Climate activist Sacha","Greenpeace","Activista de Greenpeace","Greenpeace activist"],people:{es:"Sasha",en:"Sasha",fr:"Sasha"},icon:"🌱"},
       {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",aliases:["Exxon Mobil","Exxon","Lobby Exxon Mobil"],people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"}
