@@ -298,7 +298,7 @@
     .country-detail strong { color: #23561A; overflow-wrap: anywhere; }
     .budget-value { color: #516F7A !important; font-size: 1rem; background: #A2B447; border-radius: 7px; padding: 3px 7px; display: inline-block; }
 
-    .live-changes-ticker{position:fixed;left:0;right:0;bottom:0;z-index:1000;overflow:hidden;background:#23561A;color:#A2B447;border-top:3px solid #A2B44788;padding:9px 0;box-shadow:0 -4px 16px #0002;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:900;letter-spacing:.09em;font-size:.92rem;white-space:nowrap}
+    .live-changes-ticker{position:fixed;left:0;right:0;bottom:0;z-index:1000;overflow:hidden;background:#A2B447;color:#FFFFFF;border-top:3px solid #FFFFFF88;padding:9px 0;box-shadow:0 -4px 16px #0002;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:900;letter-spacing:.09em;font-size:.92rem;white-space:nowrap}
     .live-changes-track{display:flex;width:max-content;animation:liveChangesScroll 22s linear infinite;will-change:transform}
     .live-changes-group{display:flex;flex:none;align-items:center}
     .live-changes-track span{flex:none;padding:0 1.25rem}
@@ -696,6 +696,9 @@
 
     /* Room sections span the full lobby width; each room has its own card grid */
     #lobby-grid,#stakeholder-grid{display:block}
+    #stakeholder-grid .room-group{display:block!important;visibility:visible!important;opacity:1!important}
+    #stakeholder-grid .room-cards{display:grid!important;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
+    #stakeholder-grid .stakeholder-card{display:flex!important;visibility:visible!important;opacity:1!important;min-height:180px}
 
 .room-leaders{display:inline-flex;align-items:baseline;gap:12px;margin-left:auto;white-space:nowrap;font-size:.9rem}.room-leaders strong{text-transform:uppercase;color:#EFF4BD}.room-leaders span{text-transform:lowercase;color:#86D6A5}@media(max-width:560px){.room-leaders{font-size:.78rem;gap:8px}}
 .room-topic{display:inline;color:#86D6A5;font-family:"Happy Monkey",system-ui,sans-serif;font-size:.82rem;font-weight:400}
@@ -1581,6 +1584,7 @@
       document.getElementById("lobby-heading").textContent=t.lobbyHeading;document.getElementById("sim-heading").textContent=t.simHeading;document.getElementById("history-heading").textContent=t.historyHeading;
     document.getElementById("history-search").placeholder=t.searchHistory;document.getElementById("lobby-search").placeholder=t.searchLobby;document.getElementById("stakeholder-heading").textContent=t.stakeholders;document.getElementById("stakeholder-note").textContent=t.stakeholderNote;
       renderCountryRoster();
+      renderStakeholderRoster();
       document.getElementById("admin-country").placeholder=t.countryPlaceholder;
       document.getElementById("admin-receiver").placeholder=t.receiverPlaceholder;
       document.getElementById("admin-amount").placeholder=t.amountPlaceholder;
@@ -1688,6 +1692,19 @@
       }).join("");
     }
 
+    function renderStakeholderRoster(){
+      const host=document.getElementById("stakeholder-grid");
+      if(!host)return;
+      const lang=document.getElementById("language")?.value||"es";
+      const t=translations[lang]||translations.es;
+      const roomName=room=>t.rooms[room-1]||("Sala "+room);
+      const renderCards=items=>items.map(item=>"<article class=\"country-card stakeholder-card\"><div class=\"country-flag\" aria-hidden=\"true\">"+item.icon+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(item[lang]||item.en)+"</h3><div class=\"country-detail\"><span>"+t.representative+"</span><strong class=\"country-representatives\">"+escapeHTML(item.people[lang]||item.people.en)+"</strong></div></div></article>").join("");
+      host.innerHTML=[1,2,3].map(room=>{
+        const items=stakeholderRoster.filter(item=>item.room===room);
+        return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+"</h3><div class=\"room-cards\">"+renderCards(items)+"</div></section>";
+      }).join("")+"<section class=\"room-group\"><h3 class=\"room-heading\">"+(lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas")+"</h3><div class=\"room-cards\">"+renderCards(stakeholderRoster.filter(item=>item.room===0))+"</div></section>";
+    }
+
     function renderCountryRoster(){
       const lang=document.getElementById("language").value,t=translations[lang]||translations.es,host=document.getElementById("lobby-grid");
       const query=normalizeSimText(document.getElementById("lobby-search")?.value||"");
@@ -1725,8 +1742,8 @@
         }).join("");
         const leaders=roomLeaders[room];return "<section class=\"room-group\"><h3 class=\"room-heading\"><span class=\"room-heading-title\">"+roomName(room)+" <span class=\"room-topic\">· "+t.roomTopics[room-1]+"</span></span><span class=\"room-leaders\"><strong>"+leaders.president+"</strong><span>"+leaders.secretary+"</span></span></h3><div class=\"room-cards\">"+cards+"</div></section>";
       }).join("");
-      const renderStakeholders=items=>items.map(item=>"<article class=\"country-card stakeholder-card\"><div class=\"country-flag\" aria-hidden=\"true\">"+item.icon+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(item[lang]||item.en)+"</h3><div class=\"country-detail\"><span>"+t.representative+"</span><strong class=\"country-representatives\">"+escapeHTML(item.people[lang]||item.people.en)+"</strong></div></div></article>").join("");
-      document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{const items=stakeholderRoster.filter(item=>item.room===room);return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+"</h3><div class=\"room-cards\">"+renderStakeholders(items)+"</div></section>";}).join("")+"<section class=\"room-group\"><h3 class=\"room-heading\">"+(lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas")+"</h3><div class=\"room-cards\">"+renderStakeholders(stakeholderRoster.filter(item=>item.room===0))+"</div></section>";
+      renderStakeholderRoster();
+
       document.getElementById("admin-country-options").innerHTML=countryRoster.map(country=>"<option value=\"" + escapeHTML(country[lang]||country.en) + "\"></option>").join("");
       const count=document.getElementById("lobby-count");
       if(count)count.textContent=query?(totalMatches+" / "+roomRoster.length):"";
@@ -2455,7 +2472,7 @@
         try{const saved=localStorage.getItem("copTycoonDemoHistory");transactions=saved?JSON.parse(saved):[...demoTransactions];}
         catch(localError){transactions=[...demoTransactions];}
       }
-      renderHistory();renderCountryRoster();subscribeToHistory();
+      renderHistory();renderCountryRoster();renderStakeholderRoster();subscribeToHistory();
     }
     function subscribeToHistory(){
       if(historyRealtimeChannel)return;
