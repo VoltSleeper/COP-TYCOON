@@ -298,6 +298,12 @@
     .country-detail strong { color: #23561A; overflow-wrap: anywhere; }
     .budget-value { color: #516F7A !important; font-size: 1rem; background: #A2B447; border-radius: 7px; padding: 3px 7px; display: inline-block; }
 
+    .live-changes-ticker{position:fixed;left:0;right:0;bottom:0;z-index:1000;overflow:hidden;background:#d71920;color:#fff;border-top:3px solid #fff3;padding:9px 0;box-shadow:0 -4px 16px #0003;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:900;letter-spacing:.09em;font-size:.92rem;white-space:nowrap}
+    .live-changes-track{display:flex;width:max-content;gap:4rem;animation:liveChangesScroll 18s linear infinite}
+    .live-changes-track span{flex:none}
+    @keyframes liveChangesScroll{from{transform:translateX(0)}to{transform:translateX(-33.333%)}}
+    body{padding-bottom:48px}
+    @media(prefers-reduced-motion:reduce){.live-changes-track{animation:none;justify-content:center;width:100%}.live-changes-track span:not(:first-child){display:none}}
     .stats {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -1224,6 +1230,7 @@
   </div>
   <footer id="page-footer"> COP TYCOON LFS 2026 · Proyecto educativo de simulación </footer>
 
+<div class="live-changes-ticker" role="status" aria-label="Live updates"><div class="live-changes-track"><span id="live-changes-message">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span><span aria-hidden="true">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span><span aria-hidden="true">¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!</span></div></div>
   <script>
     const sections = ["lobby", "simulator", "history"];
 
@@ -1543,19 +1550,21 @@
       {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",aliases:["DTB","WWF","Transactions and Donations Booth (WWF)"],people:{es:"Nuria",en:"Nuria",fr:"Nuria"},icon:"🤝"},
       {room:0,es:"Periodistas",en:"Journalists",fr:"Journalistes",aliases:["Periodistas","Journalists","Journalistes"],people:{es:"Aurora, Romy, Salima, Thomas, Imili, Pablo V.",en:"Aurora, Romy, Salima, Thomas, Imili, Pablo V.",fr:"Aurora, Romy, Salima, Thomas, Imili, Pablo V."},icon:"📰"},
       {room:0,es:"Seguridad y organización",en:"Security and organization",fr:"Sécurité et organisation",aliases:["Seguridad","Security and organization","Sécurité et organisation"],people:{es:"Lucas M, Maé, Salam, Akram",en:"Lucas M, Maé, Salam, Akram",fr:"Lucas M, Maé, Salam, Akram"},icon:"🛡️"},
-      {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",aliases:["Activistas","Activistas climáticos","Climate activists"],people:{es:"Isabella y Paula",en:"Isabella and Paula",fr:"Isabella et Paula"},icon:"🌱"},
-      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
+      {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",aliases:["Activistas","Activistas climáticos","Climate activists"],people:{es:"Isabella, Paula y Diane",en:"Isabella, Paula and Diane",fr:"Isabella, Paula et Diane"},icon:"🌱"},
+      {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"Adam",en:"Adam",fr:"Adam"},icon:"🌴"},
       {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",aliases:["ChatGPT","Lobby ChatGPT"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🤖"},
       {room:2,es:"Activista climático (por asignar)",en:"Climate activist (to be assigned)",fr:"Militant pour le climat (à attribuer)",aliases:["Activista climático","Climate activist"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌱"},
       {room:3,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California sala 3","California room 3"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
-      {room:3,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma",en:"Emma",fr:"Emma"},icon:"🏢"},
-      {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",aliases:["Nestlé","Nestle","Lobby Nestlé"],people:{es:"Julia D. + 1 persona por asignar",en:"Julia D. + 1 participant to be assigned",fr:"Julia D. + 1 personne à attribuer"},icon:"🏢"},
-      {room:2,es:"Activista climático (Sacha)",en:"Climate activist (Sacha)",fr:"Militant pour le climat (Sacha)",aliases:["Sacha","Activista Sacha","Climate activist Sacha"],people:{es:"Sacha",en:"Sacha",fr:"Sacha"},icon:"🌱"},
+      {room:3,es:"Lobby ACS",en:"ACS lobby",fr:"Lobby ACS",aliases:["ACS","Lobby ACS"],people:{es:"Emma y Nuria",en:"Emma and Nuria",fr:"Emma et Nuria"},icon:"🏢"},
+      {room:2,es:"Lobby Nestlé",en:"Nestlé lobby",fr:"Lobby Nestlé",aliases:["Nestlé","Nestle","Lobby Nestlé"],people:{es:"Julia D.",en:"Julia D.",fr:"Julia D."},icon:"🏢"},
+      {room:2,es:"Activista de Greenpeace",en:"Greenpeace activist",fr:"Activiste de Greenpeace",aliases:["Sacha","Activista Sacha","Climate activist Sacha","Greenpeace","Activista de Greenpeace","Greenpeace activist"],people:{es:"Sasha",en:"Sasha",fr:"Sasha"},icon:"🌱"},
       {room:1,es:"Lobby Exxon Mobil",en:"Exxon Mobil lobby",fr:"Lobby Exxon Mobil",aliases:["Exxon Mobil","Exxon","Lobby Exxon Mobil"],people:{es:"Maria",en:"Maria",fr:"Maria"},icon:"🏢"}
     ];    const ids = {tagline:"tagline",lobby:"lobby-title",lobbyDesc:"lobby-desc",sim:"sim-title",simDesc:"sim-desc",history:"history-title",historyDesc:"history-desc",country:"country-label",rep:"rep-label",mascot:"mascot-label",budget:"budget-label"};
 
     function applyLanguage(lang) {
       const t=translations[lang]||translations.es;
+      const tickerMessages={es:"¡CAMBIOS EN DIRECTO! ¡CAMBIOS EN DIRECTO!",en:"LIVE UPDATES! LIVE UPDATES!",fr:"CHANGEMENTS EN DIRECT ! CHANGEMENTS EN DIRECT !"};
+      const ticker=document.getElementById("live-changes-message");if(ticker)ticker.textContent=tickerMessages[lang]||tickerMessages.es;
       Object.entries(ids).forEach(([key,id])=>{const el=document.getElementById(id);if(el&&t[key])el.textContent=t[key];});
       ["back-lobby","back-sim","back-history"].forEach(id=>document.getElementById(id).textContent=t.back);
       document.getElementById("simulate-button").textContent=t.simulate;
