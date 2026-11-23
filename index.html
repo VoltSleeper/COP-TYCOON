@@ -680,7 +680,7 @@
     .country-detail span,.roster-subhead,.eyebrow,.mascot-name{color:#86D6A5}
     .country-flag{width:96px;height:64px;border-radius:12px;background:transparent;border:0;box-shadow:none;font-size:3.7rem;line-height:1}
     .room-group{margin:26px 0 10px}.room-group:first-child{margin-top:0}
-    .room-heading{font-family:'Space Grotesk',system-ui,sans-serif;color:#DCEFFA;font-size:1.25rem;margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid #6F9DBB55}
+    .room-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:'Space Grotesk',system-ui,sans-serif;color:#DCEFFA;font-size:1.25rem;margin:0 0 14px;padding-bottom:9px;border-bottom:1px solid #6F9DBB55}
     .room-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
     .room-chip{display:inline-block;margin:0 0 10px;padding:4px 9px;border-radius:999px;background:#183B35;border:1px solid #34765E;color:#86D6A5;font-size:.72rem;font-weight:700}
     .stakeholder-card .country-flag{font-size:2.7rem}
@@ -690,6 +690,7 @@
     /* Room sections span the full lobby width; each room has its own card grid */
     #lobby-grid,#stakeholder-grid{display:block}
 
+.room-leaders{display:inline-flex;align-items:baseline;gap:12px;margin-left:auto;white-space:nowrap;font-size:.9rem}.room-leaders strong{text-transform:uppercase;color:#EFF4BD}.room-leaders span{text-transform:lowercase;color:#86D6A5}@media(max-width:560px){.room-leaders{font-size:.78rem;gap:8px}}
 .room-topic{display:inline;color:#86D6A5;font-family:"Happy Monkey",system-ui,sans-serif;font-size:.82rem;font-weight:400}
 
     /* Emoji flags: place clearly above each country card */
@@ -1514,10 +1515,15 @@
       );
     }
 
+    const roomLeaders = {
+      1:{president:"MARTIN",secretary:"alejandro"},
+      2:{president:"RAPHAËL",secretary:"issam"},
+      3:{president:"EMMA GR",secretary:"nekane"}
+    };
     const roomRoster = [
-      {room:1,country:"Germany"},{room:1,country:"Ireland"},{room:1,country:"Japan"},{room:1,country:"Canada"},{room:1,country:"Russia",representative:"Guillermo"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela"},{room:1,country:"Chile"},{room:1,country:"Democratic Republic of the Congo"},{room:1,country:"United Arab Emirates"},{room:1,country:"Indonesia"},{room:1,country:"Tuvalu",representative:"Alberto"},{room:1,country:"Samoa"},
-      {room:2,country:"Italy"},{room:2,country:"France",representative:"pending",tentative:true},{room:2,country:"Poland"},{room:2,country:"Russia",representative:"Houssam"},{room:2,country:"United Kingdom"},{room:2,country:"Norway",tentative:true},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine"},{room:2,country:"Türkiye"},{room:2,country:"Iraq"},{room:2,country:"Brazil"},{room:2,country:"Indonesia",tentative:true},{room:2,country:"Colombia",tentative:true},{room:2,country:"Ethiopia"},{room:2,country:"Tonga"},
-      {room:3,country:"Spain"},{room:3,country:"Sweden"},{room:3,country:"Israel"},{room:3,country:"Australia"},{room:3,country:"Singapore"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco"},{room:3,country:"Peru"},{room:3,country:"Saudi Arabia"},{room:3,country:"Philippines"},{room:3,country:"Fiji"},{room:3,country:"Tuvalu",representative:"pending"}
+      {room:1,country:"Germany"},{room:1,country:"Ireland",representative:"Tania"},{room:1,country:"Japan",representative:"Raphaël T-K"},{room:1,country:"Canada",representative:"Fabio"},{room:1,country:"Russia",representative:"Guillermo"},{room:1,country:"China",representative:"Olivia"},{room:1,country:"India",representative:"Gabriel"},{room:1,country:"Venezuela",representative:"Paolo"},{room:1,country:"Chile",representative:"Paul"},{room:1,country:"Democratic Republic of the Congo",representative:"Yusef / Manuel"},{room:1,country:"United Arab Emirates",representative:"Georgia"},{room:1,country:"Indonesia",representative:"Héctor / Mar"},{room:1,country:"Tuvalu",representative:"Alberto"},{room:1,country:"Samoa",representative:"Enzo"},
+      {room:2,country:"Italy"},{room:2,country:"France",representative:"Irene / Rania"},{room:2,country:"Poland",representative:"Jimena"},{room:2,country:"Russia",representative:"Houssam"},{room:2,country:"United Kingdom",representative:"Nathan"},{room:2,country:"Norway",representative:"Lucas C. / Luca"},{room:2,country:"China",representative:"Maha"},{room:2,country:"India",representative:"Chloë"},{room:2,country:"Ukraine",representative:"Javier"},{room:2,country:"Türkiye",representative:"Marc-Antoine"},{room:2,country:"Iraq",representative:"Jade"},{room:2,country:"Brazil",representative:"Lina"},{room:2,country:"Ethiopia",representative:"Léonie / Charlotte"},{room:2,country:"Tonga",representative:"Anaé F."},
+      {room:3,country:"Spain"},{room:3,country:"Sweden",representative:"Mariam"},{room:3,country:"Israel",representative:"Sara"},{room:3,country:"Australia",representative:"Macarena"},{room:3,country:"Singapore",representative:"Marco"},{room:3,country:"China",representative:"Esteban"},{room:3,country:"India",representative:"Noâm"},{room:3,country:"Morocco",representative:"Miguel"},{room:3,country:"Peru",representative:"Catalina / Joaquina"},{room:3,country:"Saudi Arabia",representative:"Marcelino"},{room:3,country:"Philippines",representative:"Santiago"},{room:3,country:"Fiji",representative:"Carla"},{room:3,country:"Tuvalu",representative:"Emma A / Rafael"}
     ];
 
     // Current-year Lobby is the single source of truth for the active country roster.
@@ -1535,6 +1541,8 @@
 
     const stakeholderRoster = [
       {room:0,es:"Transactions and Donations Booth (WWF)",en:"Transactions and Donations Booth (WWF)",fr:"Bureau des transactions et dons (WWF)",aliases:["DTB","WWF","Transactions and Donations Booth (WWF)"],people:{es:"Nuria",en:"Nuria",fr:"Nuria"},icon:"🤝"},
+      {room:0,es:"Periodistas",en:"Journalists",fr:"Journalistes",aliases:["Periodistas","Journalists","Journalistes"],people:{es:"Aurora, Romy, Salima, Thomas, Imili, Pablo V.",en:"Aurora, Romy, Salima, Thomas, Imili, Pablo V.",fr:"Aurora, Romy, Salima, Thomas, Imili, Pablo V."},icon:"📰"},
+      {room:0,es:"Seguridad y organización",en:"Security and organization",fr:"Sécurité et organisation",aliases:["Seguridad","Security and organization","Sécurité et organisation"],people:{es:"Lucas M, Maé, Salam, Akram",en:"Lucas M, Maé, Salam, Akram",fr:"Lucas M, Maé, Salam, Akram"},icon:"🛡️"},
       {room:1,es:"Activistas climáticos",en:"Climate activists",fr:"Militants pour le climat",aliases:["Activistas","Activistas climáticos","Climate activists"],people:{es:"Isabella y Paula",en:"Isabella and Paula",fr:"Isabella et Paula"},icon:"🌱"},
       {room:1,es:"Estado de California",en:"State of California",fr:"État de Californie",aliases:["California","Estado de California","State of California"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🌴"},
       {room:2,es:"Lobby ChatGPT",en:"ChatGPT lobby",fr:"Lobby ChatGPT",aliases:["ChatGPT","Lobby ChatGPT"],people:{es:"Por asignar",en:"To be assigned",fr:"À attribuer"},icon:"🤖"},
@@ -1704,7 +1712,7 @@
           const provisional=entry.tentative?` <span class="room-chip">${lang==="fr"?"À confirmer":lang==="en"?"Tentative":"Por confirmar"}</span>`:"";
           return "<article class=\"country-card\" data-search=\"" + escapeHTML(search) + "\"><div class=\"country-flag\" aria-hidden=\"true\">"+flagMarkup(country.flag)+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(name)+"</h3>"+provisional+"<div class=\"country-detail\"><strong class=\"country-representatives\">"+escapeHTML(reps)+"</strong><span class=\"country-room\">"+roomName(room)+"</span><div class=\"budget-line\"><span>"+t.budget+"</span><strong class=\"budget-value\">"+formatUSD(displayedBudget)+"</strong></div><div class=\"budget-line\"><span>"+t.maxAmount+"</span><strong class=\"budget-value\">"+formatUSD(displayedMaximum)+"</strong></div></div><div class=\"allies-row\">"+renderAllyFlags(country)+"</div></div></div></article>";
         }).join("");
-        return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+" <span class=\"room-topic\">· "+t.roomTopics[room-1]+"</span></h3><div class=\"room-cards\">"+cards+"</div></section>";
+        const leaders=roomLeaders[room];return "<section class=\"room-group\"><h3 class=\"room-heading\"><span class=\"room-heading-title\">"+roomName(room)+" <span class=\"room-topic\">· "+t.roomTopics[room-1]+"</span></span><span class=\"room-leaders\"><strong>"+leaders.president+"</strong><span>"+leaders.secretary+"</span></span></h3><div class=\"room-cards\">"+cards+"</div></section>";
       }).join("");
       const renderStakeholders=items=>items.map(item=>"<article class=\"country-card stakeholder-card\"><div class=\"country-flag\" aria-hidden=\"true\">"+item.icon+"</div><div class=\"country-info\"><h3 class=\"country-name\">"+escapeHTML(item[lang]||item.en)+"</h3><div class=\"country-detail\"><span>"+t.representative+"</span><strong class=\"country-representatives\">"+escapeHTML(item.people[lang]||item.people.en)+"</strong></div></div></article>").join("");
       document.getElementById("stakeholder-grid").innerHTML=[1,2,3].map(room=>{const items=stakeholderRoster.filter(item=>item.room===room);return "<section class=\"room-group\"><h3 class=\"room-heading\">"+roomName(room)+"</h3><div class=\"room-cards\">"+renderStakeholders(items)+"</div></section>";}).join("")+"<section class=\"room-group\"><h3 class=\"room-heading\">"+(lang==="en"?"Outside the rooms":lang==="fr"?"À l’extérieur des salles":"Fuera de las salas")+"</h3><div class=\"room-cards\">"+renderStakeholders(stakeholderRoster.filter(item=>item.room===0))+"</div></section>";
